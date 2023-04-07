@@ -12,8 +12,23 @@
     "plugin:react/jsx-runtime"
   ],
   "rules": {
-    "react/jsx-filename-extension": 0
+    "react/jsx-filename-extension": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": false,
+        "parser": "flow"
+      }
+    ]
   },
+  "react/jsx-no-bind": [
+    "error",
+    {
+      "allowArrowFunctions": true,
+      "allowFunctions": true,
+      "allowBind": true
+    }
+  ],
   "parserOptions": {
     "ecmaVersion": 2020
   }
