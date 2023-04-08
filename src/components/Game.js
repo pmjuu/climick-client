@@ -4,15 +4,18 @@ import styled from "styled-components";
 import { SIZE } from "../assets/constants";
 import ClimbingWall from "./ClimbingWall";
 import Modal from "./Modal";
+import Ranking from "./Ranking";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 
-  .game {
+  .game-display {
     width: 950px;
-    margin: 20px 0;
     height: ${SIZE.GAME_HEIGHT};
     background-color: #999;
   }
@@ -23,7 +26,6 @@ const Wrapper = styled.div`
     justify-content: space-between;
 
     width: 400px;
-    margin: 20px 0;
     height: ${SIZE.GAME_HEIGHT};
 
     .status-box {
@@ -70,7 +72,7 @@ export default function Game() {
   return (
     <>
       <Wrapper>
-        <div className="game">
+        <div className="game-display">
           <ClimbingWall />
         </div>
         <div className="sidebar">
@@ -99,7 +101,11 @@ export default function Game() {
           </div>
         </div>
       </Wrapper>
-      {isModalOpened && <Modal closeModal={closeModal}>ranking..</Modal>}
+      {isModalOpened && (
+        <Modal closeModal={closeModal}>
+          <Ranking />
+        </Modal>
+      )}
     </>
   );
 }

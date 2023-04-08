@@ -1,7 +1,16 @@
+import { useRef } from "react";
 import styled from "styled-components";
+import Climber from "./Climber";
 
 const Wrapper = styled.div``;
 
 export default function ClimbingWall() {
-  return <Wrapper>wall</Wrapper>;
+  const gameRef = useRef();
+
+  return (
+    <Wrapper>
+      <div className="wall" ref={gameRef}></div>
+      <Climber gameRef={gameRef} />
+    </Wrapper>
+  );
 }

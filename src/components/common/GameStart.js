@@ -4,38 +4,50 @@ import styled from "styled-components";
 const GameStartContainer = styled.div`
   display: flex;
   flex-direction: row;
-  height: 60px;
+  justify-content: space-between;
+  width: 220px;
+  height: 62px;
   margin: 10px 0;
   text-align: center;
+  overflow: hidden;
+  transition: all 0.4s;
+
+  :hover {
+    width: 560px;
+  }
 
   input {
     width: 300px;
-    height: 100%;
+    height: 60px;
     padding: 0 10px;
     margin-right: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     border: none;
-    color: white;
+    color: #fff;
     text-align: center;
     font-size: 2rem;
     transition: all 0.4s;
 
     ::-webkit-input-placeholder {
+      padding: 0 20px;
+      color: #aaa;
       font-size: 1.5rem;
+      text-align: left;
     }
 
     :hover {
       background-color: rgba(255, 255, 255, 0.4);
 
       ::-webkit-input-placeholder {
-        color: rgb(50, 50, 50);
+        color: #333;
+        text-align: center;
       }
     }
 
     :focus {
-      outline: none;
-      border-bottom: 1px solid white;
       background-color: rgba(0, 0, 0, 0);
+      border-bottom: 1px solid white;
+      outline: none;
     }
   }
 `;
@@ -43,7 +55,7 @@ const GameStartContainer = styled.div`
 export default function GameStart() {
   return (
     <GameStartContainer>
-      <input placeholder="please enter player's name" />
+      <input placeholder="player's name" />
       <Link to="/game" className="button">
         Game START
       </Link>
