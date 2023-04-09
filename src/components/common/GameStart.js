@@ -30,7 +30,7 @@ const GameStartContainer = styled.div`
 
     ::-webkit-input-placeholder {
       padding: 0 20px;
-      color: #aaa;
+      color: #fff;
       font-size: 1.5rem;
       text-align: left;
     }

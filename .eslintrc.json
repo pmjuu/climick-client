@@ -19,16 +19,25 @@
         "singleQuote": false,
         "parser": "flow"
       }
-    ]
+    ],
+    "react/jsx-no-bind": [
+      "off",
+      {
+        "allowArrowFunctions": true,
+        "allowFunctions": true,
+        "allowBind": true
+      }
+    ],
+    "import/no-extraneous-dependencies": "off",
+    "consistent-return": "off",
+    "no-use-before-define": "off",
+    "no-unused-expressions": "warn",
+    "no-underscore-dangle": "warn",
+    "react/button-has-type": "off",
+    "react/prop-types": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off"
   },
-  "react/jsx-no-bind": [
-    "error",
-    {
-      "allowArrowFunctions": true,
-      "allowFunctions": true,
-      "allowBind": true
-    }
-  ],
   "parserOptions": {
     "ecmaVersion": 2020
   }
