@@ -9,7 +9,7 @@ export default function ClimbingWall() {
 
   return (
     <Wrapper>
-      <div className="wall" ref={gameRef}></div>
+      <div className="wall" ref={gameRef} />
       <Climber gameRef={gameRef} />
     </Wrapper>
   );

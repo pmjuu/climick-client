@@ -1,20 +1,17 @@
-import * as PIXI from "pixi.js";
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable no-param-reassign */
 import { useEffect } from "react";
-
-const getRadians = degrees => (degrees / 180) * Math.PI;
-const getAngleDegrees = (x, y) => (Math.atan2(y, x) * 180) / Math.PI;
-const getCos = degrees => Math.cos(getRadians(degrees));
-const getSin = degrees => Math.sin(getRadians(degrees));
-// getDistance: 두 물체의 x,y 좌표 사이 거리를 구함.
-const getDistance = (matter1, matter2) =>
-  Math.sqrt(Math.pow(matter1.x - matter2.x, 2) + Math.pow(matter1.y - matter2.y, 2));
+import * as PIXI from "pixi.js";
+import { getDistance, getAngleDegrees, getCos, getSin } from "../utils/math";
+import moveJoint from "../utils/moveJoint";
 
 export default function Climber({ gameRef }) {
   const container = new PIXI.Container();
 
   const app = new PIXI.Application({
-    width: 400,
-    height: 400,
+    width: 950,
+    height: 770,
     backgroundColor: "#000",
   });
   app.stage.addChild(container);
@@ -25,10 +22,11 @@ export default function Climber({ gameRef }) {
         gameRef.current.removeChild(gameRef.current.firstChild);
       gameRef.current.appendChild(app.view);
     }
-  }, [gameRef]);
+  }, [gameRef, app.view]);
 
   const hold = new PIXI.Graphics();
   container.addChild(hold);
+  hold.position.set(200, 450);
   hold
     .beginFill("blue")
     .drawEllipse(50, 100, 30, 10)
@@ -72,7 +70,7 @@ export default function Climber({ gameRef }) {
   const bodyWidth = 40;
   const bodyHeight = 60;
   const headRadius = 15;
-  const leftShoulder = { x: 100, y: 150 };
+  const leftShoulder = { x: 300, y: 600 };
   const rightShoulder = {
     x: leftShoulder.x + bodyWidth * getCos(body.angle),
     y: leftShoulder.y + bodyWidth * getSin(body.angle),
@@ -92,8 +90,13 @@ export default function Climber({ gameRef }) {
   const handRadius = 10;
 
   // body setting
-  body.beginFill("#555").drawRect(0, 0, bodyWidth, bodyHeight);
-  body.beginFill("#999").drawCircle(bodyWidth / 2, -headRadius, headRadius);
+  body
+    .beginFill("#555")
+    .drawRect(0, 0, bodyWidth, bodyHeight)
+    .beginFill("#999")
+    .drawCircle(bodyWidth / 2, -headRadius, headRadius)
+    .beginFill("black")
+    .drawCircle(bodyWidth / 2, bodyHeight / 2, 5);
   body.position.set(leftShoulder.x, leftShoulder.y);
 
   // left arm 초기값만 설정
@@ -107,7 +110,9 @@ export default function Climber({ gameRef }) {
   };
 
   leftUpperArm.position = body.position;
-  leftUpperArm.lineStyle(armWidth, "gray").lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
+  leftUpperArm
+    .lineStyle(armWidth, "gray")
+    .lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
 
   leftForeArm.position.set(
     leftUpperArm.x + leftUpperArmDxy.dx,
@@ -163,13 +168,23 @@ export default function Climber({ gameRef }) {
   };
 
   leftThigh.position.set(leftCoxa.x, leftCoxa.y);
-  leftThigh.lineStyle(legWidth, "gray").lineTo(leftThighDxy.dx, leftThighDxy.dy);
+  leftThigh
+    .lineStyle(legWidth, "gray")
+    .lineTo(leftThighDxy.dx, leftThighDxy.dy);
 
-  leftCalf.position.set(leftThigh.x + leftThighDxy.dx, leftThigh.y + leftThighDxy.dy);
-  leftCalf.lineStyle(legWidth, "lightgray").lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
+  leftCalf.position.set(
+    leftThigh.x + leftThighDxy.dx,
+    leftThigh.y + leftThighDxy.dy
+  );
+  leftCalf
+    .lineStyle(legWidth, "lightgray")
+    .lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
 
   leftFoot.beginFill("#777").drawCircle(0, 0, handRadius);
-  leftFoot.position.set(leftCalf.x + leftCalfDxy.dx, leftCalf.y + leftCalfDxy.dy);
+  leftFoot.position.set(
+    leftCalf.x + leftCalfDxy.dx,
+    leftCalf.y + leftCalfDxy.dy
+  );
 
   // right leg 초기값만 설정
   const rightThighDxy = {
@@ -182,21 +197,30 @@ export default function Climber({ gameRef }) {
   };
 
   rightThigh.position.set(rightCoxa.x, rightCoxa.y);
-  rightThigh.lineStyle(legWidth, "gray").lineTo(rightThighDxy.dx, rightThighDxy.dy);
+  rightThigh
+    .lineStyle(legWidth, "gray")
+    .lineTo(rightThighDxy.dx, rightThighDxy.dy);
 
   rightCalf.position.set(
     rightThigh.x + rightThighDxy.dx,
     rightThigh.y + rightThighDxy.dy
   );
-  rightCalf.lineStyle(legWidth, "lightgray").lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
+  rightCalf
+    .lineStyle(legWidth, "lightgray")
+    .lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
 
   rightFoot.beginFill("#777").drawCircle(0, 0, handRadius);
-  rightFoot.position.set(rightCalf.x + rightCalfDxy.dx, rightCalf.y + rightCalfDxy.dy);
+  rightFoot.position.set(
+    rightCalf.x + rightCalfDxy.dx,
+    rightCalf.y + rightCalfDxy.dy
+  );
 
   const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
   const rightArmList = [rightHand, rightForeArm, rightUpperArm, rightShoulder];
   const leftLegList = [leftFoot, leftCalf, leftThigh, leftCoxa];
   const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
+  const armSize = [armWidth, armLength];
+  const legSize = [legWidth, legLength];
 
   // hand drag event
   function onDragStart() {
@@ -206,19 +230,27 @@ export default function Climber({ gameRef }) {
   }
 
   function onDragging(event) {
-    if (this === body) return moveBody(event);
-    this.x = event.clientX;
-    this.y = event.clientY - handRadius * 2;
+    const wall = document.querySelector(".wall");
+    const cursorInCanvas = {
+      x: event.client.x - wall.offsetLeft,
+      y: event.client.y - wall.offsetTop,
+    };
+    if (this === body) return moveBodyTo(cursorInCanvas);
 
-    if (this === leftHand) return moveJoint(...leftArmList, 1, armWidth, armLength);
-    if (this === rightHand) return moveJoint(...rightArmList, -1, armWidth, armLength);
-    if (this === leftFoot) return moveJoint(...leftLegList, -1, legWidth, legLength);
-    if (this === rightFoot) return moveJoint(...rightLegList, 1, legWidth, legLength);
+    if (this === leftHand)
+      return moveJoint(...leftArmList, ...armSize, cursorInCanvas, 1, 1);
+    if (this === rightHand)
+      return moveJoint(...rightArmList, ...armSize, cursorInCanvas, -1, 1);
+    if (this === leftFoot)
+      return moveJoint(...leftLegList, ...legSize, cursorInCanvas, -1, -1);
+    if (this === rightFoot)
+      return moveJoint(...rightLegList, ...legSize, cursorInCanvas, 1, -1);
   }
 
-  function moveBody(event) {
-    leftShoulder.x = event.clientX - bodyWidth / 2;
-    leftShoulder.y = event.clientY - bodyHeight / 2 - headRadius;
+  let exceededPart = null;
+  function moveBodyTo(cursorInCanvas) {
+    leftShoulder.x = cursorInCanvas.x - bodyWidth / 2;
+    leftShoulder.y = cursorInCanvas.y - bodyHeight / 2;
 
     rightShoulder.x = leftShoulder.x + bodyWidth * getCos(body.angle);
     rightShoulder.y = leftShoulder.y + bodyWidth * getSin(body.angle);
@@ -227,12 +259,10 @@ export default function Climber({ gameRef }) {
     rightCoxa.x = rightShoulder.x - bodyHeight * getSin(body.angle);
     rightCoxa.y = rightShoulder.y + bodyHeight * getCos(body.angle);
 
-    body.position.set(leftShoulder.x, leftShoulder.y);
-
-    moveJointByBodyMovement(...leftArmList, 1, armWidth, armLength);
-    moveJointByBodyMovement(...rightArmList, -1, armWidth, armLength);
-    moveJointByBodyMovement(...leftLegList, -1, legWidth, legLength);
-    moveJointByBodyMovement(...rightLegList, 1, legWidth, legLength);
+    if (!exceededPart) moveJointByBodyMovement(...leftArmList, ...armSize, 1);
+    if (!exceededPart) moveJointByBodyMovement(...rightArmList, ...armSize, -1);
+    if (!exceededPart) moveJointByBodyMovement(...leftLegList, ...legSize, -1);
+    if (!exceededPart) moveJointByBodyMovement(...rightLegList, ...legSize, 1);
   }
 
   function moveJointByBodyMovement(
@@ -240,23 +270,36 @@ export default function Climber({ gameRef }) {
     foreArm,
     upperArm,
     shoulder,
-    flag,
     armLegWidth,
-    armLegLength
+    armLegLength,
+    flagX
   ) {
-    const handToBody = getDistance(shoulder, hand);
-    const h = Math.sqrt(Math.pow(armLegLength, 2) - Math.pow(handToBody / 2, 2));
-    const theta1 = getAngleDegrees(handToBody / 2, h);
-    const theta2 = getAngleDegrees(flag * (shoulder.x - hand.x), -shoulder.y + hand.y);
+    const handToShoulder = getDistance(shoulder, hand);
+    const h = Math.sqrt(armLegLength ** 2 - (handToShoulder / 2) ** 2) || 0;
+    const theta1 = getAngleDegrees(handToShoulder / 2, h);
+    const theta2 = getAngleDegrees(
+      flagX * (shoulder.x - hand.x),
+      -shoulder.y + hand.y
+    );
     const angles = theta1 + theta2;
+
+    if (handToShoulder >= armLegLength * 2) {
+      exceededPart = hand;
+    }
+
+    body.position.set(leftShoulder.x, leftShoulder.y);
+
     upperArm.position.set(shoulder.x, shoulder.y);
     upperArm
       .clear()
       .lineStyle(armLegWidth, "gray")
-      .lineTo(armLegLength * -getCos(angles) * flag, armLegLength * getSin(angles));
+      .lineTo(
+        armLegLength * -getCos(angles) * flagX,
+        armLegLength * getSin(angles)
+      );
 
     foreArm.position.set(
-      upperArm.x + armLegLength * -getCos(angles) * flag,
+      upperArm.x + armLegLength * -getCos(angles) * flagX,
       upperArm.y + armLegLength * getSin(angles)
     );
     foreArm
@@ -265,42 +308,20 @@ export default function Climber({ gameRef }) {
       .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
   }
 
-  function moveJoint(hand, foreArm, upperArm, shoulder, flag, armLegWidth, armLegLength) {
-    const handToBody = getDistance(shoulder, hand);
-    const h = Math.sqrt(Math.pow(armLegLength, 2) - Math.pow(handToBody / 2, 2));
-    const theta1 = getAngleDegrees(handToBody / 2, h);
-    const theta2 = getAngleDegrees(flag * (shoulder.x - hand.x), shoulder.y - hand.y);
-    const angles = theta1 + theta2;
-
-    foreArm.position.set(hand.x, hand.y);
-    foreArm
-      .clear()
-      .lineStyle(armLegWidth, "lightgray")
-      .lineTo(armLegLength * getCos(angles) * flag, armLegLength * getSin(angles));
-
-    upperArm.position.set(
-      foreArm.x + armLegLength * getCos(angles) * flag,
-      foreArm.y + armLegLength * getSin(angles)
-    );
-    upperArm
-      .clear()
-      .lineStyle(armLegWidth, "gray")
-      .lineTo(shoulder.x - upperArm.x, shoulder.y - upperArm.y);
-  }
-
   function onDragEnd() {
     container.children.forEach(child => {
       child.cursor = "grab";
       child.alpha = 1;
       child.off("pointermove");
     });
+    exceededPart = null;
   }
 
   const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
   limbs.forEach(limb => {
     limb
       .on("pointerover", function () {
-        return (this.cursor = "grab");
+        this.cursor = "grab";
       })
       .on("pointerdown", onDragStart).eventMode = "dynamic";
   });
@@ -369,8 +390,8 @@ export default function Climber({ gameRef }) {
   }
 
   return (
-    <>
-      <button onClick={applyGravity}>gravity start</button>
-    </>
+    <button type="button" onClick={applyGravity}>
+      gravity start
+    </button>
   );
 }

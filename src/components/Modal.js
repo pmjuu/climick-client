@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { useCallback } from "react";
 
 const ModalWrapper = styled.div`
@@ -61,10 +60,10 @@ export default function Modal({ children, closeModal }) {
     [closeModal]
   );
 
-  const handleHovering = useCallback(
-    e =>
-      (document.body.style.cursor = e.target === e.currentTarget ? "pointer" : "default")
-  );
+  const handleHovering = e => {
+    document.body.style.cursor =
+      e.target === e.currentTarget ? "pointer" : "default";
+  };
 
   return (
     <ModalWrapper onClick={handleClosingClick} onMouseOver={handleHovering}>
@@ -77,8 +76,3 @@ export default function Modal({ children, closeModal }) {
     </ModalWrapper>
   );
 }
-
-Modal.propTypes = {
-  children: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
-};
