@@ -2,11 +2,11 @@
 import { Container, Graphics, Text } from "pixi.js";
 
 export const holdInfo = {
-  floor: { x: 0, y: 750, width: 950, height: 20 },
-  start: { x: 430, y: 560, width: 60, height: 20 },
-  top: { x: 500, y: 500, width: 60, height: 20 },
-  _1: { x: 550, y: 680, width: 60, height: 20 },
-  _2: { x: 400, y: 650, width: 60, height: 20 },
+  floor: { x: 0, y: 760, width: 950, height: 20 },
+  start: { x: 430, y: 570, width: 60, height: 20 },
+  top: { x: 500, y: 470, width: 60, height: 20 },
+  general1: { x: 550, y: 680, width: 60, height: 20 },
+  general2: { x: 400, y: 650, width: 60, height: 20 },
 };
 const rectSize = [0, 0, 60, 20];
 
@@ -48,8 +48,8 @@ const topText = new Text("TOP", {
 topHold.addChild(topText);
 topText.anchor.set(0.5, 1.1);
 
-hold1.position.set(holdInfo._1.x, holdInfo._1.y);
+hold1.position.set(holdInfo.general1.x, holdInfo.general1.y);
 hold1.beginFill("purple").drawRect(...rectSize);
 
-hold2.position.set(holdInfo._2.x, holdInfo._2.y);
+hold2.position.set(holdInfo.general2.x, holdInfo.general2.y);
 hold2.beginFill("purple").drawRect(...rectSize);

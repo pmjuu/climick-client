@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
 
-export default function applyGravity(
+export default function gravityRotate(
   hand,
   foreArm,
   upperArm,

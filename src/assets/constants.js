@@ -3,5 +3,5 @@ export const COLOR = {
 };
 
 export const SIZE = {
-  GAME_HEIGHT: "780px",
+  GAME_HEIGHT: 780,
 };
