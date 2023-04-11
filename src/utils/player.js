@@ -7,6 +7,7 @@ import { holdInfo } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
+import { armLegColor, lineColor } from "./playerSetting";
 
 const containerPosition = { x: 400, y: 640 };
 const playerContainer = new Container();
@@ -27,10 +28,10 @@ const rightCalf = new Graphics();
 const rightFoot = new Graphics();
 playerContainer.addChild(leftThigh, leftCalf, leftFoot);
 playerContainer.addChild(rightThigh, rightCalf, rightFoot);
-playerContainer.addChild(body);
 playerContainer.addChild(leftUpperArm, leftForeArm, leftHand);
 playerContainer.addChild(rightUpperArm, rightForeArm, rightHand);
-const bodyWidth = 40;
+playerContainer.addChild(body);
+const bodyWidth = 30;
 const bodyHeight = 60;
 const headRadius = 15;
 const leftShoulder = { x: 50, y: 0 };
@@ -51,16 +52,30 @@ const armWidth = 10;
 const legLength = 50;
 const legWidth = 15;
 const handRadius = 10;
+const footRadius = 12;
 
 // body setting
 body
-  .beginFill("#555")
-  .drawRect(0, 0, bodyWidth, bodyHeight)
-  .beginFill("#999")
-  .drawCircle(bodyWidth / 2, -headRadius, headRadius)
-  .beginFill("black")
-  .drawCircle(bodyWidth / 2, bodyHeight / 2, 5);
+  .beginFill("#744700")
+  .drawCircle(bodyWidth / 2, -headRadius * 1.3, headRadius)
+  .lineStyle(10, lineColor)
+  .beginFill("#000")
+  .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
+  .lineStyle(13, lineColor)
+  .drawRoundedRect(0, bodyHeight / 2 + 10, bodyWidth, bodyHeight / 2, 10);
+
 body.position.set(leftShoulder.x, leftShoulder.y);
+
+leftHand
+  .lineStyle(1, "#f9cb9c")
+  .beginFill("#FCE5CD")
+  .drawCircle(0, 0, handRadius);
+rightHand
+  .lineStyle(1, "#f9cb9c")
+  .beginFill("#FCE5CD")
+  .drawCircle(0, 0, handRadius);
+leftFoot.beginFill("#333").drawCircle(0, 0, footRadius);
+rightFoot.beginFill("#333").drawCircle(0, 0, footRadius);
 
 // left arm 초기값만 설정
 const leftUpperArmDxy = {
@@ -72,9 +87,11 @@ const leftForeArmDxy = {
   dy: -armLength * getSin(60),
 };
 
-leftUpperArm.position = body.position;
+leftUpperArm.position.set(leftShoulder.x - 3, leftShoulder.y);
 leftUpperArm
-  .lineStyle(armWidth, "gray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, armWidth / 2 + 3)
+  .lineStyle(armWidth + 3, armLegColor)
   .lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
 
 leftForeArm.position.set(
@@ -82,10 +99,11 @@ leftForeArm.position.set(
   leftUpperArm.y + leftUpperArmDxy.dy
 );
 leftForeArm
-  .lineStyle(armWidth, "lightgray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, armWidth / 2)
+  .lineStyle(armWidth, armLegColor)
   .lineTo(leftForeArmDxy.dx, leftForeArmDxy.dy);
 
-leftHand.beginFill("white").drawCircle(0, 0, handRadius);
 leftHand.position.set(
   leftForeArm.x + leftForeArmDxy.dx,
   leftForeArm.y + leftForeArmDxy.dy
@@ -101,9 +119,11 @@ const rightForeArmDxy = {
   dy: -armLength * getSin(140),
 };
 
-rightUpperArm.position.set(rightShoulder.x, rightShoulder.y);
+rightUpperArm.position.set(rightShoulder.x + 3, rightShoulder.y);
 rightUpperArm
-  .lineStyle(armWidth, "gray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, armWidth / 2 + 3)
+  .lineStyle(13, armLegColor)
   .lineTo(rightUpperArmDxy.dx, rightUpperArmDxy.dy);
 
 rightForeArm.position.set(
@@ -111,10 +131,11 @@ rightForeArm.position.set(
   rightUpperArm.y + rightUpperArmDxy.dy
 );
 rightForeArm
-  .lineStyle(armWidth, "lightgray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, armWidth / 2)
+  .lineStyle(armWidth, armLegColor)
   .lineTo(rightForeArmDxy.dx, rightForeArmDxy.dy);
 
-rightHand.beginFill("white").drawCircle(0, 0, handRadius);
 rightHand.position.set(
   rightForeArm.x + rightForeArmDxy.dx,
   rightForeArm.y + rightForeArmDxy.dy
@@ -131,17 +152,22 @@ const leftCalfDxy = {
 };
 
 leftThigh.position.set(leftCoxa.x, leftCoxa.y);
-leftThigh.lineStyle(legWidth, "gray").lineTo(leftThighDxy.dx, leftThighDxy.dy);
+leftThigh
+  .lineStyle(legWidth + 13, lineColor)
+  .lineTo(leftThighDxy.dx / 2, leftThighDxy.dy / 2)
+  .lineStyle(legWidth + 3, armLegColor)
+  .lineTo(leftThighDxy.dx, leftThighDxy.dy);
 
 leftCalf.position.set(
   leftThigh.x + leftThighDxy.dx,
   leftThigh.y + leftThighDxy.dy
 );
 leftCalf
-  .lineStyle(legWidth, "lightgray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, legWidth / 2)
+  .lineStyle(legWidth, armLegColor)
   .lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
 
-leftFoot.beginFill("#777").drawCircle(0, 0, handRadius);
 leftFoot.position.set(leftCalf.x + leftCalfDxy.dx, leftCalf.y + leftCalfDxy.dy);
 
 // right leg 초기값만 설정
@@ -156,7 +182,9 @@ const rightCalfDxy = {
 
 rightThigh.position.set(rightCoxa.x, rightCoxa.y);
 rightThigh
-  .lineStyle(legWidth, "gray")
+  .lineStyle(legWidth + 13, lineColor)
+  .lineTo(rightThighDxy.dx / 2, rightThighDxy.dy / 2)
+  .lineStyle(legWidth + 3, armLegColor)
   .lineTo(rightThighDxy.dx, rightThighDxy.dy);
 
 rightCalf.position.set(
@@ -164,10 +192,11 @@ rightCalf.position.set(
   rightThigh.y + rightThighDxy.dy
 );
 rightCalf
-  .lineStyle(legWidth, "lightgray")
+  .beginFill(armLegColor)
+  .drawCircle(0, 0, legWidth / 2)
+  .lineStyle(legWidth, armLegColor)
   .lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
 
-rightFoot.beginFill("#777").drawCircle(0, 0, handRadius);
 rightFoot.position.set(
   rightCalf.x + rightCalfDxy.dx,
   rightCalf.y + rightCalfDxy.dy
@@ -219,13 +248,13 @@ function moveBodyTo(cursorInCanvas) {
   rightCoxa.y = rightShoulder.y + bodyHeight * getCos(body.angle);
 
   if (!exceededPart)
-    exceededPart = moveJointByBody(...leftArmList, ...armSize, 1);
+    exceededPart = moveJointByBody(...leftArmList, ...armSize, 1, 1);
   if (!exceededPart)
-    exceededPart = moveJointByBody(...rightArmList, ...armSize, -1);
+    exceededPart = moveJointByBody(...rightArmList, ...armSize, -1, 1);
   if (!exceededPart)
-    exceededPart = moveJointByBody(...leftLegList, ...legSize, -1);
+    exceededPart = moveJointByBody(...leftLegList, ...legSize, -1, -1);
   if (!exceededPart)
-    exceededPart = moveJointByBody(...rightLegList, ...legSize, 1);
+    exceededPart = moveJointByBody(...rightLegList, ...legSize, 1, -1);
 
   if (!exceededPart) body.position.set(leftShoulder.x, leftShoulder.y);
 }
@@ -264,13 +293,14 @@ function onDragEnd() {
 
   if (attachedStatus.leftHand === 0 && attachedStatus.rightHand === 0) {
     let descentVelocity = 0;
+
     const gravity = setInterval(() => {
       descentVelocity += 0.02;
 
       const isPlayerAboveGround =
         playerContainer.y <
         containerPosition.y -
-          leftShoulder.y -
+          leftShoulder.y +
           (initialContainerHeight - playerContainer.height);
       playerContainer.y += descentVelocity * 0.3;
 

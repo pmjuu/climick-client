@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
+import { armLegColor } from "./playerSetting";
 
 export default function gravityRotate(
   hand,
@@ -57,11 +58,22 @@ export default function gravityRotate(
     if (isRotationFinished) {
       clearInterval(gravity);
       upperArm.angle = 0;
-      upperArm.clear().lineStyle(armLegWidth, "gray").lineTo(0, armLegLength);
+      upperArm.clear();
+
+      if (flagY === -1) {
+        upperArm
+          .lineStyle(armLegWidth + 13, "#000")
+          .lineTo(0, armLegLength / 2);
+      } else {
+        upperArm.beginFill(armLegColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+      }
+
+      upperArm.lineStyle(armLegWidth + 3, armLegColor).lineTo(0, armLegLength);
+
       foreArm.angle = 0;
       foreArm
         .clear()
-        .lineStyle(armLegWidth, "lightgray")
+        .lineStyle(armLegWidth, armLegColor)
         .lineTo(0, armLegLength);
     }
   }, 1);

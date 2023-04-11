@@ -1,4 +1,5 @@
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
+import { armLegColor } from "./playerSetting";
 
 export default function moveJointByBody(
   hand,
@@ -7,7 +8,8 @@ export default function moveJointByBody(
   shoulder,
   armLegWidth,
   armLegLength,
-  flagX
+  flagX,
+  flagY
 ) {
   const handToShoulder = getDistance(shoulder, hand);
   const h = Math.sqrt(armLegLength ** 2 - (handToShoulder / 2) ** 2) || 0;
@@ -22,14 +24,27 @@ export default function moveJointByBody(
     return hand;
   }
 
-  upperArm.position.set(shoulder.x, shoulder.y);
+  upperArm.clear();
+
+  if (flagY === -1) {
+    upperArm
+      .lineStyle(armLegWidth + 13, "#000")
+      .lineTo(
+        (armLegLength * -getCos(angles) * flagX) / 2,
+        (armLegLength * getSin(angles)) / 2
+      );
+  } else {
+    upperArm.beginFill(armLegColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+  }
+
   upperArm
-    .clear()
-    .lineStyle(armLegWidth, "gray")
+    .lineStyle(armLegWidth + 3, armLegColor)
     .lineTo(
       armLegLength * -getCos(angles) * flagX,
       armLegLength * getSin(angles)
     );
+
+  upperArm.position.set(shoulder.x - flagX * 4, shoulder.y);
 
   foreArm.position.set(
     upperArm.x + armLegLength * -getCos(angles) * flagX,
@@ -37,6 +52,8 @@ export default function moveJointByBody(
   );
   foreArm
     .clear()
-    .lineStyle(armLegWidth, "lightgray")
+    .beginFill(armLegColor)
+    .drawCircle(0, 0, armLegWidth / 2)
+    .lineStyle(armLegWidth, armLegColor)
     .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
 }

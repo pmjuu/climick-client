@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
+import { armLegColor } from "./playerSetting";
 
 export default function moveJoint(
   hand,
@@ -40,14 +41,25 @@ export default function moveJoint(
     y: shoulder.y + armLegLength * getSin(theta1 - theta2),
   };
 
+  upperArm.clear();
+
+  if (flagY === -1) {
+    upperArm
+      .lineStyle(armLegWidth + 13, "#000")
+      .lineTo((elbow.x - shoulder.x) / 2, (elbow.y - shoulder.y) / 2);
+  } else {
+    upperArm.beginFill(armLegColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+  }
+
   upperArm
-    .clear()
-    .lineStyle(armLegWidth, "gray")
+    .lineStyle(armLegWidth + 3, armLegColor)
     .lineTo(elbow.x - shoulder.x, elbow.y - shoulder.y);
 
   foreArm.position.set(elbow.x, elbow.y);
   foreArm
     .clear()
-    .lineStyle(armLegWidth, "lightgray")
+    .beginFill(armLegColor)
+    .drawCircle(0, 0, armLegWidth / 2)
+    .lineStyle(armLegWidth, armLegColor)
     .lineTo(hand.x - elbow.x, hand.y - elbow.y);
 }

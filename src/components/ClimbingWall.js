@@ -10,7 +10,7 @@ export default function ClimbingWall() {
   const app = new Application({
     width: 950,
     height: SIZE.GAME_HEIGHT,
-    backgroundColor: "#000",
+    backgroundColor: "#bbb",
   });
   app.stage.addChild(holdContainer);
   app.stage.addChild(playerContainer);

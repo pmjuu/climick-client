@@ -21,7 +21,7 @@ holdContainer.addChild(floor, startHold, topHold, hold1, hold2);
 
 floor.position.set(holdInfo.floor.x, holdInfo.floor.y);
 floor
-  .beginFill(0x002255)
+  .beginFill("#555")
   .drawRect(0, 0, holdInfo.floor.width, holdInfo.floor.height);
 
 startHold.position.set(holdInfo.start.x, holdInfo.start.y);
