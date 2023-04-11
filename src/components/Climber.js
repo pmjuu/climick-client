@@ -1,19 +1,24 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable no-param-reassign */
+/* eslint-disable no-restricted-syntax */
 import { useEffect } from "react";
-import * as PIXI from "pixi.js";
-import { getDistance, getAngleDegrees, getCos, getSin } from "../utils/math";
+import { Application, Container, Graphics } from "pixi.js";
+import { getCos, getSin } from "../utils/math";
+import { holdContainer, holdInfo } from "../utils/hold";
 import moveJoint from "../utils/moveJoint";
+import applyGravity from "../utils/applyGravity";
+import moveJointByBody from "../utils/moveJointByBody";
 
 export default function Climber({ gameRef }) {
-  const container = new PIXI.Container();
+  const container = new Container();
 
-  const app = new PIXI.Application({
+  const app = new Application({
     width: 950,
     height: 770,
     backgroundColor: "#000",
   });
+  app.stage.addChild(holdContainer);
   app.stage.addChild(container);
 
   useEffect(() => {
@@ -24,43 +29,26 @@ export default function Climber({ gameRef }) {
     }
   }, [gameRef, app.view]);
 
-  const hold = new PIXI.Graphics();
-  container.addChild(hold);
-  hold.position.set(200, 450);
-  hold
-    .beginFill("blue")
-    .drawEllipse(50, 100, 30, 10)
-    .beginFill("green")
-    .drawEllipse(230, 140, 30, 10)
-    .beginFill("purple")
-    .drawEllipse(120, 70, 30, 10)
-    .beginFill("skyblue")
-    .drawEllipse(230, 30, 30, 10)
-    .beginFill("brown")
-    .drawRect(60, 240, 30, 10)
-    .beginFill("brown")
-    .drawRect(200, 240, 30, 10);
-
-  const body = new PIXI.Graphics();
-  const leftUpperArm = new PIXI.Graphics();
-  const leftForeArm = new PIXI.Graphics();
-  const leftHand = new PIXI.Graphics();
-  const rightUpperArm = new PIXI.Graphics();
-  const rightForeArm = new PIXI.Graphics();
-  const rightHand = new PIXI.Graphics();
-  const leftThigh = new PIXI.Graphics();
-  const leftCalf = new PIXI.Graphics();
-  const leftFoot = new PIXI.Graphics();
-  const rightThigh = new PIXI.Graphics();
-  const rightCalf = new PIXI.Graphics();
-  const rightFoot = new PIXI.Graphics();
-  container.addChild(body);
+  const body = new Graphics();
+  const leftUpperArm = new Graphics();
+  const leftForeArm = new Graphics();
+  const leftHand = new Graphics();
+  const rightUpperArm = new Graphics();
+  const rightForeArm = new Graphics();
+  const rightHand = new Graphics();
+  const leftThigh = new Graphics();
+  const leftCalf = new Graphics();
+  const leftFoot = new Graphics();
+  const rightThigh = new Graphics();
+  const rightCalf = new Graphics();
+  const rightFoot = new Graphics();
   container.addChild(leftThigh);
   container.addChild(leftCalf);
   container.addChild(leftFoot);
   container.addChild(rightThigh);
   container.addChild(rightCalf);
   container.addChild(rightFoot);
+  container.addChild(body);
   container.addChild(leftUpperArm);
   container.addChild(leftForeArm);
   container.addChild(leftHand);
@@ -70,7 +58,7 @@ export default function Climber({ gameRef }) {
   const bodyWidth = 40;
   const bodyHeight = 60;
   const headRadius = 15;
-  const leftShoulder = { x: 300, y: 600 };
+  const leftShoulder = { x: 450, y: 630 };
   const rightShoulder = {
     x: leftShoulder.x + bodyWidth * getCos(body.angle),
     y: leftShoulder.y + bodyWidth * getSin(body.angle),
@@ -101,12 +89,12 @@ export default function Climber({ gameRef }) {
 
   // left arm 초기값만 설정
   const leftUpperArmDxy = {
-    dx: -armLength * getCos(20),
-    dy: -armLength * getSin(20),
+    dx: -armLength * getCos(40),
+    dy: -armLength * getSin(40),
   };
   const leftForeArmDxy = {
-    dx: -armLength * getCos(70),
-    dy: -armLength * getSin(70),
+    dx: armLength * getCos(60),
+    dy: -armLength * getSin(60),
   };
 
   leftUpperArm.position = body.position;
@@ -130,12 +118,12 @@ export default function Climber({ gameRef }) {
 
   // right arm 초기값만 설정
   const rightUpperArmDxy = {
-    dx: armLength * getCos(-10),
-    dy: -armLength * getSin(-10),
+    dx: armLength * getCos(50),
+    dy: -armLength * getSin(50),
   };
   const rightForeArmDxy = {
-    dx: armLength * getCos(30),
-    dy: -armLength * getSin(30),
+    dx: armLength * getCos(140),
+    dy: -armLength * getSin(140),
   };
 
   rightUpperArm.position.set(rightShoulder.x, rightShoulder.y);
@@ -160,11 +148,11 @@ export default function Climber({ gameRef }) {
   // left leg 초기값만 설정
   const leftThighDxy = {
     dx: -legLength * getCos(20),
-    dy: -legLength * getSin(20),
+    dy: legLength * getSin(20),
   };
   const leftCalfDxy = {
-    dx: -legLength * getCos(120),
-    dy: legLength * getSin(120),
+    dx: -legLength * getCos(80),
+    dy: legLength * getSin(80),
   };
 
   leftThigh.position.set(leftCoxa.x, leftCoxa.y);
@@ -188,12 +176,12 @@ export default function Climber({ gameRef }) {
 
   // right leg 초기값만 설정
   const rightThighDxy = {
-    dx: legLength * getCos(10),
-    dy: -legLength * getSin(10),
+    dx: legLength * getCos(30),
+    dy: legLength * getSin(30),
   };
   const rightCalfDxy = {
-    dx: legLength * getCos(45),
-    dy: legLength * getSin(45),
+    dx: legLength * getCos(120),
+    dy: legLength * getSin(120),
   };
 
   rightThigh.position.set(rightCoxa.x, rightCoxa.y);
@@ -235,6 +223,7 @@ export default function Climber({ gameRef }) {
       x: event.client.x - wall.offsetLeft,
       y: event.client.y - wall.offsetTop,
     };
+
     if (this === body) return moveBodyTo(cursorInCanvas);
 
     if (this === leftHand)
@@ -259,53 +248,16 @@ export default function Climber({ gameRef }) {
     rightCoxa.x = rightShoulder.x - bodyHeight * getSin(body.angle);
     rightCoxa.y = rightShoulder.y + bodyHeight * getCos(body.angle);
 
-    if (!exceededPart) moveJointByBodyMovement(...leftArmList, ...armSize, 1);
-    if (!exceededPart) moveJointByBodyMovement(...rightArmList, ...armSize, -1);
-    if (!exceededPart) moveJointByBodyMovement(...leftLegList, ...legSize, -1);
-    if (!exceededPart) moveJointByBodyMovement(...rightLegList, ...legSize, 1);
-  }
+    if (!exceededPart)
+      exceededPart = moveJointByBody(...leftArmList, ...armSize, 1);
+    if (!exceededPart)
+      exceededPart = moveJointByBody(...rightArmList, ...armSize, -1);
+    if (!exceededPart)
+      exceededPart = moveJointByBody(...leftLegList, ...legSize, -1);
+    if (!exceededPart)
+      exceededPart = moveJointByBody(...rightLegList, ...legSize, 1);
 
-  function moveJointByBodyMovement(
-    hand,
-    foreArm,
-    upperArm,
-    shoulder,
-    armLegWidth,
-    armLegLength,
-    flagX
-  ) {
-    const handToShoulder = getDistance(shoulder, hand);
-    const h = Math.sqrt(armLegLength ** 2 - (handToShoulder / 2) ** 2) || 0;
-    const theta1 = getAngleDegrees(handToShoulder / 2, h);
-    const theta2 = getAngleDegrees(
-      flagX * (shoulder.x - hand.x),
-      -shoulder.y + hand.y
-    );
-    const angles = theta1 + theta2;
-
-    if (handToShoulder >= armLegLength * 2) {
-      exceededPart = hand;
-    }
-
-    body.position.set(leftShoulder.x, leftShoulder.y);
-
-    upperArm.position.set(shoulder.x, shoulder.y);
-    upperArm
-      .clear()
-      .lineStyle(armLegWidth, "gray")
-      .lineTo(
-        armLegLength * -getCos(angles) * flagX,
-        armLegLength * getSin(angles)
-      );
-
-    foreArm.position.set(
-      upperArm.x + armLegLength * -getCos(angles) * flagX,
-      upperArm.y + armLegLength * getSin(angles)
-    );
-    foreArm
-      .clear()
-      .lineStyle(armLegWidth, "lightgray")
-      .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
+    if (!exceededPart) body.position.set(leftShoulder.x, leftShoulder.y);
   }
 
   function onDragEnd() {
@@ -315,83 +267,33 @@ export default function Climber({ gameRef }) {
       child.off("pointermove");
     });
     exceededPart = null;
+
+    for (const hold of Object.values(holdInfo)) {
+      const isAttachedToHold =
+        hold.x < this.x &&
+        this.x < hold.x + hold.width &&
+        hold.y < this.y &&
+        this.y < hold.y + hold.height;
+
+      if (isAttachedToHold) return;
+    }
+
+    if (this === leftHand) applyGravity(...leftArmList, ...armSize, -1, 1);
+    if (this === rightHand) applyGravity(...rightArmList, ...armSize, 1, 1);
+    if (this === leftFoot) applyGravity(...leftLegList, ...legSize, -1, -1);
+    if (this === rightFoot) applyGravity(...rightLegList, ...legSize, 1, -1);
   }
 
   const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
   limbs.forEach(limb => {
+    limb.eventMode = "dynamic";
     limb
       .on("pointerover", function () {
         this.cursor = "grab";
       })
-      .on("pointerdown", onDragStart).eventMode = "dynamic";
+      .on("pointerdown", onDragStart)
+      .on("pointerup", onDragEnd);
   });
 
   document.body.addEventListener("pointerup", onDragEnd);
-
-  function applyGravity() {
-    const leftForeArmAngleOrigin = getAngleDegrees(
-      leftUpperArm.y - leftForeArm.y,
-      leftUpperArm.x - leftForeArm.x
-    );
-
-    const leftUpperArmAngleOrigin = getAngleDegrees(
-      body.y - leftUpperArm.y,
-      body.x - leftUpperArm.x
-    );
-
-    const bodyAngleOrigin = getAngleDegrees(
-      leftForeArmDxy.dy + leftUpperArmDxy.dy + bodyHeight / 2,
-      leftForeArmDxy.dx + leftUpperArmDxy.dx + bodyWidth / 2
-    );
-
-    let angleVelocity = 0;
-
-    const gravity = setInterval(() => {
-      rotate();
-
-      const isRotationFinished =
-        Math.abs(leftForeArm.angle) >= Math.abs(leftForeArmAngleOrigin) &&
-        Math.abs(leftUpperArm.angle) >= Math.abs(leftUpperArmAngleOrigin) &&
-        body.angle >= bodyAngleOrigin / 2;
-
-      if (isRotationFinished) clearInterval(gravity);
-    }, 1);
-
-    function rotate() {
-      angleVelocity += 0.02;
-
-      if (Math.abs(leftForeArm.angle) < Math.abs(leftForeArmAngleOrigin)) {
-        leftForeArmAngleOrigin > 0
-          ? (leftForeArm.rotation += angleVelocity * 0.001)
-          : (leftForeArm.rotation -= angleVelocity * 0.001);
-
-        const newAngle = leftForeArmAngleOrigin - leftForeArm.angle;
-
-        leftUpperArm.x = leftHand.x + armLength * getSin(newAngle);
-        leftUpperArm.y = leftHand.y + armLength * getCos(newAngle);
-      }
-
-      if (Math.abs(leftUpperArm.angle) < Math.abs(leftUpperArmAngleOrigin)) {
-        leftUpperArmAngleOrigin > 0
-          ? (leftUpperArm.rotation += angleVelocity * 0.001)
-          : (leftUpperArm.rotation -= angleVelocity * 0.001);
-        const newAngle = leftUpperArmAngleOrigin - leftUpperArm.angle;
-
-        body.x = leftUpperArm.position._x + armLength * getSin(newAngle);
-        body.y = leftUpperArm.position._y + armLength * getCos(newAngle);
-      }
-
-      if (Math.abs(body.angle) < Math.abs(bodyAngleOrigin / 2)) {
-        body.rotation += angleVelocity * 0.002;
-      }
-
-      console.log("rotate..");
-    }
-  }
-
-  return (
-    <button type="button" onClick={applyGravity}>
-      gravity start
-    </button>
-  );
 }

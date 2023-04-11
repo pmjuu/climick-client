@@ -19,34 +19,35 @@ export default function moveJoint(
     flagX * (shoulder.x - hand.x),
     shoulder.y - hand.y
   );
-  const angles = theta1 + theta2;
+  const handDirectionY = hand.y - shoulder.y > 0 ? 1 : -1;
 
   if (handToShoulder >= armLegLength * 2) {
     hand.x =
       shoulder.x -
       armLegLength * 2 * getCos(theta2) * flagX +
       0.0000001 * flagX * flagY;
-    hand.y = shoulder.y - armLegLength * 2 * getSin(theta2) + 0.0000001 * flagY;
+    hand.y =
+      shoulder.y -
+      armLegLength * 2 * getSin(theta2) -
+      0.0000001 * flagY * handDirectionY;
   } else {
     hand.x = cursorInCanvas.x;
     hand.y = cursorInCanvas.y;
   }
 
-  foreArm.position.set(hand.x, hand.y);
-  foreArm
-    .clear()
-    .lineStyle(armLegWidth, "lightgray")
-    .lineTo(
-      armLegLength * getCos(angles) * flagX,
-      armLegLength * getSin(angles)
-    );
+  const elbow = {
+    x: shoulder.x - armLegLength * getCos(theta1 - theta2) * flagX,
+    y: shoulder.y + armLegLength * getSin(theta1 - theta2),
+  };
 
-  upperArm.position.set(
-    foreArm.x + armLegLength * getCos(angles) * flagX,
-    foreArm.y + armLegLength * getSin(angles)
-  );
   upperArm
     .clear()
     .lineStyle(armLegWidth, "gray")
-    .lineTo(shoulder.x - upperArm.x, shoulder.y - upperArm.y);
+    .lineTo(elbow.x - shoulder.x, elbow.y - shoulder.y);
+
+  foreArm.position.set(elbow.x, elbow.y);
+  foreArm
+    .clear()
+    .lineStyle(armLegWidth, "lightgray")
+    .lineTo(hand.x - elbow.x, hand.y - elbow.y);
 }
