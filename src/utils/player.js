@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-restricted-syntax */
 import { Container, Graphics } from "pixi.js";
-import { getCos, getSin } from "./math";
+import { getCos, getDistance, getSin } from "./math";
 import { holdInfo } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
@@ -274,11 +274,20 @@ function onDragEnd() {
   exceededPart = null;
 
   for (const hold of Object.values(holdInfo)) {
-    const isAttachedToHold =
-      hold.x < this.x + containerPosition.x &&
-      this.x + containerPosition.x < hold.x + hold.width &&
-      hold.y < this.y + containerPosition.y &&
-      this.y + containerPosition.y < hold.y + hold.height;
+    const cursor = {
+      x: this.x + containerPosition.x,
+      y: this.y + containerPosition.y,
+    };
+
+    const handFootRadius =
+      this === leftHand || this === rightHand ? handRadius : footRadius;
+
+    const isAttachedToHold = hold.radius
+      ? getDistance(hold, cursor) < hold.radius + handFootRadius
+      : hold.x - handFootRadius < cursor.x &&
+        cursor.x < hold.x + hold.width + handFootRadius &&
+        hold.y - handFootRadius < cursor.y &&
+        cursor.y < hold.y + hold.height + handFootRadius;
 
     if (isAttachedToHold) {
       if (this === leftHand) attachedStatus.leftHand = 1;
@@ -330,6 +339,6 @@ limbs.forEach(limb => {
     .on("pointerup", onDragEnd);
 });
 
-document.body.addEventListener("pointerup", onDragEnd);
+// document.body.addEventListener("pointerup", onDragEnd);
 
 export default playerContainer;
