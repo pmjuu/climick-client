@@ -5,6 +5,7 @@ const GameStartContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   width: 220px;
   height: 62px;
   margin: 10px 0;
@@ -17,9 +18,9 @@ const GameStartContainer = styled.div`
   }
 
   input {
-    width: 300px;
+    width: 260px;
     height: 60px;
-    padding: 0 10px;
+    padding: 0 30px;
     margin-right: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     border: none;
@@ -55,7 +56,7 @@ const GameStartContainer = styled.div`
 export default function GameStart() {
   return (
     <GameStartContainer>
-      <input placeholder="player's name" />
+      <input placeholder="enter name" />
       <Link to="/game" className="button">
         Game START
       </Link>

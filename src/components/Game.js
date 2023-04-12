@@ -16,7 +16,7 @@ const Wrapper = styled.div`
 
   .game-display {
     width: 950px;
-    height: ${SIZE.GAME_HEIGHT};
+    height: ${SIZE.GAME_HEIGHT}px;
     background-color: #999;
   }
 
@@ -26,7 +26,7 @@ const Wrapper = styled.div`
     justify-content: space-between;
 
     width: 400px;
-    height: ${SIZE.GAME_HEIGHT};
+    height: ${SIZE.GAME_HEIGHT}px;
 
     .status-box {
       display: flex;
@@ -72,7 +72,7 @@ export default function Game() {
   return (
     <>
       <Wrapper>
-        <div className="game-display">
+        <div className="wall">
           <ClimbingWall />
         </div>
         <div className="sidebar">
