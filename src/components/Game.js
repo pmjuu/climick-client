@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { SIZE } from "../assets/constants";
 import ClimbingWall from "./ClimbingWall";
@@ -63,11 +63,18 @@ const Wrapper = styled.div`
 `;
 
 export default function Game() {
+  const navigate = useNavigate();
+  const name = localStorage.getItem("climick-name");
   const [isModalOpened, setIsModalOpened] = useState(false);
 
-  function closeModal() {
-    setIsModalOpened(false);
-  }
+  useEffect(() => {
+    if (!name) navigate("/");
+  }, [name, navigate]);
+
+  const clickRanking = () => setIsModalOpened(true);
+  const clickHomePage = () => navigate("/");
+  const clickRestart = () => navigate("/game");
+  const closeModal = () => setIsModalOpened(false);
 
   return (
     <>
@@ -79,7 +86,7 @@ export default function Game() {
           <div className="status-box">
             <div className="row">
               <span className="category">Name</span>
-              <span>---</span>
+              <span>{name}</span>
             </div>
             <div className="row">
               <span className="category">Time</span>
@@ -91,13 +98,15 @@ export default function Game() {
             <div className="row hp-bar" />
           </div>
           <div className="button-section">
-            <div className="button" onClick={() => setIsModalOpened(true)}>
+            <button className="button" onClick={clickRanking}>
               🏆 Ranking
-            </div>
-            <Link to="/" className="button">
+            </button>
+            <button className="button" onClick={clickHomePage}>
               🏠 Home Page
-            </Link>
-            <div className="button">Restart</div>
+            </button>
+            <button className="button" onClick={clickRestart}>
+              Restart
+            </button>
           </div>
         </div>
       </Wrapper>

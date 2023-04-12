@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import GameStart from "./common/GameStart";
 
@@ -18,13 +18,18 @@ const Wrapper = styled.div`
 `;
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  localStorage.removeItem("climick-name");
+
+  const clickInstruction = () => navigate("/instruction");
+
   return (
     <Wrapper>
       <h1 className="title">Climick</h1>
       <GameStart />
-      <Link to="/instruction" className="button">
+      <button className="button" onClick={clickInstruction}>
         Instruction
-      </Link>
+      </button>
     </Wrapper>
   );
 }

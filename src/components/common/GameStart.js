@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const GameStartContainer = styled.div`
@@ -14,11 +15,11 @@ const GameStartContainer = styled.div`
   transition: all 0.4s;
 
   :hover {
-    width: 560px;
+    width: 520px;
   }
 
   input {
-    width: 260px;
+    width: 220px;
     height: 60px;
     padding: 0 30px;
     margin-right: 10px;
@@ -51,15 +52,31 @@ const GameStartContainer = styled.div`
       outline: none;
     }
   }
+
+  .button:hover {
+    cursor: ${props => (props.name ? "pointer" : "not-allowed")};
+  }
 `;
 
 export default function GameStart() {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+
+  const handleInput = e => {
+    const newName = e.target.value.trim();
+
+    setName(newName);
+    localStorage.setItem("climick-name", newName);
+  };
+
+  const handleGameStart = () => (name ? navigate("/game") : null);
+
   return (
-    <GameStartContainer>
-      <input placeholder="enter name" />
-      <Link to="/game" className="button">
-        Game START
-      </Link>
+    <GameStartContainer name={name}>
+      <input placeholder="enter name" onChange={handleInput} />
+      <button className="button" onClick={handleGameStart}>
+        Game&nbsp;START
+      </button>
     </GameStartContainer>
   );
 }
