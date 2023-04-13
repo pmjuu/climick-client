@@ -4,7 +4,7 @@ import { Application } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import GameSideBar from "./GameSideBar";
-import { setTime } from "../features/playerSlice";
+import { setFirstSuccess, setTime } from "../features/playerSlice";
 import { holdContainer } from "../utils/hold";
 import playerContainer from "../utils/player";
 import { COLOR, SIZE } from "../assets/constants";
@@ -57,6 +57,7 @@ export default function Game() {
         if (wall.getAttribute("result") === "success") {
           clearInterval(timerInterval);
           setResult("Success!");
+          dispatch(setFirstSuccess(true));
         }
 
         dispatch(setTime(tick));

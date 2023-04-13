@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setName } from "../features/playerSlice";
+import { setFirstSuccess, setName } from "../features/playerSlice";
 import { SIZE } from "../assets/constants";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
@@ -63,7 +63,17 @@ export default function GameSideBar() {
     }
   }, [name, navigate]);
 
+  const gameResult = useSelector(state => state.player.result);
   const [isModalOpened, setIsModalOpened] = useState(false);
+
+  useEffect(() => {
+    if (gameResult === "success") {
+      setTimeout(() => {
+        setIsModalOpened(true);
+        dispatch(setFirstSuccess(false));
+      }, 1000 * 1);
+    }
+  }, [gameResult, dispatch]);
 
   const closeModal = () => setIsModalOpened(false);
   const clickRanking = () => setIsModalOpened(true);

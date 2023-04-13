@@ -5,6 +5,7 @@ const initialState = {
   name: "",
   time: 0,
   hp: 0,
+  hasSucceeded: false,
 };
 
 const playerSlice = createSlice({
@@ -17,8 +18,11 @@ const playerSlice = createSlice({
     setTime(state, action) {
       state.time = action.payload;
     },
+    setFirstSuccess(state, action) {
+      state.hasSucceeded = action.payload;
+    },
   },
 });
 
-export const { setName, setTime } = playerSlice.actions;
+export const { setName, setTime, setFirstSuccess } = playerSlice.actions;
 export default playerSlice.reducer;
