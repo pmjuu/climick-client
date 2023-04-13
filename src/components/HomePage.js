@@ -1,5 +1,7 @@
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { setName } from "../features/playerSlice";
 import GameStart from "./common/GameStart";
 
 const Wrapper = styled.div`
@@ -19,6 +21,9 @@ const Wrapper = styled.div`
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  dispatch(setName(""));
   localStorage.removeItem("climick-name");
 
   const clickInstruction = () => navigate("/instruction");

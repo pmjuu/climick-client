@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 import HomePage from "./components/HomePage";
 import Instruction from "./components/Instruction";
-import Game from "./components/Game";
+import GamePage from "./components/GamePage";
 
 const EntryWrapper = styled.div`
   width: 100vw;
@@ -16,7 +16,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/instruction" element={<Instruction />} />
-        <Route path="/game" element={<Game />} />
+        <Route path="/game" element={<GamePage />} />
       </Routes>
     </EntryWrapper>
   );

@@ -7,7 +7,7 @@ import { holdInfo } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
-import { armLegColor, lineColor } from "./playerSetting";
+import { skinColor, lineColor } from "./playerSetting";
 
 const containerPosition = { x: 400, y: 640 };
 const playerContainer = new Container();
@@ -68,11 +68,11 @@ body.position.set(leftShoulder.x, leftShoulder.y);
 
 leftHand
   .lineStyle(1, "#f9cb9c")
-  .beginFill("#FCE5CD")
+  .beginFill(skinColor)
   .drawCircle(0, 0, handRadius);
 rightHand
   .lineStyle(1, "#f9cb9c")
-  .beginFill("#FCE5CD")
+  .beginFill(skinColor)
   .drawCircle(0, 0, handRadius);
 leftFoot.beginFill("#333").drawCircle(0, 0, footRadius);
 rightFoot.beginFill("#333").drawCircle(0, 0, footRadius);
@@ -89,9 +89,9 @@ const leftForeArmDxy = {
 
 leftUpperArm.position.set(leftShoulder.x - 3, leftShoulder.y);
 leftUpperArm
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(armWidth + 3, armLegColor)
+  .lineStyle(armWidth + 3, skinColor)
   .lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
 
 leftForeArm.position.set(
@@ -99,9 +99,9 @@ leftForeArm.position.set(
   leftUpperArm.y + leftUpperArmDxy.dy
 );
 leftForeArm
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, armLegColor)
+  .lineStyle(armWidth, skinColor)
   .lineTo(leftForeArmDxy.dx, leftForeArmDxy.dy);
 
 leftHand.position.set(
@@ -121,9 +121,9 @@ const rightForeArmDxy = {
 
 rightUpperArm.position.set(rightShoulder.x + 3, rightShoulder.y);
 rightUpperArm
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(13, armLegColor)
+  .lineStyle(13, skinColor)
   .lineTo(rightUpperArmDxy.dx, rightUpperArmDxy.dy);
 
 rightForeArm.position.set(
@@ -131,9 +131,9 @@ rightForeArm.position.set(
   rightUpperArm.y + rightUpperArmDxy.dy
 );
 rightForeArm
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, armLegColor)
+  .lineStyle(armWidth, skinColor)
   .lineTo(rightForeArmDxy.dx, rightForeArmDxy.dy);
 
 rightHand.position.set(
@@ -155,7 +155,7 @@ leftThigh.position.set(leftCoxa.x, leftCoxa.y);
 leftThigh
   .lineStyle(legWidth + 13, lineColor)
   .lineTo(leftThighDxy.dx / 2, leftThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, armLegColor)
+  .lineStyle(legWidth + 3, skinColor)
   .lineTo(leftThighDxy.dx, leftThighDxy.dy);
 
 leftCalf.position.set(
@@ -163,9 +163,9 @@ leftCalf.position.set(
   leftThigh.y + leftThighDxy.dy
 );
 leftCalf
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, armLegColor)
+  .lineStyle(legWidth, skinColor)
   .lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
 
 leftFoot.position.set(leftCalf.x + leftCalfDxy.dx, leftCalf.y + leftCalfDxy.dy);
@@ -184,7 +184,7 @@ rightThigh.position.set(rightCoxa.x, rightCoxa.y);
 rightThigh
   .lineStyle(legWidth + 13, lineColor)
   .lineTo(rightThighDxy.dx / 2, rightThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, armLegColor)
+  .lineStyle(legWidth + 3, skinColor)
   .lineTo(rightThighDxy.dx, rightThighDxy.dy);
 
 rightCalf.position.set(
@@ -192,9 +192,9 @@ rightCalf.position.set(
   rightThigh.y + rightThighDxy.dy
 );
 rightCalf
-  .beginFill(armLegColor)
+  .beginFill(skinColor)
   .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, armLegColor)
+  .lineStyle(legWidth, skinColor)
   .lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
 
 rightFoot.position.set(
@@ -212,7 +212,7 @@ const legSize = [legWidth, legLength];
 // hand drag event
 function onDragStart() {
   this.cursor = "grabbing";
-  this.alpha = 0.5;
+  this.alpha = this === body ? 1 : 0.5;
   this.on("pointermove", onDragging);
 }
 
@@ -260,6 +260,7 @@ function moveBodyTo(cursorInCanvas) {
 }
 
 const attachedStatus = {
+  onTop: 0,
   leftHand: 1,
   rightHand: 1,
 };
@@ -304,14 +305,14 @@ function onDragEnd() {
     let descentVelocity = 0;
 
     const gravity = setInterval(() => {
-      descentVelocity += 0.02;
+      descentVelocity += 0.5;
 
       const isPlayerAboveGround =
         playerContainer.y <
         containerPosition.y -
           leftShoulder.y +
           (initialContainerHeight - playerContainer.height);
-      playerContainer.y += descentVelocity * 0.3;
+      playerContainer.y += descentVelocity * 0.2;
 
       if (!isPlayerAboveGround) {
         clearInterval(gravity);

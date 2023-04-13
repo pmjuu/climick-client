@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { setName } from "../../features/playerSlice";
 
 const GameStartContainer = styled.div`
   display: flex;
@@ -60,16 +61,16 @@ const GameStartContainer = styled.div`
 
 export default function GameStart() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const dispatch = useDispatch();
+  const name = useSelector(state => state.player.name);
 
-  const handleInput = e => {
-    const newName = e.target.value.trim();
+  const handleInput = e => dispatch(setName(e.target.value.trim()));
+  const handleGameStart = () => {
+    if (!name) return;
 
-    setName(newName);
-    localStorage.setItem("climick-name", newName);
+    localStorage.setItem("climick-name", name);
+    navigate("/game");
   };
-
-  const handleGameStart = () => (name ? navigate("/game") : null);
 
   return (
     <GameStartContainer name={name}>

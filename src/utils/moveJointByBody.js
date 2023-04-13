@@ -1,5 +1,5 @@
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
-import { armLegColor } from "./playerSetting";
+import { skinColor } from "./playerSetting";
 
 export default function moveJointByBody(
   hand,
@@ -34,11 +34,11 @@ export default function moveJointByBody(
         (armLegLength * getSin(angles)) / 2
       );
   } else {
-    upperArm.beginFill(armLegColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+    upperArm.beginFill(skinColor).drawCircle(0, 0, armLegWidth / 2 + 3);
   }
 
   upperArm
-    .lineStyle(armLegWidth + 3, armLegColor)
+    .lineStyle(armLegWidth + 3, skinColor)
     .lineTo(
       armLegLength * -getCos(angles) * flagX,
       armLegLength * getSin(angles)
@@ -52,8 +52,8 @@ export default function moveJointByBody(
   );
   foreArm
     .clear()
-    .beginFill(armLegColor)
+    .beginFill(skinColor)
     .drawCircle(0, 0, armLegWidth / 2)
-    .lineStyle(armLegWidth, armLegColor)
+    .lineStyle(armLegWidth, skinColor)
     .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
 }

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
-import { armLegColor } from "./playerSetting";
+import { skinColor } from "./playerSetting";
 
 export default function gravityRotate(
   hand,
@@ -65,16 +65,13 @@ export default function gravityRotate(
           .lineStyle(armLegWidth + 13, "#000")
           .lineTo(0, armLegLength / 2);
       } else {
-        upperArm.beginFill(armLegColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+        upperArm.beginFill(skinColor).drawCircle(0, 0, armLegWidth / 2 + 3);
       }
 
-      upperArm.lineStyle(armLegWidth + 3, armLegColor).lineTo(0, armLegLength);
+      upperArm.lineStyle(armLegWidth + 3, skinColor).lineTo(0, armLegLength);
 
       foreArm.angle = 0;
-      foreArm
-        .clear()
-        .lineStyle(armLegWidth, armLegColor)
-        .lineTo(0, armLegLength);
+      foreArm.clear().lineStyle(armLegWidth, skinColor).lineTo(0, armLegLength);
     }
   }, 1);
 }
