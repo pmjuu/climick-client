@@ -69,7 +69,7 @@ export default function Modal({ children, closeModal }) {
     <ModalWrapper onClick={handleClosingClick} onMouseOver={handleHovering}>
       <div className="modal">
         <div className="contents">{children}</div>
-        <button className="close-button" type="button" onClick={closeModal}>
+        <button className="close-button" onClick={closeModal}>
           X
         </button>
       </div>

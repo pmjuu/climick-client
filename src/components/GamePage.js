@@ -1,7 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
-import { SIZE } from "../assets/constants";
-import ClimbingWall from "./ClimbingWall";
+import { Application } from "pixi.js";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import GameSideBar from "./GameSideBar";
+import { setTime } from "../features/playerSlice";
+import { holdContainer } from "../utils/hold";
+import playerContainer from "../utils/player";
+import { COLOR, SIZE } from "../assets/constants";
+import GameResult from "./GameResult";
 
 const Wrapper = styled.div`
   display: flex;
@@ -11,18 +18,61 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
 
-  .game-display {
-    width: 950px;
+  .wall {
+    width: ${SIZE.GAME_WIDTH}px;
     height: ${SIZE.GAME_HEIGHT}px;
-    background-color: #999;
   }
 `;
 
 export default function Game() {
+  const dispatch = useDispatch();
+  const [result, setResult] = useState(null);
+
+  const app = new Application({
+    width: SIZE.GAME_WIDTH,
+    height: SIZE.GAME_HEIGHT,
+    backgroundColor: COLOR.GAME_BACKGROUND,
+  });
+  app.stage.addChild(holdContainer);
+  app.stage.addChild(playerContainer);
+
+  const wallRef = useRef();
+
+  useEffect(() => {
+    const wall = wallRef.current;
+
+    if (wall.firstChild) wall.removeChild(wall.firstChild);
+
+    wall.appendChild(app.view);
+
+    const startTimer = () => {
+      if (!wall.getAttribute("result")) return;
+
+      let tick = 1;
+      const timerInterval = setInterval(() => {
+        if (wall.getAttribute("result") === "fail") {
+          clearInterval(timerInterval);
+          setResult("Fail");
+        }
+        if (wall.getAttribute("result") === "success") {
+          clearInterval(timerInterval);
+          setResult("Success!");
+        }
+
+        dispatch(setTime(tick));
+        tick += 1;
+      }, 1000);
+
+      wall.removeEventListener("click", startTimer);
+    };
+
+    wall.addEventListener("click", startTimer);
+  }, [result]);
+
   return (
     <Wrapper>
-      <div className="wall">
-        <ClimbingWall />
+      <div className="wall" ref={wallRef}>
+        {result && <GameResult result={result} />}
       </div>
       <GameSideBar />
     </Wrapper>

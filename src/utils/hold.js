@@ -4,16 +4,15 @@ import { Container, Graphics, Text } from "pixi.js";
 
 export const holdInfo = {
   floor: { x: -9, y: 760, width: 999, height: 20, type: "rect", color: "#555" },
-  start: {
-    x: 430,
-    y: 570,
-    width: 60,
-    height: 20,
-    type: "rect",
-    color: "blue",
-    text: "start",
+  start: { x: 430, y: 570, width: 60, height: 20, type: "rect", color: "blue" },
+  top: {
+    x: 450,
+    y: 530,
+    radius: 25,
+    type: "circle",
+    color: "yellow",
+    text: "top",
   },
-  top: { x: 450, y: 230, radius: 25, type: "circle", color: "yellow" },
   a0: { x: 570, y: 680, width: 20, height: 80, type: "rect", color: "#744700" },
   a1: { x: 530, y: 680, width: 100, height: 20, type: "rect", color: "green" },
   a2: { x: 540, y: 660, width: 80, height: 20, type: "rect", color: "green" },

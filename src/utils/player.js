@@ -28,9 +28,9 @@ const rightCalf = new Graphics();
 const rightFoot = new Graphics();
 playerContainer.addChild(leftThigh, leftCalf, leftFoot);
 playerContainer.addChild(rightThigh, rightCalf, rightFoot);
+playerContainer.addChild(body);
 playerContainer.addChild(leftUpperArm, leftForeArm, leftHand);
 playerContainer.addChild(rightUpperArm, rightForeArm, rightHand);
-playerContainer.addChild(body);
 const bodyWidth = 30;
 const bodyHeight = 60;
 const headRadius = 15;
@@ -211,6 +211,11 @@ const legSize = [legWidth, legLength];
 
 // hand drag event
 function onDragStart() {
+  const wall = document.querySelector(".wall");
+  if (!wall.getAttribute("result")) {
+    wall.setAttribute("result", "start");
+  }
+
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
   this.on("pointermove", onDragging);
@@ -218,27 +223,27 @@ function onDragStart() {
 
 function onDragging(event) {
   const wall = document.querySelector(".wall");
-  const cursorInCanvas = {
+  const cursorInContainer = {
     x: event.client.x - wall.offsetLeft - containerPosition.x,
     y: event.client.y - wall.offsetTop - containerPosition.y,
   };
 
-  if (this === body) return moveBodyTo(cursorInCanvas);
+  if (this === body) return moveBodyTo(cursorInContainer);
 
   if (this === leftHand)
-    return moveJoint(...leftArmList, ...armSize, cursorInCanvas, 1, 1);
+    return moveJoint(...leftArmList, ...armSize, cursorInContainer, 1, 1);
   if (this === rightHand)
-    return moveJoint(...rightArmList, ...armSize, cursorInCanvas, -1, 1);
+    return moveJoint(...rightArmList, ...armSize, cursorInContainer, -1, 1);
   if (this === leftFoot)
-    return moveJoint(...leftLegList, ...legSize, cursorInCanvas, -1, -1);
+    return moveJoint(...leftLegList, ...legSize, cursorInContainer, -1, -1);
   if (this === rightFoot)
-    return moveJoint(...rightLegList, ...legSize, cursorInCanvas, 1, -1);
+    return moveJoint(...rightLegList, ...legSize, cursorInContainer, 1, -1);
 }
 
 let exceededPart = null;
-function moveBodyTo(cursorInCanvas) {
-  leftShoulder.x = cursorInCanvas.x - bodyWidth / 2;
-  leftShoulder.y = cursorInCanvas.y - bodyHeight / 2;
+function moveBodyTo(cursorInContainer) {
+  leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
+  leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
 
   rightShoulder.x = leftShoulder.x + bodyWidth * getCos(body.angle);
   rightShoulder.y = leftShoulder.y + bodyWidth * getSin(body.angle);
@@ -260,7 +265,8 @@ function moveBodyTo(cursorInCanvas) {
 }
 
 const attachedStatus = {
-  onTop: 0,
+  leftHandOnTop: 0,
+  rightHandOnTop: 0,
   leftHand: 1,
   rightHand: 1,
 };
@@ -291,8 +297,21 @@ function onDragEnd() {
         cursor.y < hold.y + hold.height + handFootRadius;
 
     if (isAttachedToHold) {
-      if (this === leftHand) attachedStatus.leftHand = 1;
-      if (this === rightHand) attachedStatus.rightHand = 1;
+      if (this === leftHand) {
+        attachedStatus.leftHand = 1;
+
+        if (hold.text === "top") attachedStatus.leftHandOnTop = 1;
+      }
+
+      if (this === rightHand) {
+        attachedStatus.rightHand = 1;
+
+        if (hold.text === "top") attachedStatus.rightHandOnTop = 1;
+      }
+
+      if (attachedStatus.leftHandOnTop && attachedStatus.rightHandOnTop) {
+        document.querySelector(".wall").setAttribute("result", "success");
+      }
 
       return;
     }
@@ -306,17 +325,17 @@ function onDragEnd() {
 
     const gravity = setInterval(() => {
       descentVelocity += 0.5;
+      playerContainer.y += descentVelocity * 0.2;
 
       const isPlayerAboveGround =
         playerContainer.y <
         containerPosition.y -
           leftShoulder.y +
           (initialContainerHeight - playerContainer.height);
-      playerContainer.y += descentVelocity * 0.2;
 
       if (!isPlayerAboveGround) {
         clearInterval(gravity);
-        console.log("fail..");
+        document.querySelector(".wall").setAttribute("result", "fail");
       }
     }, 10);
 
