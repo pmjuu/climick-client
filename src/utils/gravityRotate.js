@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { COLOR } from "../assets/constants";
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
-import { skinColor } from "./playerSetting";
 
 export default function gravityRotate(
   hand,
@@ -37,7 +37,8 @@ export default function gravityRotate(
 
       const newAngle = upperArmOriginalAngle - upperArm.angle;
 
-      foreArm.x = shoulder.x + armLegLength * getSin(newAngle);
+      foreArm.x =
+        shoulder.x + armLegLength * getSin(newAngle) + flagX * flagY * 3;
       foreArm.y = shoulder.y + armLegLength * getCos(newAngle);
     }
 
@@ -62,16 +63,19 @@ export default function gravityRotate(
 
       if (flagY === -1) {
         upperArm
-          .lineStyle(armLegWidth + 13, "#000")
+          .lineStyle(armLegWidth + 13, COLOR.PANTS)
           .lineTo(0, armLegLength / 2);
       } else {
-        upperArm.beginFill(skinColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+        upperArm.beginFill(COLOR.SKIN).drawCircle(0, 0, armLegWidth / 2 + 3);
       }
 
-      upperArm.lineStyle(armLegWidth + 3, skinColor).lineTo(0, armLegLength);
+      upperArm.lineStyle(armLegWidth + 3, COLOR.SKIN).lineTo(0, armLegLength);
 
       foreArm.angle = 0;
-      foreArm.clear().lineStyle(armLegWidth, skinColor).lineTo(0, armLegLength);
+      foreArm
+        .clear()
+        .lineStyle(armLegWidth, COLOR.SKIN)
+        .lineTo(0, armLegLength);
     }
   }, 1);
 }

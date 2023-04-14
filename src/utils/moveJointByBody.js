@@ -1,5 +1,5 @@
+import { COLOR } from "../assets/constants";
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
-import { skinColor } from "./playerSetting";
 
 export default function moveJointByBody(
   hand,
@@ -28,17 +28,17 @@ export default function moveJointByBody(
 
   if (flagY === -1) {
     upperArm
-      .lineStyle(armLegWidth + 13, "#000")
+      .lineStyle(armLegWidth + 13, COLOR.PANTS)
       .lineTo(
         (armLegLength * -getCos(angles) * flagX) / 2,
         (armLegLength * getSin(angles)) / 2
       );
   } else {
-    upperArm.beginFill(skinColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+    upperArm.beginFill(COLOR.SKIN).drawCircle(0, 0, armLegWidth / 2 + 3);
   }
 
   upperArm
-    .lineStyle(armLegWidth + 3, skinColor)
+    .lineStyle(armLegWidth + 3, COLOR.SKIN)
     .lineTo(
       armLegLength * -getCos(angles) * flagX,
       armLegLength * getSin(angles)
@@ -52,8 +52,8 @@ export default function moveJointByBody(
   );
   foreArm
     .clear()
-    .beginFill(skinColor)
+    .beginFill(COLOR.SKIN)
     .drawCircle(0, 0, armLegWidth / 2)
-    .lineStyle(armLegWidth, skinColor)
+    .lineStyle(armLegWidth, COLOR.SKIN)
     .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
 }

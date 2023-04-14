@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { COLOR } from "../assets/constants";
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
-import { skinColor } from "./playerSetting";
 
 export default function moveJoint(
   hand,
@@ -26,11 +26,11 @@ export default function moveJoint(
     hand.x =
       shoulder.x -
       armLegLength * 2 * getCos(theta2) * flagX +
-      0.0000001 * flagX * flagY;
+      0.000001 * flagX * flagY;
     hand.y =
       shoulder.y -
       armLegLength * 2 * getSin(theta2) -
-      0.0000001 * flagY * handDirectionY;
+      0.000001 * flagY * handDirectionY;
   } else {
     hand.x = cursorInCanvas.x;
     hand.y = cursorInCanvas.y;
@@ -45,21 +45,21 @@ export default function moveJoint(
 
   if (flagY === -1) {
     upperArm
-      .lineStyle(armLegWidth + 13, "#000")
+      .lineStyle(armLegWidth + 13, COLOR.PANTS)
       .lineTo((elbow.x - shoulder.x) / 2, (elbow.y - shoulder.y) / 2);
   } else {
-    upperArm.beginFill(skinColor).drawCircle(0, 0, armLegWidth / 2 + 3);
+    upperArm.beginFill(COLOR.SKIN).drawCircle(0, 0, armLegWidth / 2 + 3);
   }
 
   upperArm
-    .lineStyle(armLegWidth + 3, skinColor)
+    .lineStyle(armLegWidth + 3, COLOR.SKIN)
     .lineTo(elbow.x - shoulder.x, elbow.y - shoulder.y);
 
   foreArm.position.set(elbow.x, elbow.y);
   foreArm
     .clear()
-    .beginFill(skinColor)
+    .beginFill(COLOR.SKIN)
     .drawCircle(0, 0, armLegWidth / 2)
-    .lineStyle(armLegWidth, skinColor)
+    .lineStyle(armLegWidth, COLOR.SKIN)
     .lineTo(hand.x - elbow.x, hand.y - elbow.y);
 }

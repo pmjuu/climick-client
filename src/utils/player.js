@@ -2,13 +2,15 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-restricted-syntax */
 import { Container, Graphics } from "pixi.js";
+import "@pixi/graphics-extras";
 import { getCos, getDistance, getSin } from "./math";
 import { holdInfo } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
-import { skinColor, lineColor } from "./playerSetting";
+import { lineColor } from "./playerSetting";
 import getResultText from "./getResultText";
+import { COLOR } from "../assets/constants";
 
 const containerPosition = { x: 400, y: 640 };
 const playerContainer = new Container();
@@ -63,17 +65,20 @@ body
   .beginFill("#000")
   .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
   .lineStyle(13, lineColor)
-  .drawRoundedRect(0, bodyHeight / 2 + 10, bodyWidth, bodyHeight / 2, 10);
+  .drawRoundedRect(0, bodyHeight / 2 + 10, bodyWidth, bodyHeight / 2, 10)
+  .lineStyle("none")
+  .beginFill("#fff")
+  .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
 
 body.position.set(leftShoulder.x, leftShoulder.y);
 
 leftHand
-  .lineStyle(1, "#f9cb9c")
-  .beginFill(skinColor)
+  .lineStyle(1, "#f6b26b")
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
 rightHand
-  .lineStyle(1, "#f9cb9c")
-  .beginFill(skinColor)
+  .lineStyle(1, "#f6b26b")
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
 leftFoot.beginFill("#333").drawCircle(0, 0, footRadius);
 rightFoot.beginFill("#333").drawCircle(0, 0, footRadius);
@@ -90,9 +95,9 @@ const leftForeArmDxy = {
 
 leftUpperArm.position.set(leftShoulder.x - 3, leftShoulder.y);
 leftUpperArm
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(armWidth + 3, skinColor)
+  .lineStyle(armWidth + 3, COLOR.SKIN)
   .lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
 
 leftForeArm.position.set(
@@ -100,9 +105,9 @@ leftForeArm.position.set(
   leftUpperArm.y + leftUpperArmDxy.dy
 );
 leftForeArm
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, skinColor)
+  .lineStyle(armWidth, COLOR.SKIN)
   .lineTo(leftForeArmDxy.dx, leftForeArmDxy.dy);
 
 leftHand.position.set(
@@ -122,9 +127,9 @@ const rightForeArmDxy = {
 
 rightUpperArm.position.set(rightShoulder.x + 3, rightShoulder.y);
 rightUpperArm
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(13, skinColor)
+  .lineStyle(13, COLOR.SKIN)
   .lineTo(rightUpperArmDxy.dx, rightUpperArmDxy.dy);
 
 rightForeArm.position.set(
@@ -132,9 +137,9 @@ rightForeArm.position.set(
   rightUpperArm.y + rightUpperArmDxy.dy
 );
 rightForeArm
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, skinColor)
+  .lineStyle(armWidth, COLOR.SKIN)
   .lineTo(rightForeArmDxy.dx, rightForeArmDxy.dy);
 
 rightHand.position.set(
@@ -156,7 +161,7 @@ leftThigh.position.set(leftCoxa.x, leftCoxa.y);
 leftThigh
   .lineStyle(legWidth + 13, lineColor)
   .lineTo(leftThighDxy.dx / 2, leftThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, skinColor)
+  .lineStyle(legWidth + 3, COLOR.SKIN)
   .lineTo(leftThighDxy.dx, leftThighDxy.dy);
 
 leftCalf.position.set(
@@ -164,9 +169,9 @@ leftCalf.position.set(
   leftThigh.y + leftThighDxy.dy
 );
 leftCalf
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, skinColor)
+  .lineStyle(legWidth, COLOR.SKIN)
   .lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
 
 leftFoot.position.set(leftCalf.x + leftCalfDxy.dx, leftCalf.y + leftCalfDxy.dy);
@@ -185,7 +190,7 @@ rightThigh.position.set(rightCoxa.x, rightCoxa.y);
 rightThigh
   .lineStyle(legWidth + 13, lineColor)
   .lineTo(rightThighDxy.dx / 2, rightThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, skinColor)
+  .lineStyle(legWidth + 3, COLOR.SKIN)
   .lineTo(rightThighDxy.dx, rightThighDxy.dy);
 
 rightCalf.position.set(
@@ -193,9 +198,9 @@ rightCalf.position.set(
   rightThigh.y + rightThighDxy.dy
 );
 rightCalf
-  .beginFill(skinColor)
+  .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, skinColor)
+  .lineStyle(legWidth, COLOR.SKIN)
   .lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
 
 rightFoot.position.set(
@@ -243,6 +248,8 @@ function onDragging(event) {
 
 let exceededPart = null;
 function moveBodyTo(cursorInContainer) {
+  if (exceededPart) return onDragEnd();
+
   leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
   leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
 
@@ -262,7 +269,9 @@ function moveBodyTo(cursorInContainer) {
   if (!exceededPart)
     exceededPart = moveJointByBody(...rightLegList, ...legSize, 1, -1);
 
-  if (!exceededPart) body.position.set(leftShoulder.x, leftShoulder.y);
+  if (!exceededPart) {
+    body.position.set(leftShoulder.x, leftShoulder.y);
+  }
 }
 
 const attachedStatus = {
@@ -274,12 +283,43 @@ const attachedStatus = {
 const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
+  const retrievePX = 0.5;
+  if (exceededPart === leftHand) {
+    exceededPart = null;
+    moveBodyTo({
+      x: body.x - retrievePX + bodyWidth / 2,
+      y: body.y - retrievePX + bodyHeight / 2,
+    });
+  }
+  if (exceededPart === rightHand) {
+    exceededPart = null;
+    moveBodyTo({
+      x: body.x + retrievePX + bodyWidth / 2,
+      y: body.y - retrievePX + bodyHeight / 2,
+    });
+  }
+  if (exceededPart === leftFoot) {
+    exceededPart = null;
+    moveBodyTo({
+      x: body.x - retrievePX + bodyWidth / 2,
+      y: body.y + retrievePX + bodyHeight / 2,
+    });
+  }
+  if (exceededPart === rightFoot) {
+    exceededPart = null;
+    moveBodyTo({
+      x: body.x + retrievePX + bodyWidth / 2,
+      y: body.y + retrievePX + bodyHeight / 2,
+    });
+  }
+
   playerContainer.children.forEach(child => {
     child.cursor = "grab";
     child.alpha = 1;
     child.off("pointermove");
   });
-  exceededPart = null;
+
+  if (!this) return;
 
   for (const hold of Object.values(holdInfo)) {
     const cursor = {
