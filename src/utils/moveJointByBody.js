@@ -6,13 +6,13 @@ export default function moveJointByBody(
   foreArm,
   upperArm,
   shoulder,
-  armLegWidth,
-  armLegLength,
+  limbWidth,
+  limbLength,
   flagX,
   flagY
 ) {
   const handToShoulder = getDistance(shoulder, hand);
-  const h = Math.sqrt(armLegLength ** 2 - (handToShoulder / 2) ** 2) || 0;
+  const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
   const theta1 = getAngleDegrees(handToShoulder / 2, h);
   const theta2 = getAngleDegrees(
     flagX * (shoulder.x - hand.x),
@@ -20,40 +20,55 @@ export default function moveJointByBody(
   );
   const angles = theta1 + theta2;
 
-  if (handToShoulder >= armLegLength * 2) {
+  if (handToShoulder >= limbLength * 2) {
     return hand;
   }
 
-  upperArm.clear();
+  upperArm
+    .clear()
+    .lineStyle(limbWidth + 5, COLOR.DARK_SKIN)
+    .lineTo(limbLength * -getCos(angles) * flagX, limbLength * getSin(angles))
+    .moveTo(0, 0)
+    .lineStyle("none");
 
   if (flagY === -1) {
     upperArm
-      .lineStyle(armLegWidth + 13, COLOR.PANTS)
+      .lineStyle(limbWidth + 13, COLOR.PANTS)
       .lineTo(
-        (armLegLength * -getCos(angles) * flagX) / 2,
-        (armLegLength * getSin(angles)) / 2
+        (limbLength * -getCos(angles) * flagX) / 2,
+        (limbLength * getSin(angles)) / 2
       );
   } else {
-    upperArm.beginFill(COLOR.SKIN).drawCircle(0, 0, armLegWidth / 2 + 3);
+    upperArm
+      .lineStyle(1, COLOR.DARK_SKIN)
+      .beginFill(COLOR.SKIN)
+      .drawCircle(0, 0, limbWidth / 2 + 3);
   }
 
   upperArm
-    .lineStyle(armLegWidth + 3, COLOR.SKIN)
-    .lineTo(
-      armLegLength * -getCos(angles) * flagX,
-      armLegLength * getSin(angles)
-    );
+    .lineStyle(1, COLOR.DARK_SKIN)
+    .beginFill(COLOR.SKIN)
+    .drawCircle(
+      limbLength * -getCos(angles) * flagX,
+      limbLength * getSin(angles),
+      (limbWidth + 3) / 2
+    )
+    .lineStyle(limbWidth + 3, COLOR.SKIN)
+    .lineTo(limbLength * -getCos(angles) * flagX, limbLength * getSin(angles));
 
   upperArm.position.set(shoulder.x - flagX * 4, shoulder.y);
 
   foreArm.position.set(
-    upperArm.x + armLegLength * -getCos(angles) * flagX,
-    upperArm.y + armLegLength * getSin(angles)
+    upperArm.x + limbLength * -getCos(angles) * flagX,
+    upperArm.y + limbLength * getSin(angles)
   );
   foreArm
     .clear()
     .beginFill(COLOR.SKIN)
-    .drawCircle(0, 0, armLegWidth / 2)
-    .lineStyle(armLegWidth, COLOR.SKIN)
+    .drawCircle(0, 0, limbWidth / 2)
+    .lineStyle(limbWidth + 2, COLOR.DARK_SKIN)
+    .lineTo(hand.x - foreArm.x, hand.y - foreArm.y)
+    .moveTo(0, 0)
+    .lineStyle(limbWidth, COLOR.SKIN)
     .lineTo(hand.x - foreArm.x, hand.y - foreArm.y);
 }

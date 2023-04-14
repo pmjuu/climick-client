@@ -9,9 +9,8 @@ export const getDistance = (matter1, matter2) => {
     (matter1.x - matter2.x) ** 2 + (matter1.y - matter2.y) ** 2
   );
 
-  if (!result) {
+  if (result === undefined) {
     console.error("distance error...", matter1, matter2);
-    return 0;
   }
 
   return result;

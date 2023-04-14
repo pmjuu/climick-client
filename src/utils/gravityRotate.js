@@ -7,13 +7,13 @@ export default function gravityRotate(
   foreArm,
   upperArm,
   shoulder,
-  armLegWidth,
-  armLegLength,
+  limbWidth,
+  limbLength,
   flagX,
   flagY
 ) {
   const handToShoulder = getDistance(shoulder, hand);
-  const h = Math.sqrt(armLegLength ** 2 - (handToShoulder / 2) ** 2) || 0;
+  const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
   const theta1 = getAngleDegrees(handToShoulder / 2, h);
   const upperArmOriginalAngle = getAngleDegrees(
     foreArm.y - shoulder.y,
@@ -38,8 +38,8 @@ export default function gravityRotate(
       const newAngle = upperArmOriginalAngle - upperArm.angle;
 
       foreArm.x =
-        shoulder.x + armLegLength * getSin(newAngle) + flagX * flagY * 3;
-      foreArm.y = shoulder.y + armLegLength * getCos(newAngle);
+        shoulder.x + limbLength * getSin(newAngle) + flagX * flagY * 3;
+      foreArm.y = shoulder.y + limbLength * getCos(newAngle);
     }
 
     if (isForeArmRotating) {
@@ -50,8 +50,8 @@ export default function gravityRotate(
         Math.abs(upperArmOriginalAngle) * flagY -
         Math.abs(foreArm.angle);
 
-      hand.x = foreArm.x + armLegLength * getSin(newAngle) * flagX * flagY;
-      hand.y = foreArm.y + armLegLength * getCos(newAngle);
+      hand.x = foreArm.x + limbLength * getSin(newAngle) * flagX * flagY;
+      hand.y = foreArm.y + limbLength * getCos(newAngle);
     }
 
     const isRotationFinished = !isUpperArmRotating && !isForeArmRotating;
@@ -59,23 +59,41 @@ export default function gravityRotate(
     if (isRotationFinished) {
       clearInterval(gravity);
       upperArm.angle = 0;
-      upperArm.clear();
+      upperArm
+        .clear()
+        .lineStyle(limbWidth + 5, COLOR.DARK_SKIN)
+        .lineTo(0, limbLength)
+        .moveTo(0, 0)
+        .lineStyle("none");
 
       if (flagY === -1) {
         upperArm
-          .lineStyle(armLegWidth + 13, COLOR.PANTS)
-          .lineTo(0, armLegLength / 2);
+          .lineStyle(limbWidth + 13, COLOR.PANTS)
+          .lineTo(0, limbLength / 2);
       } else {
-        upperArm.beginFill(COLOR.SKIN).drawCircle(0, 0, armLegWidth / 2 + 3);
+        upperArm
+          .lineStyle(1, COLOR.DARK_SKIN)
+          .beginFill(COLOR.SKIN)
+          .drawCircle(0, 0, limbWidth / 2 + 3);
       }
 
-      upperArm.lineStyle(armLegWidth + 3, COLOR.SKIN).lineTo(0, armLegLength);
+      upperArm
+        .lineStyle(1, COLOR.DARK_SKIN)
+        .beginFill(COLOR.SKIN)
+        .drawCircle(0, limbLength, (limbWidth + 3) / 2)
+        .lineStyle(limbWidth + 3, COLOR.SKIN)
+        .lineTo(0, limbLength);
 
       foreArm.angle = 0;
       foreArm
         .clear()
-        .lineStyle(armLegWidth, COLOR.SKIN)
-        .lineTo(0, armLegLength);
+        .beginFill(COLOR.SKIN)
+        .drawCircle(0, 0, limbWidth / 2)
+        .lineStyle(limbWidth + 2, COLOR.DARK_SKIN)
+        .lineTo(0, limbLength)
+        .moveTo(0, 0)
+        .lineStyle(limbWidth, COLOR.SKIN)
+        .lineTo(0, limbLength);
     }
   }, 1);
 }

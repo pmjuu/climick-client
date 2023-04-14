@@ -8,9 +8,9 @@ import { holdInfo } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
-import { lineColor } from "./playerSetting";
 import getResultText from "./getResultText";
 import { COLOR } from "../assets/constants";
+import drawLimb from "./drawLimb";
 
 const containerPosition = { x: 400, y: 640 };
 const playerContainer = new Container();
@@ -57,14 +57,21 @@ const legWidth = 15;
 const handRadius = 10;
 const footRadius = 12;
 
+const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
+const rightArmList = [rightHand, rightForeArm, rightUpperArm, rightShoulder];
+const leftLegList = [leftFoot, leftCalf, leftThigh, leftCoxa];
+const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
+const armSize = [armWidth, armLength];
+const legSize = [legWidth, legLength];
+
 // body setting
 body
   .beginFill("#744700")
   .drawCircle(bodyWidth / 2, -headRadius * 1.3, headRadius)
-  .lineStyle(10, lineColor)
+  .lineStyle(10, COLOR.PANTS)
   .beginFill("#000")
   .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
-  .lineStyle(13, lineColor)
+  .lineStyle(13, COLOR.PANTS)
   .drawRoundedRect(0, bodyHeight / 2 + 10, bodyWidth, bodyHeight / 2, 10)
   .lineStyle("none")
   .beginFill("#fff")
@@ -73,147 +80,20 @@ body
 body.position.set(leftShoulder.x, leftShoulder.y);
 
 leftHand
-  .lineStyle(1, "#f6b26b")
+  .lineStyle(1, COLOR.DARK_SKIN)
   .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
 rightHand
-  .lineStyle(1, "#f6b26b")
+  .lineStyle(1, COLOR.DARK_SKIN)
   .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
 leftFoot.beginFill("#333").drawCircle(0, 0, footRadius);
 rightFoot.beginFill("#333").drawCircle(0, 0, footRadius);
 
-// left arm 초기값만 설정
-const leftUpperArmDxy = {
-  dx: -armLength * getCos(40),
-  dy: -armLength * getSin(40),
-};
-const leftForeArmDxy = {
-  dx: armLength * getCos(60),
-  dy: -armLength * getSin(60),
-};
-
-leftUpperArm.position.set(leftShoulder.x - 3, leftShoulder.y);
-leftUpperArm
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(armWidth + 3, COLOR.SKIN)
-  .lineTo(leftUpperArmDxy.dx, leftUpperArmDxy.dy);
-
-leftForeArm.position.set(
-  leftUpperArm.x + leftUpperArmDxy.dx,
-  leftUpperArm.y + leftUpperArmDxy.dy
-);
-leftForeArm
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, COLOR.SKIN)
-  .lineTo(leftForeArmDxy.dx, leftForeArmDxy.dy);
-
-leftHand.position.set(
-  leftForeArm.x + leftForeArmDxy.dx,
-  leftForeArm.y + leftForeArmDxy.dy
-);
-
-// right arm 초기값만 설정
-const rightUpperArmDxy = {
-  dx: armLength * getCos(50),
-  dy: -armLength * getSin(50),
-};
-const rightForeArmDxy = {
-  dx: armLength * getCos(140),
-  dy: -armLength * getSin(140),
-};
-
-rightUpperArm.position.set(rightShoulder.x + 3, rightShoulder.y);
-rightUpperArm
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, armWidth / 2 + 3)
-  .lineStyle(13, COLOR.SKIN)
-  .lineTo(rightUpperArmDxy.dx, rightUpperArmDxy.dy);
-
-rightForeArm.position.set(
-  rightUpperArm.x + rightUpperArmDxy.dx,
-  rightUpperArm.y + rightUpperArmDxy.dy
-);
-rightForeArm
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, armWidth / 2)
-  .lineStyle(armWidth, COLOR.SKIN)
-  .lineTo(rightForeArmDxy.dx, rightForeArmDxy.dy);
-
-rightHand.position.set(
-  rightForeArm.x + rightForeArmDxy.dx,
-  rightForeArm.y + rightForeArmDxy.dy
-);
-
-// left leg 초기값만 설정
-const leftThighDxy = {
-  dx: -legLength * getCos(20),
-  dy: legLength * getSin(20),
-};
-const leftCalfDxy = {
-  dx: -legLength * getCos(80),
-  dy: legLength * getSin(80),
-};
-
-leftThigh.position.set(leftCoxa.x, leftCoxa.y);
-leftThigh
-  .lineStyle(legWidth + 13, lineColor)
-  .lineTo(leftThighDxy.dx / 2, leftThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, COLOR.SKIN)
-  .lineTo(leftThighDxy.dx, leftThighDxy.dy);
-
-leftCalf.position.set(
-  leftThigh.x + leftThighDxy.dx,
-  leftThigh.y + leftThighDxy.dy
-);
-leftCalf
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, COLOR.SKIN)
-  .lineTo(leftCalfDxy.dx, leftCalfDxy.dy);
-
-leftFoot.position.set(leftCalf.x + leftCalfDxy.dx, leftCalf.y + leftCalfDxy.dy);
-
-// right leg 초기값만 설정
-const rightThighDxy = {
-  dx: legLength * getCos(30),
-  dy: legLength * getSin(30),
-};
-const rightCalfDxy = {
-  dx: legLength * getCos(120),
-  dy: legLength * getSin(120),
-};
-
-rightThigh.position.set(rightCoxa.x, rightCoxa.y);
-rightThigh
-  .lineStyle(legWidth + 13, lineColor)
-  .lineTo(rightThighDxy.dx / 2, rightThighDxy.dy / 2)
-  .lineStyle(legWidth + 3, COLOR.SKIN)
-  .lineTo(rightThighDxy.dx, rightThighDxy.dy);
-
-rightCalf.position.set(
-  rightThigh.x + rightThighDxy.dx,
-  rightThigh.y + rightThighDxy.dy
-);
-rightCalf
-  .beginFill(COLOR.SKIN)
-  .drawCircle(0, 0, legWidth / 2)
-  .lineStyle(legWidth, COLOR.SKIN)
-  .lineTo(rightCalfDxy.dx, rightCalfDxy.dy);
-
-rightFoot.position.set(
-  rightCalf.x + rightCalfDxy.dx,
-  rightCalf.y + rightCalfDxy.dy
-);
-
-const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
-const rightArmList = [rightHand, rightForeArm, rightUpperArm, rightShoulder];
-const leftLegList = [leftFoot, leftCalf, leftThigh, leftCoxa];
-const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
-const armSize = [armWidth, armLength];
-const legSize = [legWidth, legLength];
+drawLimb(...leftArmList, ...armSize, -1, 1, 40, 60);
+drawLimb(...rightArmList, ...armSize, 1, 1, 50, 40);
+drawLimb(...leftLegList, ...legSize, -1, -1, 20, 80);
+drawLimb(...rightLegList, ...legSize, 1, -1, 30, 60);
 
 // hand drag event
 function onDragStart() {
@@ -404,6 +284,6 @@ limbs.forEach(limb => {
     .on("pointerup", onDragEnd);
 });
 
-// document.body.addEventListener("pointerup", onDragEnd);
+document.body.addEventListener("pointerup", onDragEnd);
 
 export default playerContainer;
