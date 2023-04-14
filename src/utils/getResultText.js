@@ -8,7 +8,7 @@ const getResultText = string => {
     dropShadowBlur: 10,
   });
   resultText.alpha = 0.5;
-  resultText.anchor.set(-0.15, 5);
+  resultText.anchor.set(-0.1, 5);
 
   return resultText;
 };

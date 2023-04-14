@@ -1,2 +1,2 @@
-export const skinColor = "#FCE5CD";
+export const skinColor = "rgb(249 219 192)";
 export const lineColor = "#000";

@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import { Application } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import GameSideBar from "./GameSideBar";
-import { setFirstSuccess, setTime } from "../features/playerSlice";
+import { setIsRankingOpened, setTime } from "../features/playerSlice";
 import { holdContainer } from "../utils/hold";
 import playerContainer from "../utils/player";
 import { COLOR, SIZE } from "../assets/constants";
@@ -20,6 +20,7 @@ const Wrapper = styled.div`
   .wall {
     width: ${SIZE.GAME_WIDTH}px;
     height: ${SIZE.GAME_HEIGHT}px;
+    background-color: ${COLOR.GAME_BACKGROUND};
   }
 `;
 
@@ -29,7 +30,7 @@ export default function Game() {
   const app = new Application({
     width: SIZE.GAME_WIDTH,
     height: SIZE.GAME_HEIGHT,
-    backgroundColor: COLOR.GAME_BACKGROUND,
+    backgroundAlpha: 0,
   });
   app.stage.addChild(holdContainer);
   app.stage.addChild(playerContainer);
@@ -48,12 +49,12 @@ export default function Game() {
 
       let tick = 1;
       const timerInterval = setInterval(() => {
-        if (wall.getAttribute("result") === "fail") {
+        if (
+          wall.getAttribute("result") === "fail" ||
+          wall.getAttribute("result") === "success"
+        ) {
           clearInterval(timerInterval);
-        }
-        if (wall.getAttribute("result") === "success") {
-          clearInterval(timerInterval);
-          dispatch(setFirstSuccess(true));
+          dispatch(setIsRankingOpened(true));
         }
 
         dispatch(setTime(tick));

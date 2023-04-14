@@ -2,10 +2,12 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setFirstSuccess, setName } from "../features/playerSlice";
+import { setIsRankingOpened, setName } from "../features/playerSlice";
 import { SIZE } from "../assets/constants";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
+import playerContainer from "../utils/player";
+import getResultText from "../utils/getResultText";
 
 const SideBar = styled.div`
   display: flex;
@@ -63,17 +65,17 @@ export default function GameSideBar() {
     }
   }, [name, navigate]);
 
-  const gameResult = useSelector(state => state.player.result);
+  const isRankingOpened = useSelector(state => state.player.isRankingOpened);
   const [isModalOpened, setIsModalOpened] = useState(false);
 
   useEffect(() => {
-    if (gameResult === "success") {
+    if (isRankingOpened === true) {
       setTimeout(() => {
         setIsModalOpened(true);
-        dispatch(setFirstSuccess(false));
+        dispatch(setIsRankingOpened(false));
       }, 1000 * 1);
     }
-  }, [gameResult, dispatch]);
+  }, [isRankingOpened, dispatch]);
 
   const closeModal = () => setIsModalOpened(false);
   const clickRanking = () => setIsModalOpened(true);
@@ -85,6 +87,14 @@ export default function GameSideBar() {
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
+
+  useEffect(() => {
+    if (time > 119) {
+      document.querySelector(".wall").setAttribute("result", "fail");
+      playerContainer.addChild(getResultText("Time Over"));
+      playerContainer.eventMode = "none";
+    }
+  }, [time]);
 
   return (
     <SideBar>
