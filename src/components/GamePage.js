@@ -8,7 +8,6 @@ import { setFirstSuccess, setTime } from "../features/playerSlice";
 import { holdContainer } from "../utils/hold";
 import playerContainer from "../utils/player";
 import { COLOR, SIZE } from "../assets/constants";
-import GameResult from "./GameResult";
 
 const Wrapper = styled.div`
   display: flex;
@@ -26,7 +25,6 @@ const Wrapper = styled.div`
 
 export default function Game() {
   const dispatch = useDispatch();
-  const [result, setResult] = useState(null);
 
   const app = new Application({
     width: SIZE.GAME_WIDTH,
@@ -52,11 +50,9 @@ export default function Game() {
       const timerInterval = setInterval(() => {
         if (wall.getAttribute("result") === "fail") {
           clearInterval(timerInterval);
-          setResult("Fail");
         }
         if (wall.getAttribute("result") === "success") {
           clearInterval(timerInterval);
-          setResult("Success!");
           dispatch(setFirstSuccess(true));
         }
 
@@ -68,13 +64,11 @@ export default function Game() {
     };
 
     wall.addEventListener("click", startTimer);
-  }, [result]);
+  }, []);
 
   return (
     <Wrapper>
-      <div className="wall" ref={wallRef}>
-        {result && <GameResult result={result} />}
-      </div>
+      <div className="wall" ref={wallRef} />
       <GameSideBar />
     </Wrapper>
   );

@@ -8,6 +8,7 @@ import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
 import { skinColor, lineColor } from "./playerSetting";
+import getResultText from "./getResultText";
 
 const containerPosition = { x: 400, y: 640 };
 const playerContainer = new Container();
@@ -311,6 +312,8 @@ function onDragEnd() {
 
       if (attachedStatus.leftHandOnTop && attachedStatus.rightHandOnTop) {
         document.querySelector(".wall").setAttribute("result", "success");
+        playerContainer.addChild(getResultText("Success!"));
+        playerContainer.eventMode = "none";
       }
 
       return;
@@ -336,6 +339,8 @@ function onDragEnd() {
       if (!isPlayerAboveGround) {
         clearInterval(gravity);
         document.querySelector(".wall").setAttribute("result", "fail");
+        playerContainer.addChild(getResultText("Fail..."));
+        playerContainer.eventMode = "none";
       }
     }, 10);
 
