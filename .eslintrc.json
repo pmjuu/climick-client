@@ -32,10 +32,11 @@
     "consistent-return": "off",
     "no-use-before-define": "off",
     "no-unused-expressions": "warn",
-    "no-underscore-dangle": "warn",
+    "no-underscore-dangle": "off",
     "no-unused-vars": "warn",
     "react/button-has-type": "off",
     "react/prop-types": "off",
+    "react-hooks/exhaustive-deps": "off",
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off"
   },

@@ -22,7 +22,7 @@ const ModalWrapper = styled.div`
     z-index: 1;
     width: 700px;
     height: 600px;
-    background-color: #aaa;
+    background-color: #ccc;
     border: 1px solid #fff;
     border-radius: 20px;
     box-shadow: 5px 5px 5px rgba(50, 50, 50, 0.5);

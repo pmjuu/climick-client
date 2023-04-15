@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import { Application } from "pixi.js";
@@ -25,8 +26,6 @@ const Wrapper = styled.div`
 `;
 
 export default function Game() {
-  const dispatch = useDispatch();
-
   const app = new Application({
     width: SIZE.GAME_WIDTH,
     height: SIZE.GAME_HEIGHT,
@@ -35,6 +34,7 @@ export default function Game() {
   app.stage.addChild(holdContainer);
   app.stage.addChild(playerContainer);
 
+  const dispatch = useDispatch();
   const wallRef = useRef();
 
   useEffect(() => {
@@ -48,11 +48,10 @@ export default function Game() {
       if (!wall.getAttribute("result")) return;
 
       let tick = 1;
-      const timerInterval = setInterval(() => {
-        if (
-          wall.getAttribute("result") === "fail" ||
-          wall.getAttribute("result") === "success"
-        ) {
+      const timerInterval = setInterval(async () => {
+        const gameResult = wall.getAttribute("result");
+
+        if (gameResult === "fail" || gameResult === "success") {
           clearInterval(timerInterval);
           dispatch(setIsRankingOpened(true));
         }

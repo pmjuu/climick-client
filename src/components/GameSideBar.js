@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import customAxios from "../utils/customAxios";
 import { setIsRankingOpened, setName } from "../features/playerSlice";
 import { SIZE } from "../assets/constants";
 import Modal from "./Modal";
@@ -103,7 +105,25 @@ export default function GameSideBar() {
       playerContainer.addChild(getResultText("Time Over"));
       playerContainer.eventMode = "none";
     }
+
+    const gameResult = document.querySelector(".wall").getAttribute("result");
+
+    if (gameResult === "success") {
+      handleSuccess();
+    }
   }, [time]);
+
+  async function handleSuccess() {
+    try {
+      const playerInfo = { name, time };
+      await customAxios.post(
+        `${process.env.REACT_APP_SERVER_URL}/players`,
+        playerInfo
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <SideBar>
