@@ -10,3 +10,7 @@ export const SIZE = {
   GAME_WIDTH: 950,
   GAME_HEIGHT: 780,
 };
+
+export const BODY = {
+  SHOULDER_LENGTH: 5,
+};

@@ -9,7 +9,7 @@ import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
 import getResultText from "./getResultText";
-import { COLOR } from "../assets/constants";
+import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 
 const containerPosition = { x: 400, y: 640 };
@@ -31,12 +31,18 @@ const rightCalf = new Graphics();
 const rightFoot = new Graphics();
 playerContainer.addChild(leftThigh, leftCalf, leftFoot);
 playerContainer.addChild(rightThigh, rightCalf, rightFoot);
-playerContainer.addChild(body);
 playerContainer.addChild(leftUpperArm, leftForeArm, leftHand);
 playerContainer.addChild(rightUpperArm, rightForeArm, rightHand);
+playerContainer.addChild(body);
 const bodyWidth = 30;
 const bodyHeight = 60;
 const headRadius = 15;
+const armLength = 40;
+const armWidth = 10;
+const legLength = 50;
+const legWidth = 15;
+const handRadius = 10;
+const footRadius = 12;
 const leftShoulder = { x: 50, y: 0 };
 const rightShoulder = {
   x: leftShoulder.x + bodyWidth * getCos(body.angle),
@@ -50,12 +56,6 @@ const rightCoxa = {
   x: rightShoulder.x - bodyHeight * getSin(body.angle),
   y: rightShoulder.y + bodyHeight * getCos(body.angle),
 };
-const armLength = 40;
-const armWidth = 10;
-const legLength = 50;
-const legWidth = 15;
-const handRadius = 10;
-const footRadius = 12;
 
 const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
 const rightArmList = [rightHand, rightForeArm, rightUpperArm, rightShoulder];
@@ -64,16 +64,18 @@ const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
 const armSize = [armWidth, armLength];
 const legSize = [legWidth, legLength];
 
-// body setting
 body
   .beginFill("#744700")
-  .drawCircle(bodyWidth / 2, -headRadius * 1.3, headRadius)
-  .lineStyle(10, COLOR.PANTS)
+  .drawCircle(bodyWidth / 2, -headRadius * 1.2, headRadius)
+  .lineStyle(7, COLOR.PANTS)
   .beginFill("#000")
   .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
-  .lineStyle(13, COLOR.PANTS)
-  .drawRoundedRect(0, bodyHeight / 2 + 10, bodyWidth, bodyHeight / 2, 10)
+  .lineStyle(10, COLOR.PANTS)
+  .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
   .lineStyle("none")
+  .beginFill(COLOR.SKIN)
+  .drawCircle(-BODY.SHOULDER_LENGTH, 0, (armWidth + 5) / 2)
+  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH, 0, (armWidth + 5) / 2)
   .beginFill("#fff")
   .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
 
@@ -87,8 +89,8 @@ rightHand
   .lineStyle(1, COLOR.DARK_SKIN)
   .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
-leftFoot.beginFill("#333").drawCircle(0, 0, footRadius);
-rightFoot.beginFill("#333").drawCircle(0, 0, footRadius);
+leftFoot.beginFill("#555").drawCircle(0, 0, footRadius);
+rightFoot.beginFill("#555").drawCircle(0, 0, footRadius);
 
 drawLimb(...leftArmList, ...armSize, -1, 1, 40, 60);
 drawLimb(...rightArmList, ...armSize, 1, 1, 50, 40);
@@ -97,6 +99,7 @@ drawLimb(...rightLegList, ...legSize, 1, -1, 30, 60);
 
 // hand drag event
 function onDragStart() {
+  playerContainer.addChildAt(body, 13);
   const wall = document.querySelector(".wall");
   if (!wall.getAttribute("result")) {
     wall.setAttribute("result", "start");
@@ -247,7 +250,7 @@ function onDragEnd() {
     let descentVelocity = 0;
 
     const gravity = setInterval(() => {
-      descentVelocity += 0.5;
+      descentVelocity += 0.2;
       playerContainer.y += descentVelocity * 0.2;
 
       const isPlayerAboveGround =
@@ -267,8 +270,14 @@ function onDragEnd() {
     return;
   }
 
-  if (this === leftHand) gravityRotate(...leftArmList, ...armSize, -1, 1);
-  if (this === rightHand) gravityRotate(...rightArmList, ...armSize, 1, 1);
+  if (this === leftHand) {
+    gravityRotate(...leftArmList, ...armSize, -1, 1);
+    playerContainer.addChildAt(body, 6);
+  }
+  if (this === rightHand) {
+    gravityRotate(...rightArmList, ...armSize, 1, 1);
+    playerContainer.addChildAt(body, 6);
+  }
   if (this === leftFoot) gravityRotate(...leftLegList, ...legSize, -1, -1);
   if (this === rightFoot) gravityRotate(...rightLegList, ...legSize, 1, -1);
 }

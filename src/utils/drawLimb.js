@@ -1,4 +1,4 @@
-import { COLOR } from "../assets/constants";
+import { BODY, COLOR } from "../assets/constants";
 import { getCos, getSin } from "./math";
 
 export default function drawLimb(
@@ -22,7 +22,10 @@ export default function drawLimb(
     dy: -limbLength * getSin(foreArmAngle) * flagY,
   };
 
-  upperArm.position.set(shoulder.x + 3 * flagX * flagY, shoulder.y);
+  upperArm.position.set(
+    shoulder.x + BODY.SHOULDER_LENGTH * flagX * flagY,
+    shoulder.y
+  );
   upperArm
     .lineStyle(limbWidth + 5, COLOR.DARK_SKIN)
     .lineTo(upperArmDxy.dx, upperArmDxy.dy)

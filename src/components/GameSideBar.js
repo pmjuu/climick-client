@@ -27,12 +27,20 @@ const SideBar = styled.div`
     font-size: 2.5rem;
 
     .row {
+      display: flex;
       margin: 10px 15px;
-    }
 
-    .category {
-      margin-right: 10px;
-      font-weight: 700;
+      .category {
+        margin-right: 10px;
+        font-weight: 700;
+      }
+
+      .name {
+        width: 250px;
+        text-overflow: clip;
+        overflow: scroll;
+        white-space: nowrap;
+      }
     }
 
     .hp-bar {
@@ -81,6 +89,7 @@ export default function GameSideBar() {
   const clickRanking = () => setIsModalOpened(true);
   const clickHomePage = () => {
     navigate("/");
+    window.location.reload();
   };
   const clickRestart = () => window.location.reload();
 
@@ -89,7 +98,7 @@ export default function GameSideBar() {
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
 
   useEffect(() => {
-    if (time > 119) {
+    if (time >= 239) {
       document.querySelector(".wall").setAttribute("result", "fail");
       playerContainer.addChild(getResultText("Time Over"));
       playerContainer.eventMode = "none";
@@ -101,7 +110,7 @@ export default function GameSideBar() {
       <div className="status-box">
         <div className="row">
           <span className="category">Name</span>
-          <span>{name}</span>
+          <span className="name">{name}</span>
         </div>
         <div className="row">
           <span className="category">Time</span>
