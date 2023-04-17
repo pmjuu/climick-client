@@ -34,6 +34,7 @@ export default function moveJointByBody(
     .lineStyle("none");
 
   if (flagY === -1) {
+    hand.clear().beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(limbWidth + 13, COLOR.PANTS)
       .lineTo(

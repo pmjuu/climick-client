@@ -2,7 +2,7 @@
 import { COLOR } from "../assets/constants";
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
 
-export default function gravityRotate(
+export default function gravityRotateLeg(
   hand,
   foreArm,
   upperArm,
@@ -29,10 +29,12 @@ export default function gravityRotate(
     const isUpperArmRotating =
       Math.abs(upperArm.angle) < Math.abs(upperArmOriginalAngle);
 
-    const foreArmRotatingGoal =
-      Math.abs(upperArmOriginalAngle) - theta1 * 2 * rotatingDirection * flagX;
+    const foreArmRotatingGoal = Math.abs(upperArmOriginalAngle) - theta1 * 2;
+    const foreArmRotatingDirection =
+      foreArmRotatingGoal / Math.abs(foreArmRotatingGoal);
 
-    const isForeArmRotating = Math.abs(foreArm.angle) < foreArmRotatingGoal;
+    const isForeArmRotating =
+      Math.abs(foreArm.angle) < Math.abs(foreArmRotatingGoal);
 
     if (isUpperArmRotating) {
       upperArm.angle += angleVelocity * 0.2 * rotatingDirection;
@@ -44,11 +46,17 @@ export default function gravityRotate(
     }
 
     if (isForeArmRotating) {
-      foreArm.angle += angleVelocity * 0.2 * rotatingDirection;
+      foreArm.angle +=
+        angleVelocity * 0.2 * rotatingDirection * foreArmRotatingDirection;
 
-      const newAngle = foreArmRotatingGoal - Math.abs(foreArm.angle);
+      const newAngle = Math.abs(foreArmRotatingGoal) - Math.abs(foreArm.angle);
 
-      hand.x = foreArm.x + limbLength * getSin(newAngle) * rotatingDirection;
+      hand.x =
+        foreArm.x +
+        limbLength *
+          getSin(newAngle) *
+          rotatingDirection *
+          foreArmRotatingDirection;
       hand.y = foreArm.y + limbLength * getCos(newAngle);
     }
 
@@ -57,7 +65,7 @@ export default function gravityRotate(
     if (isRotationFinished) {
       clearInterval(gravity);
       hand.x = foreArm.x;
-      hand.y = foreArm.y + limbLength - 1;
+      hand.y = foreArm.y + limbLength - 0.5;
       upperArm.angle = 0;
       upperArm
         .clear()

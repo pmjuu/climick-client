@@ -11,6 +11,7 @@ import gravityRotate from "./gravityRotate";
 import getResultText from "./getResultText";
 import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
+import gravityRotateLeg from "./gravityRotateLeg";
 
 const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
@@ -74,8 +75,8 @@ body
   .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
   .lineStyle("none")
   .beginFill(COLOR.SKIN)
-  .drawCircle(-BODY.SHOULDER_LENGTH - 2, 0, (armWidth + 5) / 2)
-  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH + 2, 0, (armWidth + 5) / 2)
+  .drawCircle(-BODY.SHOULDER_LENGTH, 2, (armWidth + 5) / 2)
+  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH, 2, (armWidth + 5) / 2)
   .beginFill("#fff")
   .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
 
@@ -341,30 +342,31 @@ function onDragEnd() {
   }
 
   if (this === leftHand) {
-    gravityRotate(...leftArmList, ...armSize, -1, 1);
+    gravityRotate(...leftArmList, ...armSize, 1, 1);
     playerContainer.addChildAt(body, 6);
   }
   if (this === rightHand) {
-    gravityRotate(...rightArmList, ...armSize, 1, 1);
+    gravityRotate(...rightArmList, ...armSize, -1, 1);
     playerContainer.addChildAt(body, 6);
   }
-  if (this === leftFoot) gravityRotate(...leftLegList, ...legSize, -1, -1);
-  if (this === rightFoot) gravityRotate(...rightLegList, ...legSize, 1, -1);
+  if (this === leftFoot) gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
+  if (this === rightFoot) gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
 }
 
 function onDragOut() {
   if (this === leftHand) {
-    gravityRotate(...leftArmList, ...armSize, -1, 1);
+    gravityRotate(...leftArmList, ...armSize, 1, 1);
     playerContainer.addChildAt(body, 6);
   }
   if (this === rightHand) {
-    gravityRotate(...rightArmList, ...armSize, 1, 1);
+    gravityRotate(...rightArmList, ...armSize, -1, 1);
     playerContainer.addChildAt(body, 6);
   }
-  if (this === leftFoot) gravityRotate(...leftLegList, ...legSize, -1, -1);
-  if (this === rightFoot) gravityRotate(...rightLegList, ...legSize, 1, -1);
+  if (this === leftFoot) gravityRotateLeg(...leftLegList, ...legSize, 1, -1);
+  if (this === rightFoot) gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
 
-  this.off("pointerout");
+  this.off("pointermove").off("pointerout");
+  this.alpha = 1;
 }
 
 export default playerContainer;
