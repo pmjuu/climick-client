@@ -12,7 +12,7 @@ import getResultText from "./getResultText";
 import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 
-const containerPosition = { x: 400, y: 630 };
+const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
 playerContainer.position.set(...Object.values(containerPosition));
 
@@ -68,7 +68,7 @@ body
   .beginFill(COLOR.HAIR)
   .drawCircle(bodyWidth / 2, -headRadius * 1.2, headRadius)
   .lineStyle(7, COLOR.PANTS)
-  .beginFill("#000")
+  .beginFill(COLOR.PANTS)
   .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
   .lineStyle(10, COLOR.PANTS)
   .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
@@ -89,13 +89,13 @@ rightHand
   .lineStyle(1, COLOR.DARK_SKIN)
   .beginFill(COLOR.SKIN)
   .drawCircle(0, 0, handRadius);
-leftFoot.beginFill("#555").drawCircle(0, 0, footRadius);
-rightFoot.beginFill("#555").drawCircle(0, 0, footRadius);
+leftFoot.beginFill(COLOR.SHOES).drawCircle(0, 0, footRadius);
+rightFoot.beginFill(COLOR.SHOES).drawCircle(0, 0, footRadius);
 
-drawLimb(...leftArmList, ...armSize, -1, 1, 40, 50);
-drawLimb(...rightArmList, ...armSize, 1, 1, 50, 40);
-drawLimb(...leftLegList, ...legSize, -1, -1, 30, 80);
-drawLimb(...rightLegList, ...legSize, 1, -1, 40, 60);
+drawLimb(...leftArmList, ...armSize, -1, 1, 40, 40);
+drawLimb(...rightArmList, ...armSize, 1, 1, 40, 30);
+drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
+drawLimb(...rightLegList, ...legSize, 1, -1, 60, 60);
 
 const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
 limbs.forEach(limb => {
@@ -112,6 +112,7 @@ limbs.forEach(limb => {
 function onDragStart() {
   playerContainer.addChildAt(body, 13);
   const wall = document.querySelector(".wall");
+
   if (!wall.getAttribute("result")) {
     wall.setAttribute("result", "start");
   }
@@ -146,6 +147,7 @@ function onDragging(event) {
       y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
     });
   }
+
   if (this === rightHand) {
     const theta2 = moveJoint(
       ...rightArmList,
@@ -162,10 +164,26 @@ function onDragging(event) {
       y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
     });
   }
+
   if (this === leftFoot)
-    moveJoint(...leftLegList, ...legSize, cursorInContainer, -1, -1);
+    moveJoint(
+      ...leftLegList,
+      ...legSize,
+      cursorInContainer,
+      -1,
+      -1,
+      footRadius
+    );
+
   if (this === rightFoot)
-    moveJoint(...rightLegList, ...legSize, cursorInContainer, 1, -1);
+    moveJoint(
+      ...rightLegList,
+      ...legSize,
+      cursorInContainer,
+      1,
+      -1,
+      footRadius
+    );
 }
 
 let exceededPart = null;
@@ -187,9 +205,21 @@ function moveBodyTo(cursorInContainer) {
   if (!exceededPart)
     exceededPart = moveJointByBody(...rightArmList, ...armSize, -1, 1);
   if (!exceededPart)
-    exceededPart = moveJointByBody(...leftLegList, ...legSize, -1, -1);
+    exceededPart = moveJointByBody(
+      ...leftLegList,
+      ...legSize,
+      -1,
+      -1,
+      footRadius
+    );
   if (!exceededPart)
-    exceededPart = moveJointByBody(...rightLegList, ...legSize, 1, -1);
+    exceededPart = moveJointByBody(
+      ...rightLegList,
+      ...legSize,
+      1,
+      -1,
+      footRadius
+    );
 
   if (!exceededPart) {
     body.position.set(leftShoulder.x, leftShoulder.y);

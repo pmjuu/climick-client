@@ -5,6 +5,8 @@ export const COLOR = {
   SKIN: "#f9dbc0",
   DARK_SKIN: "#f6b26b",
   HAIR: "744700",
+  SHOES: "#555",
+  STRETCHED: "yellow",
 };
 
 export const SIZE = {

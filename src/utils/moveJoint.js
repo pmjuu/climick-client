@@ -11,7 +11,8 @@ export default function moveJoint(
   limbLength,
   cursorInCanvas,
   flagX,
-  flagY
+  flagY,
+  handRadius
 ) {
   const handToShoulder = getDistance(shoulder, hand);
   const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
@@ -33,6 +34,7 @@ export default function moveJoint(
       0.000001 * flagY * handDirectionY;
     return theta2;
   }
+
   hand.x = cursorInCanvas.x;
   hand.y = cursorInCanvas.y;
 
@@ -57,6 +59,7 @@ export default function moveJoint(
     .lineStyle("none");
 
   if (flagY === -1) {
+    hand.clear().beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(limbWidth + 13, COLOR.PANTS)
       .lineTo(upperArmDxy.x / 2, upperArmDxy.y / 2);

@@ -9,7 +9,8 @@ export default function moveJointByBody(
   limbWidth,
   limbLength,
   flagX,
-  flagY
+  flagY,
+  handRadius
 ) {
   const handToShoulder = getDistance(shoulder, hand);
   const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
@@ -21,6 +22,7 @@ export default function moveJointByBody(
   const angles = theta1 + theta2;
 
   if (handToShoulder >= limbLength * 2) {
+    hand.beginFill(COLOR.STRETCHED).drawCircle(0, 0, handRadius);
     return hand;
   }
 
