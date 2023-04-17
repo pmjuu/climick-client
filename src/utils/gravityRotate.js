@@ -19,7 +19,6 @@ export default function gravityRotate(
     foreArm.y - shoulder.y,
     foreArm.x - shoulder.x
   );
-  // const handDirectionY = hand.y - shoulder.y > 0 ? 1 : -1;
 
   let angleVelocity = 0;
 
@@ -58,6 +57,7 @@ export default function gravityRotate(
 
     if (isRotationFinished) {
       clearInterval(gravity);
+      hand.y -= 1;
       upperArm.angle = 0;
       upperArm
         .clear()

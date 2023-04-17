@@ -6,7 +6,7 @@ const cloud = { x: 290, y: 350 };
 
 export const holdInfo = {
   floor: { x: -9, y: 760, width: 999, height: 20, type: "rect", color: "#999" },
-  start: { x: 430, y: 570, width: 60, height: 20, type: "rect", color: "blue" },
+  start: { x: 430, y: 560, width: 60, height: 20, type: "rect", color: "blue" },
   top: {
     x: 450,
     y: 260,
@@ -24,7 +24,6 @@ export const holdInfo = {
   b1: { x: 370, y: 700, width: 100, height: 20, type: "rect", color: "purple" },
   b2: { x: 290, y: 610, width: 80, height: 20, type: "rect", color: "purple" },
   b3: { x: 270, y: 530, width: 60, height: 20, type: "rect", color: "purple" },
-  b4: { x: 420, y: 480, radius: 17, type: "snow", color: "white" },
   c1: { x: 570, y: 470, radius: 20, type: "circle", color: "darkred" },
   c2: {
     x: 585,
@@ -51,9 +50,10 @@ export const holdInfo = {
     type: "rect",
     color: "#6495ed",
   },
-  e1: { x: 500, y: 420, radius: 17, type: "snow", color: "white" },
-  e2: { x: 440, y: 380, radius: 17, type: "snow", color: "white" },
   e3: { x: 520, y: 340, radius: 17, type: "snow", color: "white" },
+  e2: { x: 440, y: 390, radius: 17, type: "snow", color: "white" },
+  e1: { x: 500, y: 430, radius: 17, type: "snow", color: "white" },
+  b4: { x: 420, y: 480, radius: 17, type: "snow", color: "white" },
   f0: { x: cloud.x, y: cloud.y, radius: 20, type: "circle", color: "#fff" },
   f1: {
     x: cloud.x + 30,

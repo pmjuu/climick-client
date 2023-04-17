@@ -66,14 +66,15 @@ export default function GameSideBar() {
   const name = useSelector(state => state.player.name);
   const localStorageName = localStorage.getItem("climick-name");
 
-  if (!name) dispatch(setName(localStorageName));
+  if (!name && localStorageName) dispatch(setName(localStorageName));
 
   useEffect(() => {
     if (!name) {
       alert("please enter the player's name");
       navigate("/");
+      window.location.reload();
     }
-  }, [name, navigate]);
+  }, []);
 
   const isRankingOpened = useSelector(state => state.player.isRankingOpened);
   const [isModalOpened, setIsModalOpened] = useState(false);

@@ -4,6 +4,7 @@ export const COLOR = {
   PANTS: "#000",
   SKIN: "#f9dbc0",
   DARK_SKIN: "#f6b26b",
+  HAIR: "744700",
 };
 
 export const SIZE = {
@@ -12,5 +13,5 @@ export const SIZE = {
 };
 
 export const BODY = {
-  SHOULDER_LENGTH: 5,
+  SHOULDER_LENGTH: 0,
 };

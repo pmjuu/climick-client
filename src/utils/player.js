@@ -12,7 +12,7 @@ import getResultText from "./getResultText";
 import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 
-const containerPosition = { x: 400, y: 640 };
+const containerPosition = { x: 400, y: 630 };
 const playerContainer = new Container();
 playerContainer.position.set(...Object.values(containerPosition));
 
@@ -34,7 +34,7 @@ playerContainer.addChild(rightThigh, rightCalf, rightFoot);
 playerContainer.addChild(leftUpperArm, leftForeArm, leftHand);
 playerContainer.addChild(rightUpperArm, rightForeArm, rightHand);
 playerContainer.addChild(body);
-const bodyWidth = 30;
+const bodyWidth = 33;
 const bodyHeight = 60;
 const headRadius = 15;
 const armLength = 40;
@@ -65,7 +65,7 @@ const armSize = [armWidth, armLength];
 const legSize = [legWidth, legLength];
 
 body
-  .beginFill("#744700")
+  .beginFill(COLOR.HAIR)
   .drawCircle(bodyWidth / 2, -headRadius * 1.2, headRadius)
   .lineStyle(7, COLOR.PANTS)
   .beginFill("#000")
@@ -74,8 +74,8 @@ body
   .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
   .lineStyle("none")
   .beginFill(COLOR.SKIN)
-  .drawCircle(-BODY.SHOULDER_LENGTH, 0, (armWidth + 5) / 2)
-  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH, 0, (armWidth + 5) / 2)
+  .drawCircle(-BODY.SHOULDER_LENGTH - 2, 0, (armWidth + 5) / 2)
+  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH + 2, 0, (armWidth + 5) / 2)
   .beginFill("#fff")
   .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
 
@@ -92,10 +92,21 @@ rightHand
 leftFoot.beginFill("#555").drawCircle(0, 0, footRadius);
 rightFoot.beginFill("#555").drawCircle(0, 0, footRadius);
 
-drawLimb(...leftArmList, ...armSize, -1, 1, 40, 60);
+drawLimb(...leftArmList, ...armSize, -1, 1, 40, 50);
 drawLimb(...rightArmList, ...armSize, 1, 1, 50, 40);
-drawLimb(...leftLegList, ...legSize, -1, -1, 20, 80);
-drawLimb(...rightLegList, ...legSize, 1, -1, 30, 60);
+drawLimb(...leftLegList, ...legSize, -1, -1, 30, 80);
+drawLimb(...rightLegList, ...legSize, 1, -1, 40, 60);
+
+const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
+limbs.forEach(limb => {
+  limb.eventMode = "dynamic";
+  limb
+    .on("pointerover", function () {
+      this.cursor = "grab";
+    })
+    .on("pointerdown", onDragStart)
+    .on("pointerup", onDragEnd);
+});
 
 // hand drag event
 function onDragStart() {
@@ -107,7 +118,7 @@ function onDragStart() {
 
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
-  this.on("pointermove", onDragging);
+  this.on("pointermove", onDragging).on("pointerout", onDragOut);
 }
 
 function onDragging(event) {
@@ -119,14 +130,42 @@ function onDragging(event) {
 
   if (this === body) return moveBodyTo(cursorInContainer);
 
-  if (this === leftHand)
-    return moveJoint(...leftArmList, ...armSize, cursorInContainer, 1, 1);
-  if (this === rightHand)
-    return moveJoint(...rightArmList, ...armSize, cursorInContainer, -1, 1);
+  if (this === leftHand) {
+    const theta2 = moveJoint(
+      ...leftArmList,
+      ...armSize,
+      cursorInContainer,
+      1,
+      1
+    );
+
+    if (!theta2) return;
+
+    return moveBodyTo({
+      x: cursorInContainer.x + armLength * 2 * getCos(theta2) + bodyWidth / 2,
+      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
+    });
+  }
+  if (this === rightHand) {
+    const theta2 = moveJoint(
+      ...rightArmList,
+      ...armSize,
+      cursorInContainer,
+      -1,
+      1
+    );
+
+    if (!theta2) return;
+
+    return moveBodyTo({
+      x: cursorInContainer.x - armLength * 2 * getCos(theta2) - bodyWidth / 2,
+      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
+    });
+  }
   if (this === leftFoot)
-    return moveJoint(...leftLegList, ...legSize, cursorInContainer, -1, -1);
+    moveJoint(...leftLegList, ...legSize, cursorInContainer, -1, -1);
   if (this === rightFoot)
-    return moveJoint(...rightLegList, ...legSize, cursorInContainer, 1, -1);
+    moveJoint(...rightLegList, ...legSize, cursorInContainer, 1, -1);
 }
 
 let exceededPart = null;
@@ -166,6 +205,12 @@ const attachedStatus = {
 const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
+  playerContainer.children.forEach(child => {
+    child.cursor = "grab";
+    child.alpha = 1;
+    child.off("pointermove");
+  });
+
   const retrievePX = 0.5;
   if (exceededPart === leftHand) {
     exceededPart = null;
@@ -196,13 +241,8 @@ function onDragEnd() {
     });
   }
 
-  playerContainer.children.forEach(child => {
-    child.cursor = "grab";
-    child.alpha = 1;
-    child.off("pointermove");
-  });
-
   if (!this) return;
+  this.removeEventListener("pointerout", onDragOut);
 
   for (const hold of Object.values(holdInfo)) {
     const cursor = {
@@ -282,17 +322,19 @@ function onDragEnd() {
   if (this === rightFoot) gravityRotate(...rightLegList, ...legSize, 1, -1);
 }
 
-const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
-limbs.forEach(limb => {
-  limb.eventMode = "dynamic";
-  limb
-    .on("pointerover", function () {
-      this.cursor = "grab";
-    })
-    .on("pointerdown", onDragStart)
-    .on("pointerup", onDragEnd);
-});
+function onDragOut() {
+  if (this === leftHand) {
+    gravityRotate(...leftArmList, ...armSize, -1, 1);
+    playerContainer.addChildAt(body, 6);
+  }
+  if (this === rightHand) {
+    gravityRotate(...rightArmList, ...armSize, 1, 1);
+    playerContainer.addChildAt(body, 6);
+  }
+  if (this === leftFoot) gravityRotate(...leftLegList, ...legSize, -1, -1);
+  if (this === rightFoot) gravityRotate(...rightLegList, ...legSize, 1, -1);
 
-document.body.addEventListener("pointerup", onDragEnd);
+  this.off("pointerout");
+}
 
 export default playerContainer;
