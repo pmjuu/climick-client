@@ -16,6 +16,7 @@ export const SIZE = {
 
 export const BODY = {
   SHOULDER_LENGTH: 0,
+  COXA_GAP: 6,
 };
 
 export const TIME_LIMIT = 240;

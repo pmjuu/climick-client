@@ -10,7 +10,13 @@ import {
   controlHp,
   setIsRankingOpened,
 } from "../features/playerSlice";
-import playerContainer, { attachedStatus, gameStatus } from "../utils/player";
+import playerContainer, {
+  attachedStatus,
+  containerPosition,
+  gameStatus,
+  initialContainerHeight,
+  leftShoulder,
+} from "../utils/player";
 import getResultText from "../utils/getResultText";
 import customAxios from "../utils/customAxios";
 import { SIZE, TIME_LIMIT } from "../assets/constants";
@@ -53,7 +59,7 @@ const SideBar = styled.div`
     }
 
     .hp-box {
-      width: 363px;
+      width: 366px;
       height: 30px;
       background-color: #fff;
       border: 1px solid #fff;
@@ -142,8 +148,26 @@ export default function GameSideBar() {
 
     if (hp <= 0) {
       dispatch(setHp(0));
-      gameStatus.fail = true;
-      playerContainer.addChild(getResultText("Fail..."));
+
+      let descentVelocity = 0;
+
+      const gravity = setInterval(() => {
+        descentVelocity += 0.2;
+        playerContainer.y += descentVelocity * 0.2;
+
+        const isPlayerAboveGround =
+          playerContainer.y <
+          containerPosition.y -
+            leftShoulder.y +
+            (initialContainerHeight - playerContainer.height);
+
+        if (!isPlayerAboveGround) {
+          clearInterval(gravity);
+          gameStatus.fail = true;
+          playerContainer.addChild(getResultText("Fail..."));
+        }
+      }, 10);
+
       return;
     }
 

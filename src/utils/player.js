@@ -20,7 +20,7 @@ export const gameStatus = {
   timeover: false,
 };
 
-const containerPosition = { x: 400, y: 620 };
+export const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
 playerContainer.position.set(...Object.values(containerPosition));
 
@@ -51,17 +51,17 @@ const legLength = 50;
 const legWidth = 15;
 const handRadius = 10;
 const footRadius = 12;
-const leftShoulder = { x: 50, y: 0 };
+export const leftShoulder = { x: 50, y: 0 };
 const rightShoulder = {
   x: leftShoulder.x + bodyWidth * getCos(body.angle),
   y: leftShoulder.y + bodyWidth * getSin(body.angle),
 };
 const leftCoxa = {
-  x: leftShoulder.x - bodyHeight * getSin(body.angle),
+  x: leftShoulder.x - bodyHeight * getSin(body.angle) + BODY.COXA_GAP,
   y: leftShoulder.y + bodyHeight * getCos(body.angle),
 };
 const rightCoxa = {
-  x: rightShoulder.x - bodyHeight * getSin(body.angle),
+  x: rightShoulder.x - bodyHeight * getSin(body.angle) - BODY.COXA_GAP,
   y: rightShoulder.y + bodyHeight * getCos(body.angle),
 };
 
@@ -116,7 +116,6 @@ limbs.forEach(limb => {
     .on("pointerup", onDragEnd);
 });
 
-// hand drag event
 function onDragStart() {
   playerContainer.addChildAt(body, 13);
   gameStatus.start = true;
@@ -236,7 +235,7 @@ export const attachedStatus = {
   leftHand: 1,
   rightHand: 1,
 };
-const initialContainerHeight = playerContainer.height;
+export const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
   playerContainer.children.forEach(child => {
@@ -341,7 +340,6 @@ function onDragOut() {
         clearInterval(gravity);
         gameStatus.fail = true;
         playerContainer.addChild(getResultText("Fail..."));
-        playerContainer.eventMode = "none";
       }
     }, 10);
 
