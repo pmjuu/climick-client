@@ -127,7 +127,7 @@ export default function GameSideBar() {
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
 
   useEffect(() => {
-    let tick = 1;
+    let tick = 0;
     const timerInterval = setInterval(() => {
       if (!gameStatus.start) return;
 

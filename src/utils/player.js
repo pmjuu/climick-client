@@ -130,10 +130,9 @@ function onDragStart() {
 }
 
 function onDragging(event) {
-  const wall = document.querySelector(".wall");
   const cursorInContainer = {
-    x: event.clientX - wall.offsetLeft - containerPosition.x,
-    y: event.clientY - wall.offsetTop - containerPosition.y,
+    x: event.clientX - this.offsetLeft - containerPosition.x,
+    y: event.clientY - this.offsetTop - containerPosition.y,
   };
 
   if (dragTarget === body) return moveBodyTo(cursorInContainer);
@@ -144,7 +143,8 @@ function onDragging(event) {
       ...armSize,
       cursorInContainer,
       1,
-      1
+      1,
+      handRadius
     );
 
     if (!theta2) return;
@@ -161,7 +161,8 @@ function onDragging(event) {
       ...armSize,
       cursorInContainer,
       -1,
-      1
+      1,
+      handRadius
     );
 
     if (!theta2) return;
@@ -195,7 +196,7 @@ function onDragging(event) {
 
 let exceededPart = null;
 function moveBodyTo(cursorInContainer) {
-  if (exceededPart) return onDragEnd();
+  if (exceededPart) return;
 
   leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
   leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
@@ -208,9 +209,21 @@ function moveBodyTo(cursorInContainer) {
   rightCoxa.y = rightShoulder.y + bodyHeight * getCos(body.angle);
 
   if (!exceededPart)
-    exceededPart = moveJointByBody(...leftArmList, ...armSize, 1, 1);
+    exceededPart = moveJointByBody(
+      ...leftArmList,
+      ...armSize,
+      1,
+      1,
+      handRadius
+    );
   if (!exceededPart)
-    exceededPart = moveJointByBody(...rightArmList, ...armSize, -1, 1);
+    exceededPart = moveJointByBody(
+      ...rightArmList,
+      ...armSize,
+      -1,
+      1,
+      handRadius
+    );
   if (!exceededPart)
     exceededPart = moveJointByBody(
       ...leftLegList,
@@ -345,10 +358,10 @@ function onDragEnd() {
   }
 
   if (dragTarget === leftHand) {
-    gravityRotate(...leftArmList, ...armSize, 1, 1);
+    gravityRotate(...leftArmList, ...armSize, 1, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === rightHand) {
-    gravityRotate(...rightArmList, ...armSize, -1, 1);
+    gravityRotate(...rightArmList, ...armSize, -1, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === leftFoot) {
     gravityRotateLeg(...leftLegList, ...legSize, -1, -1);

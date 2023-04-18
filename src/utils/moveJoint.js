@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { BODY, COLOR } from "../assets/constants";
+import { COLOR } from "../assets/constants";
 import { getDistance, getAngleDegrees, getCos, getSin } from "./math";
 
 export default function moveJoint(
@@ -14,40 +14,29 @@ export default function moveJoint(
   flagY,
   handRadius
 ) {
-  const handToShoulder = getDistance(shoulder, hand);
+  const handToShoulder = getDistance(shoulder, cursorInCanvas);
   const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
   const theta1 = getAngleDegrees(handToShoulder / 2, h);
   const theta2 = getAngleDegrees(
-    flagX * (shoulder.x - BODY.SHOULDER_LENGTH * flagX - hand.x),
-    shoulder.y - hand.y
+    flagX * (shoulder.x - cursorInCanvas.x),
+    shoulder.y - cursorInCanvas.y
   );
-  const handDirectionY = hand.y - shoulder.y > 0 ? 1 : -1;
 
   if (handToShoulder > limbLength * 2) {
-    hand.x =
-      shoulder.x -
-      (limbLength - 0.1) * 2 * getCos(theta2) * flagX +
-      0.000001 * flagX * flagY;
-    hand.y =
-      shoulder.y -
-      (limbLength - 0.1) * 2 * getSin(theta2) -
-      0.000001 * flagY * handDirectionY;
-    return theta2;
+    hand.x = shoulder.x - limbLength * 2 * getCos(theta2) * flagX;
+    hand.y = shoulder.y - limbLength * 2 * getSin(theta2);
+  } else {
+    hand.x = cursorInCanvas.x;
+    hand.y = cursorInCanvas.y;
   }
 
-  hand.x = cursorInCanvas.x;
-  hand.y = cursorInCanvas.y;
-
   const elbow = {
-    x:
-      shoulder.x -
-      BODY.SHOULDER_LENGTH * flagX -
-      limbLength * getCos(theta1 - theta2) * flagX,
+    x: shoulder.x - flagX - limbLength * getCos(theta1 - theta2) * flagX,
     y: shoulder.y + limbLength * getSin(theta1 - theta2),
   };
 
   const upperArmDxy = {
-    x: elbow.x - (shoulder.x - BODY.SHOULDER_LENGTH * flagX),
+    x: elbow.x - shoulder.x,
     y: elbow.y - shoulder.y,
   };
 
@@ -59,11 +48,12 @@ export default function moveJoint(
     .lineStyle("none");
 
   if (flagY === -1) {
-    hand.clear().beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
+    hand.beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(limbWidth + 13, COLOR.PANTS)
       .lineTo(upperArmDxy.x / 2, upperArmDxy.y / 2);
   } else {
+    hand.beginFill(COLOR.SKIN).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(1, COLOR.DARK_SKIN)
       .beginFill(COLOR.SKIN)
@@ -87,4 +77,6 @@ export default function moveJoint(
     .moveTo(0, 0)
     .lineStyle(limbWidth, COLOR.SKIN)
     .lineTo(hand.x - elbow.x, hand.y - elbow.y);
+
+  if (handToShoulder > limbLength * 2) return theta2;
 }

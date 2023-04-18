@@ -21,8 +21,9 @@ export default function moveJointByBody(
   );
   const angles = theta1 + theta2;
 
-  if (handToShoulder >= limbLength * 2) {
+  if (handToShoulder > limbLength * 2) {
     hand.beginFill(COLOR.STRETCHED).drawCircle(0, 0, handRadius);
+
     return hand;
   }
 
@@ -34,7 +35,7 @@ export default function moveJointByBody(
     .lineStyle("none");
 
   if (flagY === -1) {
-    hand.clear().beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
+    hand.beginFill(COLOR.SHOES).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(limbWidth + 13, COLOR.PANTS)
       .lineTo(
@@ -42,6 +43,7 @@ export default function moveJointByBody(
         (limbLength * getSin(angles)) / 2
       );
   } else {
+    hand.beginFill(COLOR.SKIN).drawCircle(0, 0, handRadius);
     upperArm
       .lineStyle(1, COLOR.DARK_SKIN)
       .beginFill(COLOR.SKIN)

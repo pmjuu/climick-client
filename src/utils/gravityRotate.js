@@ -10,7 +10,8 @@ export default function gravityRotate(
   limbWidth,
   limbLength,
   flagX,
-  flagY
+  flagY,
+  handRadius
 ) {
   const handToShoulder = getDistance(shoulder, hand);
   const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
@@ -56,6 +57,7 @@ export default function gravityRotate(
 
     if (isRotationFinished) {
       clearInterval(gravity);
+      hand.beginFill(COLOR.SKIN).drawCircle(0, 0, handRadius);
       hand.x = foreArm.x;
       hand.y = foreArm.y + limbLength - 1;
       upperArm.angle = 0;
