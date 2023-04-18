@@ -119,3 +119,14 @@ const topText = new Text("TOP", {
 });
 topHold.addChild(topText);
 topText.anchor.set(0.5, 2);
+
+export const introText = new Text(
+  "* 손/발/몸통 중 하나를 클릭하면 게임을 시작합니다 *",
+  {
+    fontFamily: "Arial",
+    fontSize: 24,
+    fill: "#fff",
+  }
+);
+introText.position.set(250, 50);
+holdContainer.addChild(introText);
