@@ -4,7 +4,7 @@
 import { Container, Graphics } from "pixi.js";
 import "@pixi/graphics-extras";
 import { getCos, getDistance, getSin } from "./math";
-import { holdInfo } from "./hold";
+import { holdContainer, holdInfo, introText } from "./hold";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
@@ -112,29 +112,33 @@ limbs.forEach(limb => {
     .on("pointerover", function () {
       this.cursor = "grab";
     })
-    .on("pointerdown", onDragStart)
-    .on("pointerup", onDragEnd);
+    .on("pointerdown", onDragStart);
 });
 
+let dragTarget = null;
+
 function onDragStart() {
+  holdContainer.removeChild(introText);
   playerContainer.addChildAt(body, 13);
   gameStatus.start = true;
 
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
-  this.on("pointermove", onDragging).on("pointerout", onDragOut);
+  dragTarget = this;
+  document.querySelector(".wall").addEventListener("pointermove", onDragging);
+  document.querySelector(".wall").addEventListener("pointerup", onDragEnd);
 }
 
 function onDragging(event) {
   const wall = document.querySelector(".wall");
   const cursorInContainer = {
-    x: event.client.x - wall.offsetLeft - containerPosition.x,
-    y: event.client.y - wall.offsetTop - containerPosition.y,
+    x: event.clientX - wall.offsetLeft - containerPosition.x,
+    y: event.clientY - wall.offsetTop - containerPosition.y,
   };
 
-  if (this === body) return moveBodyTo(cursorInContainer);
+  if (dragTarget === body) return moveBodyTo(cursorInContainer);
 
-  if (this === leftHand) {
+  if (dragTarget === leftHand) {
     const theta2 = moveJoint(
       ...leftArmList,
       ...armSize,
@@ -151,7 +155,7 @@ function onDragging(event) {
     });
   }
 
-  if (this === rightHand) {
+  if (dragTarget === rightHand) {
     const theta2 = moveJoint(
       ...rightArmList,
       ...armSize,
@@ -168,7 +172,7 @@ function onDragging(event) {
     });
   }
 
-  if (this === leftFoot)
+  if (dragTarget === leftFoot)
     moveJoint(
       ...leftLegList,
       ...legSize,
@@ -178,7 +182,7 @@ function onDragging(event) {
       footRadius
     );
 
-  if (this === rightFoot)
+  if (dragTarget === rightFoot)
     moveJoint(
       ...rightLegList,
       ...legSize,
@@ -238,35 +242,34 @@ export const attachedStatus = {
 export const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
-  playerContainer.children.forEach(child => {
-    child.cursor = "grab";
-    child.alpha = 1;
-    child.off("pointermove");
-  });
+  if (!dragTarget) return;
+
+  document
+    .querySelector(".wall")
+    .removeEventListener("pointermove", onDragging);
+  dragTarget.alpha = 1;
 
   const retrievePX = 0.5;
+
   if (exceededPart === leftHand) {
     exceededPart = null;
     moveBodyTo({
       x: body.x - retrievePX + bodyWidth / 2,
       y: body.y - retrievePX + bodyHeight / 2,
     });
-  }
-  if (exceededPart === rightHand) {
+  } else if (exceededPart === rightHand) {
     exceededPart = null;
     moveBodyTo({
       x: body.x + retrievePX + bodyWidth / 2,
       y: body.y - retrievePX + bodyHeight / 2,
     });
-  }
-  if (exceededPart === leftFoot) {
+  } else if (exceededPart === leftFoot) {
     exceededPart = null;
     moveBodyTo({
       x: body.x - retrievePX + bodyWidth / 2,
       y: body.y + retrievePX + bodyHeight / 2,
     });
-  }
-  if (exceededPart === rightFoot) {
+  } else if (exceededPart === rightFoot) {
     exceededPart = null;
     moveBodyTo({
       x: body.x + retrievePX + bodyWidth / 2,
@@ -274,17 +277,16 @@ function onDragEnd() {
     });
   }
 
-  if (!this) return;
-  this.removeEventListener("pointerout", onDragOut);
-
   for (const hold of Object.values(holdInfo)) {
     const cursor = {
-      x: this.x + containerPosition.x,
-      y: this.y + containerPosition.y,
+      x: dragTarget.x + containerPosition.x,
+      y: dragTarget.y + containerPosition.y,
     };
 
     const handFootRadius =
-      this === leftHand || this === rightHand ? handRadius : footRadius;
+      dragTarget === leftHand || dragTarget === rightHand
+        ? handRadius
+        : footRadius;
 
     const isAttachedToHold = hold.radius
       ? getDistance(hold, cursor) < hold.radius + handFootRadius
@@ -294,13 +296,13 @@ function onDragEnd() {
         cursor.y < hold.y + hold.height + handFootRadius;
 
     if (isAttachedToHold) {
-      if (this === leftHand) {
+      if (dragTarget === leftHand) {
         attachedStatus.leftHand = 1;
 
         if (hold.text === "top") attachedStatus.leftHandOnTop = 1;
       }
 
-      if (this === rightHand) {
+      if (dragTarget === rightHand) {
         attachedStatus.rightHand = 1;
 
         if (hold.text === "top") attachedStatus.rightHandOnTop = 1;
@@ -316,12 +318,8 @@ function onDragEnd() {
     }
   }
 
-  onDragOut.apply(this);
-}
-
-function onDragOut() {
-  if (this === leftHand) attachedStatus.leftHand = 0;
-  if (this === rightHand) attachedStatus.rightHand = 0;
+  if (dragTarget === leftHand) attachedStatus.leftHand = 0;
+  if (dragTarget === rightHand) attachedStatus.rightHand = 0;
 
   if (attachedStatus.leftHand === 0 && attachedStatus.rightHand === 0) {
     let descentVelocity = 0;
@@ -346,19 +344,17 @@ function onDragOut() {
     return;
   }
 
-  if (this === leftHand) {
+  if (dragTarget === leftHand) {
     gravityRotate(...leftArmList, ...armSize, 1, 1);
     playerContainer.addChildAt(body, 6);
-  }
-  if (this === rightHand) {
+  } else if (dragTarget === rightHand) {
     gravityRotate(...rightArmList, ...armSize, -1, 1);
     playerContainer.addChildAt(body, 6);
+  } else if (dragTarget === leftFoot) {
+    gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
+  } else if (dragTarget === rightFoot) {
+    gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
   }
-  if (this === leftFoot) gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
-  if (this === rightFoot) gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
-
-  this.off("pointermove").off("pointerout");
-  this.alpha = 1;
 }
 
 export default playerContainer;
