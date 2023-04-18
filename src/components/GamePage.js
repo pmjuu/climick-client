@@ -1,11 +1,8 @@
-/* eslint-disable import/no-named-as-default */
 /* eslint-disable react-hooks/exhaustive-deps */
 import styled from "styled-components";
 import { Application } from "pixi.js";
 import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
 import GameSideBar from "./GameSideBar";
-import { setIsRankingOpened, setTime } from "../features/playerSlice";
 import { holdContainer } from "../utils/hold";
 import playerContainer from "../utils/player";
 import { COLOR, SIZE } from "../assets/constants";
@@ -34,7 +31,6 @@ export default function Game() {
   app.stage.addChild(holdContainer);
   app.stage.addChild(playerContainer);
 
-  const dispatch = useDispatch();
   const wallRef = useRef();
 
   useEffect(() => {
@@ -43,27 +39,6 @@ export default function Game() {
     if (wall.firstChild) wall.removeChild(wall.firstChild);
 
     wall.appendChild(app.view);
-
-    const startTimer = () => {
-      if (!wall.getAttribute("result")) return;
-
-      let tick = 1;
-      const timerInterval = setInterval(async () => {
-        const gameResult = wall.getAttribute("result");
-
-        if (gameResult === "fail" || gameResult === "success") {
-          clearInterval(timerInterval);
-          dispatch(setIsRankingOpened(true));
-        }
-
-        dispatch(setTime(tick));
-        tick += 1;
-      }, 1000);
-
-      wall.removeEventListener("click", startTimer);
-    };
-
-    wall.addEventListener("click", startTimer);
   }, []);
 
   return (

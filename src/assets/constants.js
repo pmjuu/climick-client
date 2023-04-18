@@ -17,3 +17,5 @@ export const SIZE = {
 export const BODY = {
   SHOULDER_LENGTH: 0,
 };
+
+export const TIME_LIMIT = 240;

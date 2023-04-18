@@ -13,6 +13,13 @@ import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 import gravityRotateLeg from "./gravityRotateLeg";
 
+export const gameStatus = {
+  start: false,
+  fail: false,
+  success: false,
+  timeover: false,
+};
+
 const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
 playerContainer.position.set(...Object.values(containerPosition));
@@ -112,11 +119,7 @@ limbs.forEach(limb => {
 // hand drag event
 function onDragStart() {
   playerContainer.addChildAt(body, 13);
-  const wall = document.querySelector(".wall");
-
-  if (!wall.getAttribute("result")) {
-    wall.setAttribute("result", "start");
-  }
+  gameStatus.start = true;
 
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
@@ -227,7 +230,7 @@ function moveBodyTo(cursorInContainer) {
   }
 }
 
-const attachedStatus = {
+export const attachedStatus = {
   leftHandOnTop: 0,
   rightHandOnTop: 0,
   leftHand: 1,
@@ -305,7 +308,7 @@ function onDragEnd() {
       }
 
       if (attachedStatus.leftHandOnTop && attachedStatus.rightHandOnTop) {
-        document.querySelector(".wall").setAttribute("result", "success");
+        gameStatus.success = true;
         playerContainer.addChild(getResultText("Success!"));
         playerContainer.eventMode = "none";
       }
@@ -314,6 +317,10 @@ function onDragEnd() {
     }
   }
 
+  onDragOut.apply(this);
+}
+
+function onDragOut() {
   if (this === leftHand) attachedStatus.leftHand = 0;
   if (this === rightHand) attachedStatus.rightHand = 0;
 
@@ -332,7 +339,7 @@ function onDragEnd() {
 
       if (!isPlayerAboveGround) {
         clearInterval(gravity);
-        document.querySelector(".wall").setAttribute("result", "fail");
+        gameStatus.fail = true;
         playerContainer.addChild(getResultText("Fail..."));
         playerContainer.eventMode = "none";
       }
@@ -350,19 +357,6 @@ function onDragEnd() {
     playerContainer.addChildAt(body, 6);
   }
   if (this === leftFoot) gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
-  if (this === rightFoot) gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
-}
-
-function onDragOut() {
-  if (this === leftHand) {
-    gravityRotate(...leftArmList, ...armSize, 1, 1);
-    playerContainer.addChildAt(body, 6);
-  }
-  if (this === rightHand) {
-    gravityRotate(...rightArmList, ...armSize, -1, 1);
-    playerContainer.addChildAt(body, 6);
-  }
-  if (this === leftFoot) gravityRotateLeg(...leftLegList, ...legSize, 1, -1);
   if (this === rightFoot) gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
 
   this.off("pointermove").off("pointerout");

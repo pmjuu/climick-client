@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   name: "",
   time: 0,
-  hp: 0,
+  hp: 100,
   isRankingOpened: false,
 };
 
@@ -18,11 +18,18 @@ const playerSlice = createSlice({
     setTime(state, action) {
       state.time = action.payload;
     },
+    setHp(state, action) {
+      state.hp = action.payload;
+    },
+    controlHp(state, action) {
+      state.hp += action.payload;
+    },
     setIsRankingOpened(state, action) {
       state.isRankingOpened = action.payload;
     },
   },
 });
 
-export const { setName, setTime, setIsRankingOpened } = playerSlice.actions;
+export const { setName, setTime, setHp, controlHp, setIsRankingOpened } =
+  playerSlice.actions;
 export default playerSlice.reducer;

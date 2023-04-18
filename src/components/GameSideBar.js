@@ -3,13 +3,19 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  setName,
+  setTime,
+  setHp,
+  controlHp,
+  setIsRankingOpened,
+} from "../features/playerSlice";
+import playerContainer, { attachedStatus, gameStatus } from "../utils/player";
+import getResultText from "../utils/getResultText";
 import customAxios from "../utils/customAxios";
-import { setIsRankingOpened, setName } from "../features/playerSlice";
-import { SIZE } from "../assets/constants";
+import { SIZE, TIME_LIMIT } from "../assets/constants";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
-import playerContainer from "../utils/player";
-import getResultText from "../utils/getResultText";
 
 const SideBar = styled.div`
   display: flex;
@@ -23,13 +29,14 @@ const SideBar = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 300px;
+    height: 270px;
     background-color: rgba(30, 30, 30, 0.9);
     color: #fff;
     font-size: 2.5rem;
 
     .row {
       display: flex;
+      align-items: center;
       margin: 10px 15px;
 
       .category {
@@ -45,11 +52,22 @@ const SideBar = styled.div`
       }
     }
 
-    .hp-bar {
-      width: 366px;
+    .hp-box {
+      width: 363px;
       height: 30px;
-      background-color: #44d;
+      background-color: #fff;
       border: 1px solid #fff;
+    }
+
+    .hp-bar {
+      width: ${props => props.hp}%;
+      height: 30px;
+      background-color: ${props => props.hpColor};
+      transition: 0.4s all ease;
+    }
+
+    .hp-text {
+      font-size: 1rem;
     }
   }
 
@@ -96,25 +114,57 @@ export default function GameSideBar() {
   };
   const clickRestart = () => window.location.reload();
 
+  const [hpColor, setHpColor] = useState("#33c");
+  const hp = useSelector(state => state.player.hp);
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
 
   useEffect(() => {
-    if (time >= 239) {
-      document.querySelector(".wall").setAttribute("result", "fail");
-      playerContainer.addChild(getResultText("Time Over"));
-      playerContainer.eventMode = "none";
+    let tick = 1;
+    const timerInterval = setInterval(() => {
+      if (!gameStatus.start) return;
+
+      if (gameStatus.fail || gameStatus.success || gameStatus.timeover) {
+        clearInterval(timerInterval);
+        playerContainer.eventMode = "none";
+        dispatch(setIsRankingOpened(true));
+        return;
+      }
+
+      tick += 1;
+      dispatch(setTime(tick));
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    if (!gameStatus.start) return;
+
+    if (hp <= 0) {
+      dispatch(setHp(0));
+      gameStatus.fail = true;
+      playerContainer.addChild(getResultText("Fail..."));
+      return;
     }
 
-    const gameResult = document.querySelector(".wall").getAttribute("result");
+    if (time >= TIME_LIMIT) {
+      gameStatus.timeover = true;
+      playerContainer.addChild(getResultText("Time Over"));
+      return;
+    }
 
-    if (gameResult === "success") {
-      handleSuccess();
+    if (gameStatus.success === true) registerSuccess();
+
+    if (attachedStatus.leftHand === 0 || attachedStatus.rightHand === 0) {
+      dispatch(controlHp((-3 * 100) / TIME_LIMIT));
+      setHpColor("goldenrod");
+    } else {
+      dispatch(controlHp((-1 * 100) / TIME_LIMIT));
+      setHpColor(hp + (-1 * 100) / TIME_LIMIT > 20 ? "#33c" : "darkred");
     }
   }, [time]);
 
-  async function handleSuccess() {
+  async function registerSuccess() {
     try {
       const playerInfo = { name, time };
       await customAxios.post(
@@ -127,7 +177,7 @@ export default function GameSideBar() {
   }
 
   return (
-    <SideBar>
+    <SideBar hp={hp} hpColor={hpColor}>
       <div className="status-box">
         <div className="row">
           <span className="category">Name</span>
@@ -141,8 +191,11 @@ export default function GameSideBar() {
         </div>
         <div className="row">
           <span className="category">HP</span>
+          <span className="hp-text">{hp.toFixed(0)}%</span>
         </div>
-        <div className="row hp-bar" />
+        <div className="row hp-box">
+          <div className="hp-bar" />
+        </div>
       </div>
       <div className="button-section">
         <button className="button" onClick={clickRanking}>
