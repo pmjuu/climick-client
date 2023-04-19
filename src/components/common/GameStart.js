@@ -1,15 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { setName } from "../../features/playerSlice";
+import { SIZE } from "../../assets/constants";
 
 const GameStartContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 220px;
-  height: 62px;
+  width: ${props => (props.name ? 520 : SIZE.INPUT_WIDTH)}px;
+  height: 68px;
   margin: 10px 0;
   text-align: center;
   overflow: hidden;
@@ -17,12 +18,16 @@ const GameStartContainer = styled.div`
 
   :hover {
     width: 520px;
+
+    input {
+      padding: 0 30px;
+    }
   }
 
   input {
-    width: 220px;
+    width: ${SIZE.INPUT_WIDTH}px;
     height: 60px;
-    padding: 0 30px;
+    padding: 0 ${props => (props.name ? 30 : 0)}px;
     margin-right: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     border: none;
@@ -35,7 +40,6 @@ const GameStartContainer = styled.div`
       padding: 0 20px;
       color: #fff;
       font-size: 1.5rem;
-      text-align: left;
     }
 
     :hover {
@@ -43,7 +47,6 @@ const GameStartContainer = styled.div`
 
       ::-webkit-input-placeholder {
         color: #333;
-        text-align: center;
       }
     }
 

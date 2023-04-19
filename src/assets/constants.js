@@ -13,13 +13,14 @@ export const COLOR = {
 };
 
 export const SIZE = {
+  INPUT_WIDTH: 220,
   GAME_WIDTH: 950,
   GAME_HEIGHT: 780,
 };
 
 export const BODY = {
-  SHOULDER_LENGTH: 0,
+  SHOULDER_GAP: 0,
   COXA_GAP: 6,
 };
 
-export const TIME_LIMIT = 180;
+export const TIME_LIMIT = 120;
