@@ -9,25 +9,25 @@ export default function moveJoint(
   shoulder,
   limbWidth,
   limbLength,
-  cursorInCanvas,
+  cursorInContainer,
   flagX,
   flagY,
   handRadius
 ) {
-  const handToShoulder = getDistance(shoulder, cursorInCanvas);
+  const handToShoulder = getDistance(shoulder, cursorInContainer);
   const h = Math.sqrt(limbLength ** 2 - (handToShoulder / 2) ** 2) || 0;
   const theta1 = getAngleDegrees(handToShoulder / 2, h);
   const theta2 = getAngleDegrees(
-    flagX * (shoulder.x - cursorInCanvas.x),
-    shoulder.y - cursorInCanvas.y
+    flagX * (shoulder.x - cursorInContainer.x),
+    shoulder.y - cursorInContainer.y
   );
 
   if (handToShoulder > limbLength * 2) {
     hand.x = shoulder.x - limbLength * 2 * getCos(theta2) * flagX;
     hand.y = shoulder.y - limbLength * 2 * getSin(theta2);
   } else {
-    hand.x = cursorInCanvas.x;
-    hand.y = cursorInCanvas.y;
+    hand.x = cursorInContainer.x;
+    hand.y = cursorInContainer.y;
   }
 
   const elbow = {

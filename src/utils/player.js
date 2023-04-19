@@ -81,8 +81,8 @@ body
   .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
   .lineStyle("none")
   .beginFill(COLOR.SKIN)
-  .drawCircle(-BODY.SHOULDER_LENGTH, 2, (armWidth + 5) / 2)
-  .drawCircle(bodyWidth + BODY.SHOULDER_LENGTH, 2, (armWidth + 5) / 2)
+  .drawCircle(-BODY.SHOULDER_GAP, 2, (armWidth + 5) / 2)
+  .drawCircle(bodyWidth + BODY.SHOULDER_GAP, 2, (armWidth + 5) / 2)
   .beginFill("#fff")
   .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
 
@@ -172,8 +172,8 @@ function onDragging(event) {
     });
   }
 
-  if (dragTarget === leftFoot)
-    moveJoint(
+  if (dragTarget === leftFoot) {
+    const theta2 = moveJoint(
       ...leftLegList,
       ...legSize,
       cursorInContainer,
@@ -182,8 +182,22 @@ function onDragging(event) {
       footRadius
     );
 
-  if (dragTarget === rightFoot)
-    moveJoint(
+    if (!theta2) return;
+
+    return moveBodyTo({
+      x:
+        cursorInContainer.x -
+        legLength * 2 * getSin(90 - theta2) +
+        bodyWidth / 2,
+      y:
+        cursorInContainer.y +
+        legLength * 2 * getCos(90 - theta2) -
+        bodyHeight / 2,
+    });
+  }
+
+  if (dragTarget === rightFoot) {
+    const theta2 = moveJoint(
       ...rightLegList,
       ...legSize,
       cursorInContainer,
@@ -191,6 +205,20 @@ function onDragging(event) {
       -1,
       footRadius
     );
+
+    if (!theta2) return;
+
+    return moveBodyTo({
+      x:
+        cursorInContainer.x +
+        legLength * 2 * getSin(90 - theta2) -
+        bodyWidth / 2,
+      y:
+        cursorInContainer.y +
+        legLength * 2 * getCos(90 - theta2) -
+        bodyHeight / 2,
+    });
+  }
 }
 
 let exceededPart = null;
@@ -322,7 +350,7 @@ function onDragEnd() {
 
       if (attachedStatus.leftHandOnTop && attachedStatus.rightHandOnTop) {
         gameStatus.success = true;
-        playerContainer.addChild(getResultText("Success!"));
+        holdContainer.addChild(getResultText("Success!"));
         playerContainer.eventMode = "none";
       }
 
@@ -349,7 +377,7 @@ function onDragEnd() {
       if (!isPlayerAboveGround) {
         clearInterval(gravity);
         gameStatus.fail = true;
-        playerContainer.addChild(getResultText("Fail..."));
+        holdContainer.addChild(getResultText("Fail..."));
       }
     }, 10);
 

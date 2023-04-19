@@ -17,6 +17,7 @@ import playerContainer, {
   initialContainerHeight,
   leftShoulder,
 } from "../utils/player";
+import { holdContainer } from "../utils/hold";
 import getResultText from "../utils/getResultText";
 import customAxios from "../utils/customAxios";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
@@ -170,27 +171,6 @@ export default function GameSideBar() {
         hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
       );
     }
-
-    function fallDown(displayText) {
-      let descentVelocity = 0;
-
-      const gravity = setInterval(() => {
-        descentVelocity += 0.2;
-        playerContainer.y += descentVelocity * 0.2;
-
-        const isPlayerAboveGround =
-          playerContainer.y <
-          containerPosition.y -
-            leftShoulder.y +
-            (initialContainerHeight - playerContainer.height);
-
-        if (!isPlayerAboveGround) {
-          clearInterval(gravity);
-          gameStatus.fail = true;
-          playerContainer.addChild(getResultText(displayText));
-        }
-      }, 10);
-    }
   }, [time]);
 
   useEffect(() => {
@@ -209,6 +189,27 @@ export default function GameSideBar() {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  function fallDown(displayText) {
+    let descentVelocity = 0;
+
+    const gravity = setInterval(() => {
+      descentVelocity += 0.2;
+      playerContainer.y += descentVelocity * 0.2;
+
+      const isPlayerAboveGround =
+        playerContainer.y <
+        containerPosition.y -
+          leftShoulder.y +
+          (initialContainerHeight - playerContainer.height);
+
+      if (!isPlayerAboveGround) {
+        clearInterval(gravity);
+        gameStatus.fail = true;
+        holdContainer.addChild(getResultText(displayText));
+      }
+    }, 10);
   }
 
   return (
