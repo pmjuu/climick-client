@@ -50,7 +50,7 @@ const legLength = 50;
 const legWidth = 15;
 const handRadius = 10;
 const footRadius = 12;
-export const leftShoulder = { x: 40, y: 0 };
+const leftShoulder = { x: 40, y: 0 };
 const rightShoulder = {
   x: leftShoulder.x + bodyWidth * getCos(body.angle),
   y: leftShoulder.y + bodyWidth * getSin(body.angle),
@@ -314,7 +314,7 @@ export const attachedStatus = {
   leftHand: 1,
   rightHand: 1,
 };
-export const initialContainerHeight = playerContainer.height;
+const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
   if (!dragTarget) return;
@@ -323,6 +323,33 @@ function onDragEnd() {
     .querySelector(".wall")
     .removeEventListener("pointermove", onDragging);
   dragTarget.alpha = 1;
+
+  const centerOfGravityX = body.x + bodyWidth / 2;
+  const centerOfGravityXdirection =
+    centerOfGravityX < (leftHand.x + rightHand.x) / 2 ? -1 : 1;
+  const isCenterOfGravityOutsideFeet =
+    centerOfGravityX < leftFoot.x || rightFoot.x < centerOfGravityX;
+
+  let descentVelocity = 0;
+
+  if (isCenterOfGravityOutsideFeet) {
+    descendByGravity();
+  }
+
+  function descendByGravity() {
+    descentVelocity += 0.3;
+    moveBodyTo({
+      x:
+        leftShoulder.x +
+        bodyWidth / 2 -
+        0.2 * descentVelocity * centerOfGravityXdirection,
+      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocity,
+    });
+
+    if (exceededPart) return;
+
+    requestAnimationFrame(descendByGravity);
+  }
 
   const retrievePX = 0.5;
 
