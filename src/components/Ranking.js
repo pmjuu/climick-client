@@ -5,7 +5,7 @@ import customAxios from "../utils/customAxios";
 
 const Wrapper = styled.div`
   .table {
-    height: 450px;
+    max-height: 450px;
     border: 1px solid #fff;
     overflow: scroll;
   }

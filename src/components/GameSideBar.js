@@ -19,7 +19,7 @@ import playerContainer, {
 } from "../utils/player";
 import getResultText from "../utils/getResultText";
 import customAxios from "../utils/customAxios";
-import { SIZE, TIME_LIMIT } from "../assets/constants";
+import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
 
@@ -123,7 +123,7 @@ export default function GameSideBar() {
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
-  const [hpColor, setHpColor] = useState("#33c");
+  const [hpColor, setHpColor] = useState(COLOR.HP_TWO_HAND);
   const hp = useSelector(state => state.player.hp);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function GameSideBar() {
     const timerInterval = setInterval(() => {
       if (!gameStatus.start) return;
 
-      if (gameStatus.fail || gameStatus.success || gameStatus.timeover) {
+      if (gameStatus.fail || gameStatus.success) {
         clearInterval(timerInterval);
         playerContainer.eventMode = "none";
         dispatch(setIsRankingOpened(true));
@@ -148,7 +148,30 @@ export default function GameSideBar() {
 
     if (hp <= 0) {
       dispatch(setHp(0));
+      fallDown("Fail...");
 
+      return;
+    }
+
+    if (time >= TIME_LIMIT) {
+      fallDown("Time Over");
+
+      return;
+    }
+
+    if (attachedStatus.leftHand === 0 || attachedStatus.rightHand === 0) {
+      dispatch(controlHp((-4 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY
+      );
+    } else {
+      dispatch(controlHp((-1 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
+      );
+    }
+
+    function fallDown(displayText) {
       let descentVelocity = 0;
 
       const gravity = setInterval(() => {
@@ -164,25 +187,9 @@ export default function GameSideBar() {
         if (!isPlayerAboveGround) {
           clearInterval(gravity);
           gameStatus.fail = true;
-          playerContainer.addChild(getResultText("Fail..."));
+          playerContainer.addChild(getResultText(displayText));
         }
       }, 10);
-
-      return;
-    }
-
-    if (time >= TIME_LIMIT) {
-      gameStatus.timeover = true;
-      playerContainer.addChild(getResultText("Time Over"));
-      return;
-    }
-
-    if (attachedStatus.leftHand === 0 || attachedStatus.rightHand === 0) {
-      dispatch(controlHp((-3 * 100) / TIME_LIMIT));
-      setHpColor("goldenrod");
-    } else {
-      dispatch(controlHp((-1 * 100) / TIME_LIMIT));
-      setHpColor(hp + (-1 * 100) / TIME_LIMIT > 20 ? "#33c" : "darkred");
     }
   }, [time]);
 

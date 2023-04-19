@@ -17,7 +17,6 @@ export const gameStatus = {
   start: false,
   fail: false,
   success: false,
-  timeover: false,
 };
 
 export const containerPosition = { x: 400, y: 620 };

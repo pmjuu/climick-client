@@ -7,6 +7,9 @@ export const COLOR = {
   HAIR: "744700",
   SHOES: "#555",
   STRETCHED: "yellow",
+  HP_ONE_HAND: "goldenrod",
+  HP_TWO_HAND: "#33c",
+  HP_RISKY: "darkred",
 };
 
 export const SIZE = {
@@ -19,4 +22,4 @@ export const BODY = {
   COXA_GAP: 6,
 };
 
-export const TIME_LIMIT = 240;
+export const TIME_LIMIT = 180;
