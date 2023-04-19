@@ -50,7 +50,7 @@ const legLength = 50;
 const legWidth = 15;
 const handRadius = 10;
 const footRadius = 12;
-export const leftShoulder = { x: 50, y: 0 };
+export const leftShoulder = { x: 40, y: 0 };
 const rightShoulder = {
   x: leftShoulder.x + bodyWidth * getCos(body.angle),
   y: leftShoulder.y + bodyWidth * getSin(body.angle),
@@ -121,11 +121,46 @@ function onDragStart() {
   playerContainer.addChildAt(body, 13);
   gameStatus.start = true;
 
+  const isTwoHandsDetached =
+    (attachedStatus.leftHand === 0 && this === rightHand) ||
+    (attachedStatus.rightHand === 0 && this === leftHand);
+
+  if (isTwoHandsDetached) {
+    setTimeout(() => {
+      fallDown("Fail...");
+    }, 700);
+  }
+
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
   dragTarget = this;
   document.querySelector(".wall").addEventListener("pointermove", onDragging);
   document.querySelector(".wall").addEventListener("pointerup", onDragEnd);
+}
+
+export function fallDown(displayText) {
+  let descentVelocity = 0;
+
+  function animate() {
+    descentVelocity += 0.4;
+    playerContainer.y += descentVelocity * 0.3;
+
+    const isPlayerAboveGround =
+      playerContainer.y <
+      containerPosition.y -
+        leftShoulder.y +
+        (initialContainerHeight - playerContainer.height);
+
+    if (!isPlayerAboveGround) {
+      gameStatus.fail = true;
+      holdContainer.addChild(getResultText(displayText));
+      return;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
 }
 
 function onDragging(event) {
@@ -358,36 +393,12 @@ function onDragEnd() {
     }
   }
 
-  if (dragTarget === leftHand) attachedStatus.leftHand = 0;
-  if (dragTarget === rightHand) attachedStatus.rightHand = 0;
-
-  if (attachedStatus.leftHand === 0 && attachedStatus.rightHand === 0) {
-    let descentVelocity = 0;
-
-    const gravity = setInterval(() => {
-      descentVelocity += 0.2;
-      playerContainer.y += descentVelocity * 0.2;
-
-      const isPlayerAboveGround =
-        playerContainer.y <
-        containerPosition.y -
-          leftShoulder.y +
-          (initialContainerHeight - playerContainer.height);
-
-      if (!isPlayerAboveGround) {
-        clearInterval(gravity);
-        gameStatus.fail = true;
-        holdContainer.addChild(getResultText("Fail..."));
-      }
-    }, 10);
-
-    return;
-  }
-
   if (dragTarget === leftHand) {
+    attachedStatus.leftHand = 0;
     gravityRotate(...leftArmList, ...armSize, 1, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === rightHand) {
+    attachedStatus.rightHand = 0;
     gravityRotate(...rightArmList, ...armSize, -1, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === leftFoot) {

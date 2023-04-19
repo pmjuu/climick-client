@@ -12,13 +12,9 @@ import {
 } from "../features/playerSlice";
 import playerContainer, {
   attachedStatus,
-  containerPosition,
+  fallDown,
   gameStatus,
-  initialContainerHeight,
-  leftShoulder,
 } from "../utils/player";
-import { holdContainer } from "../utils/hold";
-import getResultText from "../utils/getResultText";
 import customAxios from "../utils/customAxios";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import Modal from "./Modal";
@@ -191,27 +187,6 @@ export default function GameSideBar() {
     }
   }
 
-  function fallDown(displayText) {
-    let descentVelocity = 0;
-
-    const gravity = setInterval(() => {
-      descentVelocity += 0.2;
-      playerContainer.y += descentVelocity * 0.2;
-
-      const isPlayerAboveGround =
-        playerContainer.y <
-        containerPosition.y -
-          leftShoulder.y +
-          (initialContainerHeight - playerContainer.height);
-
-      if (!isPlayerAboveGround) {
-        clearInterval(gravity);
-        gameStatus.fail = true;
-        holdContainer.addChild(getResultText(displayText));
-      }
-    }, 10);
-  }
-
   return (
     <SideBar hp={hp} hpColor={hpColor}>
       <div className="status-box">
@@ -227,7 +202,7 @@ export default function GameSideBar() {
         </div>
         <div className="row">
           <span className="category">HP</span>
-          <span className="hp-text">{hp.toFixed(0)}%</span>
+          <span className="hp-text">{hp > 0 ? hp.toFixed(0) : 0}%</span>
         </div>
         <div className="row hp-box">
           <div className="hp-bar" />
