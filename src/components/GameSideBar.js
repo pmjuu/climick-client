@@ -120,11 +120,11 @@ export default function GameSideBar() {
   };
   const clickRestart = () => window.location.reload();
 
-  const [hpColor, setHpColor] = useState("#33c");
-  const hp = useSelector(state => state.player.hp);
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
+  const [hpColor, setHpColor] = useState("#33c");
+  const hp = useSelector(state => state.player.hp);
 
   useEffect(() => {
     let tick = 0;
@@ -177,8 +177,6 @@ export default function GameSideBar() {
       return;
     }
 
-    if (gameStatus.success === true) registerSuccess();
-
     if (attachedStatus.leftHand === 0 || attachedStatus.rightHand === 0) {
       dispatch(controlHp((-3 * 100) / TIME_LIMIT));
       setHpColor("goldenrod");
@@ -188,9 +186,15 @@ export default function GameSideBar() {
     }
   }, [time]);
 
+  useEffect(() => {
+    if (gameStatus.success) {
+      registerSuccess();
+    }
+  }, [gameStatus.success]);
+
   async function registerSuccess() {
     try {
-      const playerInfo = { name, time };
+      const playerInfo = { name, time, hp };
       await customAxios.post(
         `${process.env.REACT_APP_SERVER_URL}/players`,
         playerInfo

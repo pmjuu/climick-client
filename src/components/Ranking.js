@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import customAxios from "../utils/customAxios";
 
 const Wrapper = styled.div`
+  .table {
+    height: 450px;
+    border: 1px solid #fff;
+    overflow: scroll;
+  }
+
   .row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -12,6 +19,10 @@ const Wrapper = styled.div`
       width: 150px;
       padding: 3px 0;
       border: 1px solid #fff;
+    }
+
+    .name {
+      color: blue;
     }
   }
 
@@ -26,6 +37,10 @@ export default function Ranking() {
   const [playerList, setPlayerList] = useState([]);
 
   function setRanking(p1, p2) {
+    if (p1.time === p2.time) {
+      return p1.hp - p2.hp;
+    }
+
     return p1.time - p2.time;
   }
 
@@ -41,7 +56,12 @@ export default function Ranking() {
         const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
         const timeString = `${minute}:${second}`;
 
-        return { _id: player._id, name: player.name, time: timeString };
+        return {
+          _id: player._id,
+          name: player.name,
+          time: timeString,
+          hp: player.hp.toFixed(0),
+        };
       });
 
       setPlayerList(newPlayerList);
@@ -54,23 +74,29 @@ export default function Ranking() {
     getPlayers();
   }, []);
 
+  const name = useSelector(state => state.player.name);
+
   return (
     <Wrapper>
       <h1>Ranking</h1>
-      <div className="row first">
-        <div>No.</div>
-        <div>Name</div>
-        <div>Time</div>
-        <div>HP</div>
-      </div>
-      {playerList.map((player, index) => (
-        <div className="row" key={player._id}>
-          <div>{index + 1}</div>
-          <div>{player.name}</div>
-          <div>{player.time}</div>
-          <div>-</div>
+      <div className="table">
+        <div className="row first">
+          <div>No.</div>
+          <div>Name</div>
+          <div>Time</div>
+          <div>HP</div>
         </div>
-      ))}
+        {playerList.map((player, index) => (
+          <div className="row" key={player._id}>
+            <div>{index + 1}</div>
+            <div className={player.name === name ? "name" : ""}>
+              {player.name}
+            </div>
+            <div>{player.time}</div>
+            <div>{player.hp}</div>
+          </div>
+        ))}
+      </div>
     </Wrapper>
   );
 }
