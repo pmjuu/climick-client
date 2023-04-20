@@ -23,6 +23,7 @@ export const attachedStatus = {
   rightHandOnTop: 0,
   leftHand: 1,
   rightHand: 1,
+  isStable: true,
 };
 
 export const containerPosition = { x: 400, y: 620 };
@@ -121,6 +122,7 @@ limbs.forEach(limb => {
 });
 
 let dragTarget = null;
+let exceededPart = null;
 
 function onDragStart() {
   holdContainer.removeChild(introText);
@@ -143,6 +145,7 @@ function onDragStart() {
   dragTarget = this;
   wall.addEventListener("pointermove", onDragging);
   wall.addEventListener("pointerup", onDragEnd);
+  rearrangeBody(exceededPart);
 }
 
 export function fallDown(displayText) {
@@ -172,6 +175,22 @@ export function fallDown(displayText) {
   }
 
   animate();
+}
+
+function rearrangeBody(part) {
+  if (!part) return;
+
+  const flag = { x: null, y: null };
+  flag.x = part.hand.x < part.shoulder.x ? -1 : 1;
+  flag.y = part.hand.y < part.shoulder.y ? -1 : 1;
+
+  exceededPart = null;
+  const rearrangePX = 1;
+
+  moveBodyTo({
+    x: body.x + rearrangePX * flag.x + bodyWidth / 2,
+    y: body.y + rearrangePX * flag.y + bodyHeight / 2,
+  });
 }
 
 function onDragging(event) {
@@ -267,7 +286,6 @@ function onDragging(event) {
   }
 }
 
-let exceededPart = null;
 function moveBodyTo(cursorInContainer) {
   if (exceededPart) return;
 
@@ -332,13 +350,13 @@ function onDragEnd() {
   const handsCenterX = (leftHand.x + rightHand.x) / 2;
   const gravityCenterX = body.x + bodyWidth / 2;
   const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
-  const isCenterOfGravityOutsideFeet =
-    gravityCenterX < leftFoot.x || rightFoot.x < gravityCenterX;
+  attachedStatus.isStable =
+    leftFoot.x < gravityCenterX && gravityCenterX < rightFoot.x;
 
   let descentVelocityX = 0;
   let descentVelocityY = 0;
 
-  if (isCenterOfGravityOutsideFeet) {
+  if (!attachedStatus.isStable) {
     descendByGravity();
   }
 
@@ -368,46 +386,6 @@ function onDragEnd() {
   }
 
   rearrangeBody(exceededPart);
-
-  function rearrangeBody(part) {
-    if (!part) return;
-
-    const rearrangePX = 1;
-
-    function getHandDirection({ hand, shoulder }) {
-      let direction = "";
-
-      direction += hand.y > shoulder.y ? "N" : "S";
-      direction += hand.x > shoulder.x ? "E" : "W";
-
-      return direction;
-    }
-
-    const exceededPartDirection = getHandDirection(part);
-
-    exceededPart = null;
-    if (exceededPartDirection === "NW") {
-      moveBodyTo({
-        x: body.x - rearrangePX + bodyWidth / 2,
-        y: body.y - rearrangePX + bodyHeight / 2,
-      });
-    } else if (exceededPartDirection === "NE") {
-      moveBodyTo({
-        x: body.x + rearrangePX + bodyWidth / 2,
-        y: body.y - rearrangePX + bodyHeight / 2,
-      });
-    } else if (exceededPartDirection === "SW") {
-      moveBodyTo({
-        x: body.x - rearrangePX + bodyWidth / 2,
-        y: body.y + rearrangePX + bodyHeight / 2,
-      });
-    } else if (exceededPartDirection === "SE") {
-      moveBodyTo({
-        x: body.x + rearrangePX + bodyWidth / 2,
-        y: body.y + rearrangePX + bodyHeight / 2,
-      });
-    }
-  }
 
   for (const hold of Object.values(holdInfo)) {
     const cursor = {
