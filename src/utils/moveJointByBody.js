@@ -24,7 +24,7 @@ export default function moveJointByBody(
   if (handToShoulder > limbLength * 2) {
     hand.beginFill(COLOR.STRETCHED).drawCircle(0, 0, handRadius);
 
-    return hand;
+    return { hand, shoulder };
   }
 
   upperArm

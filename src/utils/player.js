@@ -18,6 +18,12 @@ export const gameStatus = {
   fail: false,
   success: false,
 };
+export const attachedStatus = {
+  leftHandOnTop: 0,
+  rightHandOnTop: 0,
+  leftHand: 1,
+  rightHand: 1,
+};
 
 export const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
@@ -120,6 +126,7 @@ function onDragStart() {
   holdContainer.removeChild(introText);
   playerContainer.addChildAt(body, 13);
   gameStatus.start = true;
+  const wall = document.querySelector(".wall");
 
   const isTwoHandsDetached =
     (attachedStatus.leftHand === 0 && this === rightHand) ||
@@ -134,11 +141,15 @@ function onDragStart() {
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
   dragTarget = this;
-  document.querySelector(".wall").addEventListener("pointermove", onDragging);
-  document.querySelector(".wall").addEventListener("pointerup", onDragEnd);
+  wall.addEventListener("pointermove", onDragging);
+  wall.addEventListener("pointerup", onDragEnd);
 }
 
 export function fallDown(displayText) {
+  const wall = document.querySelector(".wall");
+  wall.removeEventListener("pointermove", onDragging);
+  wall.removeEventListener("pointerup", onDragEnd);
+
   let descentVelocity = 0;
 
   function animate() {
@@ -308,12 +319,6 @@ function moveBodyTo(cursorInContainer) {
   }
 }
 
-export const attachedStatus = {
-  leftHandOnTop: 0,
-  rightHandOnTop: 0,
-  leftHand: 1,
-  rightHand: 1,
-};
 const initialContainerHeight = playerContainer.height;
 
 function onDragEnd() {
@@ -324,59 +329,84 @@ function onDragEnd() {
     .removeEventListener("pointermove", onDragging);
   dragTarget.alpha = 1;
 
-  const centerOfGravityX = body.x + bodyWidth / 2;
-  const centerOfGravityXdirection =
-    centerOfGravityX < (leftHand.x + rightHand.x) / 2 ? -1 : 1;
+  const handsCenterX = (leftHand.x + rightHand.x) / 2;
+  const gravityCenterX = body.x + bodyWidth / 2;
+  const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
   const isCenterOfGravityOutsideFeet =
-    centerOfGravityX < leftFoot.x || rightFoot.x < centerOfGravityX;
+    gravityCenterX < leftFoot.x || rightFoot.x < gravityCenterX;
 
-  let descentVelocity = 0;
+  let descentVelocityX = 0;
+  let descentVelocityY = 0;
 
   if (isCenterOfGravityOutsideFeet) {
     descendByGravity();
   }
 
   function descendByGravity() {
-    descentVelocity += 0.3;
+    descentVelocityY += 0.3;
+
+    if ((handsCenterX - body.x + bodyWidth / 2) * gravityCenterXdirection < 0) {
+      descentVelocityX = 0;
+    } else {
+      descentVelocityX += 0.3;
+    }
+
     moveBodyTo({
       x:
         leftShoulder.x +
         bodyWidth / 2 -
-        0.2 * descentVelocity * centerOfGravityXdirection,
-      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocity,
+        0.2 * descentVelocityX * gravityCenterXdirection,
+      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocityY,
     });
 
-    if (exceededPart) return;
+    if (exceededPart) {
+      rearrangeBody(exceededPart);
+      return;
+    }
 
     requestAnimationFrame(descendByGravity);
   }
 
-  const retrievePX = 0.5;
+  rearrangeBody(exceededPart);
 
-  if (exceededPart === leftHand) {
+  function rearrangeBody(part) {
+    if (!part) return;
+
+    const rearrangePX = 1;
+
+    function getHandDirection({ hand, shoulder }) {
+      let direction = "";
+
+      direction += hand.y > shoulder.y ? "N" : "S";
+      direction += hand.x > shoulder.x ? "E" : "W";
+
+      return direction;
+    }
+
+    const exceededPartDirection = getHandDirection(part);
+
     exceededPart = null;
-    moveBodyTo({
-      x: body.x - retrievePX + bodyWidth / 2,
-      y: body.y - retrievePX + bodyHeight / 2,
-    });
-  } else if (exceededPart === rightHand) {
-    exceededPart = null;
-    moveBodyTo({
-      x: body.x + retrievePX + bodyWidth / 2,
-      y: body.y - retrievePX + bodyHeight / 2,
-    });
-  } else if (exceededPart === leftFoot) {
-    exceededPart = null;
-    moveBodyTo({
-      x: body.x - retrievePX + bodyWidth / 2,
-      y: body.y + retrievePX + bodyHeight / 2,
-    });
-  } else if (exceededPart === rightFoot) {
-    exceededPart = null;
-    moveBodyTo({
-      x: body.x + retrievePX + bodyWidth / 2,
-      y: body.y + retrievePX + bodyHeight / 2,
-    });
+    if (exceededPartDirection === "NW") {
+      moveBodyTo({
+        x: body.x - rearrangePX + bodyWidth / 2,
+        y: body.y - rearrangePX + bodyHeight / 2,
+      });
+    } else if (exceededPartDirection === "NE") {
+      moveBodyTo({
+        x: body.x + rearrangePX + bodyWidth / 2,
+        y: body.y - rearrangePX + bodyHeight / 2,
+      });
+    } else if (exceededPartDirection === "SW") {
+      moveBodyTo({
+        x: body.x - rearrangePX + bodyWidth / 2,
+        y: body.y + rearrangePX + bodyHeight / 2,
+      });
+    } else if (exceededPartDirection === "SE") {
+      moveBodyTo({
+        x: body.x + rearrangePX + bodyWidth / 2,
+        y: body.y + rearrangePX + bodyHeight / 2,
+      });
+    }
   }
 
   for (const hold of Object.values(holdInfo)) {
@@ -414,6 +444,9 @@ function onDragEnd() {
         gameStatus.success = true;
         holdContainer.addChild(getResultText("Success!"));
         playerContainer.eventMode = "none";
+        const wall = document.querySelector(".wall");
+        wall.removeEventListener("pointermove", onDragging);
+        wall.removeEventListener("pointerup", onDragEnd);
       }
 
       return;
