@@ -12,8 +12,8 @@ import {
 } from "../features/playerSlice";
 import playerContainer, {
   attachedStatus,
-  fallDown,
   gameStatus,
+  fallDown,
 } from "../utils/player";
 import customAxios from "../utils/customAxios";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
@@ -62,13 +62,6 @@ const SideBar = styled.div`
       border: 1px solid #fff;
     }
 
-    .hp-bar {
-      width: ${props => props.hp}%;
-      height: 30px;
-      background-color: ${props => props.hpColor};
-      transition: 0.4s all ease;
-    }
-
     .hp-text {
       font-size: 1rem;
     }
@@ -79,6 +72,16 @@ const SideBar = styled.div`
     padding: 0;
     width: 100%;
   }
+`;
+
+const HpBar = styled.div.attrs(props => ({
+  style: {
+    width: `${props.hp}%`,
+    backgroundColor: props.hpColor,
+  },
+}))`
+  height: 30px;
+  transition: 0.4s all ease;
 `;
 
 export default function GameSideBar() {
@@ -138,6 +141,8 @@ export default function GameSideBar() {
       tick += 1;
       dispatch(setTime(tick));
     }, 1000);
+
+    return () => clearInterval(timerInterval);
   }, []);
 
   useEffect(() => {
@@ -188,7 +193,7 @@ export default function GameSideBar() {
   }
 
   return (
-    <SideBar hp={hp} hpColor={hpColor}>
+    <SideBar>
       <div className="status-box">
         <div className="row">
           <span className="category">Name</span>
@@ -205,7 +210,7 @@ export default function GameSideBar() {
           <span className="hp-text">{hp > 0 ? hp.toFixed(0) : 0}%</span>
         </div>
         <div className="row hp-box">
-          <div className="hp-bar" />
+          <HpBar hp={hp} hpColor={hpColor} />
         </div>
       </div>
       <div className="button-section">
