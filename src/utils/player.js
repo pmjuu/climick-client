@@ -4,27 +4,15 @@
 import { Container, Graphics } from "pixi.js";
 import "@pixi/graphics-extras";
 import { getCos, getDistance, getSin } from "./math";
-import { holdContainer, holdInfo, introText } from "./hold";
+import { gameStatus, attachedStatus } from "./status";
+import { holdContainer, holdInfo } from "./hold";
+import { getResultText, instabilityWarning, introText } from "./text";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
 import gravityRotate from "./gravityRotate";
-import getResultText from "./getResultText";
 import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 import gravityRotateLeg from "./gravityRotateLeg";
-
-export const gameStatus = {
-  start: false,
-  fail: false,
-  success: false,
-};
-export const attachedStatus = {
-  leftHandOnTop: 0,
-  rightHandOnTop: 0,
-  leftHand: 1,
-  rightHand: 1,
-  isStable: true,
-};
 
 export const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
@@ -126,6 +114,7 @@ let exceededPart = null;
 
 function onDragStart() {
   holdContainer.removeChild(introText);
+  playerContainer.removeChild(instabilityWarning);
   playerContainer.addChildAt(body, 13);
   gameStatus.start = true;
   const wall = document.querySelector(".wall");
@@ -287,7 +276,8 @@ function onDragging(event) {
 }
 
 function moveBodyTo(cursorInContainer) {
-  if (exceededPart) return;
+  if (exceededPart && attachedStatus.leftHand && attachedStatus.rightHand)
+    return;
 
   leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
   leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
@@ -315,6 +305,7 @@ function moveBodyTo(cursorInContainer) {
       1,
       handRadius
     );
+
   if (!exceededPart)
     exceededPart = moveJointByBody(
       ...leftLegList,
@@ -379,6 +370,7 @@ function onDragEnd() {
 
     if (exceededPart) {
       rearrangeBody(exceededPart);
+      showWarning(body);
       return;
     }
 
@@ -444,6 +436,16 @@ function onDragEnd() {
   } else if (dragTarget === rightFoot) {
     gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
   }
+
+  if (dragTarget) showWarning(body);
+}
+
+function showWarning(ref) {
+  instabilityWarning.position.set(
+    ref.x + bodyWidth / 2,
+    ref.y - bodyHeight / 2 - headRadius * 3
+  );
+  playerContainer.addChild(instabilityWarning);
 }
 
 export default playerContainer;

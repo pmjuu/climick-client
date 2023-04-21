@@ -10,11 +10,8 @@ import {
   controlHp,
   setIsRankingOpened,
 } from "../features/playerSlice";
-import playerContainer, {
-  attachedStatus,
-  gameStatus,
-  fallDown,
-} from "../utils/player";
+import playerContainer, { fallDown } from "../utils/player";
+import { gameStatus, attachedStatus } from "../utils/status";
 import customAxios from "../utils/customAxios";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import Modal from "./Modal";
@@ -170,6 +167,13 @@ export default function GameSideBar() {
       dispatch(controlHp((-1 * 100) / TIME_LIMIT));
       setHpColor(
         hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
+      );
+    }
+
+    if (!attachedStatus.isStable) {
+      dispatch(controlHp((-2 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-2 * 100) / TIME_LIMIT > 30 ? COLOR.HP_UNSTABLE : COLOR.HP_RISKY
       );
     }
   }, [time]);
