@@ -65,7 +65,7 @@ export default function gravityRotateLeg(
     if (isRotationFinished) {
       clearInterval(gravity);
       hand.x = foreArm.x;
-      hand.y = foreArm.y + limbLength - 0.5;
+      hand.y = foreArm.y + limbLength - 3;
       upperArm.angle = 0;
       upperArm
         .clear()

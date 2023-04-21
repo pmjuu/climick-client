@@ -9,5 +9,7 @@ export const attachedStatus = {
   rightHandOnTop: 0,
   leftHand: 1,
   rightHand: 1,
+  leftFoot: 1,
+  rightFoot: 1,
   isStable: true,
 };

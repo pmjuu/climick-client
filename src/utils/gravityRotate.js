@@ -59,7 +59,7 @@ export default function gravityRotate(
       clearInterval(gravity);
       hand.beginFill(COLOR.SKIN).drawCircle(0, 0, handRadius);
       hand.x = foreArm.x;
-      hand.y = foreArm.y + limbLength - 1;
+      hand.y = foreArm.y + limbLength - 3;
       upperArm.angle = 0;
       upperArm
         .clear()

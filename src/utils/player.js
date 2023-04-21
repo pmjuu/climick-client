@@ -115,9 +115,11 @@ let exceededPart = null;
 function onDragStart() {
   holdContainer.removeChild(introText);
   playerContainer.removeChild(instabilityWarning);
-  playerContainer.addChildAt(body, 13);
+
+  if (attachedStatus.leftHand && attachedStatus.rightHand)
+    playerContainer.addChildAt(body, 13);
+
   gameStatus.start = true;
-  const wall = document.querySelector(".wall");
 
   const isTwoHandsDetached =
     (attachedStatus.leftHand === 0 && this === rightHand) ||
@@ -132,6 +134,7 @@ function onDragStart() {
   this.cursor = "grabbing";
   this.alpha = this === body ? 1 : 0.5;
   dragTarget = this;
+  const wall = document.querySelector(".wall");
   wall.addEventListener("pointermove", onDragging);
   wall.addEventListener("pointerup", onDragEnd);
   rearrangeBody(exceededPart);
@@ -276,8 +279,7 @@ function onDragging(event) {
 }
 
 function moveBodyTo(cursorInContainer) {
-  if (exceededPart && attachedStatus.leftHand && attachedStatus.rightHand)
-    return;
+  if (exceededPart) return;
 
   leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
   leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
@@ -324,6 +326,19 @@ function moveBodyTo(cursorInContainer) {
     );
 
   if (!exceededPart) {
+    if (!attachedStatus.leftHand && dragTarget !== leftHand) {
+      leftHand.position.set(leftShoulder.x, leftShoulder.y + armLength * 2 - 3);
+    } else if (!attachedStatus.rightHand && dragTarget !== rightHand) {
+      rightHand.position.set(
+        rightShoulder.x,
+        rightShoulder.y + armLength * 2 - 3
+      );
+    } else if (!attachedStatus.leftFoot && dragTarget !== leftFoot) {
+      leftFoot.position.set(leftCoxa.x, leftCoxa.y + legLength * 2 - 5);
+    } else if (!attachedStatus.rightFoot && dragTarget !== rightFoot) {
+      rightFoot.position.set(rightCoxa.x, rightCoxa.y + legLength * 2 - 5);
+    }
+
     body.position.set(leftShoulder.x, leftShoulder.y);
   }
 }
@@ -337,47 +352,6 @@ function onDragEnd() {
     .querySelector(".wall")
     .removeEventListener("pointermove", onDragging);
   dragTarget.alpha = 1;
-
-  const handsCenterX = (leftHand.x + rightHand.x) / 2;
-  const gravityCenterX = body.x + bodyWidth / 2;
-  const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
-  attachedStatus.isStable =
-    leftFoot.x < gravityCenterX && gravityCenterX < rightFoot.x;
-
-  let descentVelocityX = 0;
-  let descentVelocityY = 0;
-
-  if (!attachedStatus.isStable) {
-    descendByGravity();
-  }
-
-  function descendByGravity() {
-    descentVelocityY += 0.3;
-
-    if ((handsCenterX - body.x + bodyWidth / 2) * gravityCenterXdirection < 0) {
-      descentVelocityX = 0;
-    } else {
-      descentVelocityX += 0.3;
-    }
-
-    moveBodyTo({
-      x:
-        leftShoulder.x +
-        bodyWidth / 2 -
-        0.2 * descentVelocityX * gravityCenterXdirection,
-      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocityY,
-    });
-
-    if (exceededPart) {
-      rearrangeBody(exceededPart);
-      showWarning(body);
-      return;
-    }
-
-    requestAnimationFrame(descendByGravity);
-  }
-
-  rearrangeBody(exceededPart);
 
   for (const hold of Object.values(holdInfo)) {
     const cursor = {
@@ -419,6 +393,11 @@ function onDragEnd() {
         wall.removeEventListener("pointerup", onDragEnd);
       }
 
+      if (dragTarget === leftFoot) attachedStatus.leftFoot = 1;
+      if (dragTarget === rightFoot) attachedStatus.rightFoot = 1;
+
+      checkGravityCenter();
+      rearrangeBody(exceededPart);
       return;
     }
   }
@@ -432,12 +411,17 @@ function onDragEnd() {
     gravityRotate(...rightArmList, ...armSize, -1, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === leftFoot) {
+    attachedStatus.leftFoot = 0;
     gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
   } else if (dragTarget === rightFoot) {
+    attachedStatus.rightFoot = 0;
     gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
   }
 
-  if (dragTarget) showWarning(body);
+  checkGravityCenter();
+  rearrangeBody(exceededPart);
+
+  if (!attachedStatus.leftHand || !attachedStatus.rightHand) showWarning(body);
 }
 
 function showWarning(ref) {
@@ -446,6 +430,50 @@ function showWarning(ref) {
     ref.y - bodyHeight / 2 - headRadius * 3
   );
   playerContainer.addChild(instabilityWarning);
+}
+
+function checkGravityCenter() {
+  const handsCenterX = (leftHand.x + rightHand.x) / 2;
+  const gravityCenterX = body.x + bodyWidth / 2;
+  const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
+  attachedStatus.isStable =
+    attachedStatus.leftFoot &&
+    attachedStatus.rightFoot &&
+    leftFoot.x < gravityCenterX &&
+    gravityCenterX < rightFoot.x;
+
+  let descentVelocityX = 0;
+  let descentVelocityY = 0;
+
+  if (!attachedStatus.isStable) {
+    descendByGravity();
+  }
+
+  function descendByGravity() {
+    descentVelocityY += 0.3;
+
+    if ((handsCenterX - body.x + bodyWidth / 2) * gravityCenterXdirection < 0) {
+      descentVelocityX = 0;
+    } else {
+      descentVelocityX += 0.3;
+    }
+
+    moveBodyTo({
+      x:
+        leftShoulder.x +
+        bodyWidth / 2 -
+        0.2 * descentVelocityX * gravityCenterXdirection,
+      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocityY,
+    });
+
+    if (exceededPart) {
+      rearrangeBody(exceededPart);
+      showWarning(body);
+      return;
+    }
+
+    requestAnimationFrame(descendByGravity);
+  }
 }
 
 export default playerContainer;
