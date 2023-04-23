@@ -16,6 +16,7 @@ import customAxios from "../utils/customAxios";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
+import { instabilityWarning } from "../utils/text";
 
 const SideBar = styled.div`
   display: flex;
@@ -131,6 +132,7 @@ export default function GameSideBar() {
       if (gameStatus.fail || gameStatus.success) {
         clearInterval(timerInterval);
         playerContainer.eventMode = "none";
+        playerContainer.removeChild(instabilityWarning);
         dispatch(setIsRankingOpened(true));
         return;
       }
@@ -158,7 +160,12 @@ export default function GameSideBar() {
       return;
     }
 
-    if (attachedStatus.leftHand === 0 || attachedStatus.rightHand === 0) {
+    if (
+      attachedStatus.leftHand === 0 ||
+      attachedStatus.rightHand === 0 ||
+      attachedStatus.leftFoot === 0 ||
+      attachedStatus.rightFoot === 0
+    ) {
       dispatch(controlHp((-4 * 100) / TIME_LIMIT));
       setHpColor(
         hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY

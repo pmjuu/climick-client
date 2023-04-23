@@ -140,51 +140,6 @@ function onDragStart() {
   rearrangeBody(exceededPart);
 }
 
-export function fallDown(displayText) {
-  const wall = document.querySelector(".wall");
-  wall.removeEventListener("pointermove", onDragging);
-  wall.removeEventListener("pointerup", onDragEnd);
-
-  let descentVelocity = 0;
-
-  function animate() {
-    descentVelocity += 0.4;
-    playerContainer.y += descentVelocity * 0.3;
-
-    const isPlayerAboveGround =
-      playerContainer.y <
-      containerPosition.y -
-        leftShoulder.y +
-        (initialContainerHeight - playerContainer.height);
-
-    if (!isPlayerAboveGround) {
-      gameStatus.fail = true;
-      holdContainer.addChild(getResultText(displayText));
-      return;
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-}
-
-function rearrangeBody(part) {
-  if (!part) return;
-
-  const flag = { x: null, y: null };
-  flag.x = part.hand.x < part.shoulder.x ? -1 : 1;
-  flag.y = part.hand.y < part.shoulder.y ? -1 : 1;
-
-  exceededPart = null;
-  const rearrangePX = 1;
-
-  moveBodyTo({
-    x: body.x + rearrangePX * flag.x + bodyWidth / 2,
-    y: body.y + rearrangePX * flag.y + bodyHeight / 2,
-  });
-}
-
 function onDragging(event) {
   const cursorInContainer = {
     x: event.clientX - this.offsetLeft - containerPosition.x,
@@ -404,11 +359,11 @@ function onDragEnd() {
 
   if (dragTarget === leftHand) {
     attachedStatus.leftHand = 0;
-    gravityRotate(...leftArmList, ...armSize, 1, 1, handRadius);
+    gravityRotate(...leftArmList, ...armSize, -1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === rightHand) {
     attachedStatus.rightHand = 0;
-    gravityRotate(...rightArmList, ...armSize, -1, 1, handRadius);
+    gravityRotate(...rightArmList, ...armSize, 1, handRadius);
     playerContainer.addChildAt(body, 6);
   } else if (dragTarget === leftFoot) {
     attachedStatus.leftFoot = 0;
@@ -421,7 +376,13 @@ function onDragEnd() {
   checkGravityCenter();
   rearrangeBody(exceededPart);
 
-  if (!attachedStatus.leftHand || !attachedStatus.rightHand) showWarning(body);
+  if (
+    attachedStatus.leftHand === 0 ||
+    attachedStatus.rightHand === 0 ||
+    attachedStatus.leftFoot === 0 ||
+    attachedStatus.rightFoot === 0
+  )
+    showWarning(body);
 }
 
 function showWarning(ref) {
@@ -437,10 +398,7 @@ function checkGravityCenter() {
   const gravityCenterX = body.x + bodyWidth / 2;
   const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
   attachedStatus.isStable =
-    attachedStatus.leftFoot &&
-    attachedStatus.rightFoot &&
-    leftFoot.x < gravityCenterX &&
-    gravityCenterX < rightFoot.x;
+    leftFoot.x < gravityCenterX && gravityCenterX < rightFoot.x;
 
   let descentVelocityX = 0;
   let descentVelocityY = 0;
@@ -468,12 +426,70 @@ function checkGravityCenter() {
 
     if (exceededPart) {
       rearrangeBody(exceededPart);
-      showWarning(body);
-      return;
+
+      return showWarning(body);
     }
 
     requestAnimationFrame(descendByGravity);
   }
+}
+
+function rearrangeBody(part) {
+  if (!attachedStatus.leftHand && dragTarget !== leftHand) {
+    leftHand.position.set(leftShoulder.x, leftShoulder.y + armLength * 2 - 2);
+  } else if (!attachedStatus.rightHand && dragTarget !== rightHand) {
+    rightHand.position.set(
+      rightShoulder.x,
+      rightShoulder.y + armLength * 2 - 2
+    );
+  } else if (!attachedStatus.leftFoot && dragTarget !== leftFoot) {
+    leftFoot.position.set(leftCoxa.x, leftCoxa.y + legLength * 2 - 2);
+  } else if (!attachedStatus.rightFoot && dragTarget !== rightFoot) {
+    rightFoot.position.set(rightCoxa.x, rightCoxa.y + legLength * 2 - 2);
+  }
+
+  if (!part) return;
+
+  const flag = { x: null, y: null };
+  flag.x = part.hand.x < part.shoulder.x ? -1 : 1;
+  flag.y = part.hand.y < part.shoulder.y ? -1 : 1;
+
+  exceededPart = null;
+  const rearrangePX = 3;
+
+  moveBodyTo({
+    x: body.x + rearrangePX * flag.x + bodyWidth / 2,
+    y: body.y + rearrangePX * flag.y + bodyHeight / 2,
+  });
+}
+
+export function fallDown(displayText) {
+  const wall = document.querySelector(".wall");
+  wall.removeEventListener("pointermove", onDragging);
+  wall.removeEventListener("pointerup", onDragEnd);
+
+  let descentVelocity = 0;
+
+  function animate() {
+    descentVelocity += 0.4;
+    playerContainer.y += descentVelocity * 0.3;
+
+    const isPlayerAboveGround =
+      playerContainer.y <
+      containerPosition.y -
+        leftShoulder.y +
+        (initialContainerHeight - playerContainer.height);
+
+    if (!isPlayerAboveGround) {
+      gameStatus.fail = true;
+      holdContainer.addChild(getResultText(displayText));
+      return;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
 }
 
 export default playerContainer;
