@@ -20,6 +20,7 @@ export default function gravityRotateLeg(
   );
   const rotatingDirection =
     upperArmOriginalAngle / Math.abs(upperArmOriginalAngle);
+
   let angleVelocity = 0;
 
   function animate() {
@@ -30,6 +31,9 @@ export default function gravityRotateLeg(
 
     const foreArmRotatingGoal =
       Math.abs(upperArmOriginalAngle) - theta1 * 2 * rotatingDirection * flagX;
+
+    const foreArmRotatingGoalDirection =
+      foreArmRotatingGoal / Math.abs(foreArmRotatingGoal);
 
     const isForeArmRotating =
       Math.abs(foreArm.angle) < Math.abs(foreArmRotatingGoal);
@@ -44,12 +48,18 @@ export default function gravityRotateLeg(
     }
 
     if (isForeArmRotating) {
-      foreArm.angle += angleVelocity * 0.2 * rotatingDirection;
+      foreArm.angle +=
+        angleVelocity * 0.2 * rotatingDirection * foreArmRotatingGoalDirection;
     }
 
     const newAngle = Math.abs(foreArmRotatingGoal) - Math.abs(foreArm.angle);
 
-    hand.x = foreArm.x + limbLength * getSin(newAngle) * rotatingDirection;
+    hand.x =
+      foreArm.x +
+      limbLength *
+        getSin(newAngle) *
+        rotatingDirection *
+        foreArmRotatingGoalDirection;
     hand.y = foreArm.y + limbLength * getCos(newAngle);
 
     const isRotationFinished = !isUpperArmRotating && !isForeArmRotating;

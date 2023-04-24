@@ -22,6 +22,7 @@ export default function gravityRotate(
   );
   const rotatingDirection =
     upperArmOriginalAngle / Math.abs(upperArmOriginalAngle);
+
   let angleVelocity = 0;
 
   function animate() {
