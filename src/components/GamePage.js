@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Application } from "pixi.js";
 import { useEffect, useRef } from "react";
 import GameSideBar from "./GameSideBar";
-import { holdContainer } from "../utils/hold";
+import holdContainer from "../utils/hold";
 import playerContainer from "../utils/player";
 import { COLOR, SIZE } from "../assets/constants";
 

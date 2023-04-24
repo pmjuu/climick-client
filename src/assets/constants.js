@@ -6,9 +6,10 @@ export const COLOR = {
   DARK_SKIN: "#f6b26b",
   HAIR: "744700",
   SHOES: "#555",
-  STRETCHED: "yellow",
-  HP_ONE_HAND: "goldenrod",
+  STRETCHED: "coral",
+  HP_ONE_HAND: "tomato",
   HP_TWO_HAND: "#33c",
+  HP_UNSTABLE: "goldenrod",
   HP_RISKY: "darkred",
 };
 
@@ -23,4 +24,4 @@ export const BODY = {
   COXA_GAP: 6,
 };
 
-export const TIME_LIMIT = 120;
+export const TIME_LIMIT = 300;

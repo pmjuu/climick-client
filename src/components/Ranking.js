@@ -35,6 +35,7 @@ const Wrapper = styled.div`
 
 export default function Ranking() {
   const [playerList, setPlayerList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   function setRanking(p1, p2) {
     if (p1.time === p2.time) {
@@ -66,7 +67,7 @@ export default function Ranking() {
 
       setPlayerList(newPlayerList);
     } catch (err) {
-      console.error(err);
+      setErrorMessage("Internal Server Error");
     }
   }
 
@@ -97,6 +98,7 @@ export default function Ranking() {
           </div>
         ))}
       </div>
+      {errorMessage && errorMessage}
     </Wrapper>
   );
 }
