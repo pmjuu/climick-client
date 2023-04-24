@@ -67,7 +67,7 @@ export default function Ranking() {
 
       setPlayerList(newPlayerList);
     } catch (err) {
-      setErrorMessage("Internal Server Error");
+      setErrorMessage(err.response.statusText);
     }
   }
 
