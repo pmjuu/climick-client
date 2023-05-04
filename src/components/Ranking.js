@@ -39,7 +39,7 @@ export default function Ranking() {
 
   function setRanking(p1, p2) {
     if (p1.time === p2.time) {
-      return p1.hp - p2.hp;
+      return p2.hp - p1.hp;
     }
 
     return p1.time - p2.time;

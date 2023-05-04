@@ -4,7 +4,7 @@
 
 ### _" Climbing + Click "_
 
-마우스로 손발을 클릭해서 클라이밍을 할 수 있는 게임입니다.
+🧗 마우스로 손발을 클릭해서 클라이밍을 할 수 있는 게임입니다.
 
 https://climick.netlify.app
 
@@ -17,6 +17,8 @@ https://climick.netlify.app
 - [💭 Motivation](#-motivation)
 - [💻 Features](#-features)
 - [💫 Challenges](#-challenges)
+  - [1. 관절 움직임 표현](#1-관절-움직임-표현)
+  - [2. 물리 엔진 구현](#2-물리-엔진-구현)
 - [📅 Timeline](#-timeline)
 - [📝 Memoir](#-memoir)
 - [🎥 Video](#-video)
@@ -140,4 +142,4 @@ https://climick.netlify.app
 
 🔽 첫번째 루트
 
-[![Video Label](http://img.youtube.com/vi/PGv9dS4NgYE/0.jpg)](https://youtu.be/PGv9dS4NgYE)
+[![Video Label](http://img.youtube.com/vi/w5qo4VSKXTo/0.jpg)](https://youtu.be/w5qo4VSKXTo)
