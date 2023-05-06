@@ -20,6 +20,8 @@ export const SIZE = {
 };
 
 export const BODY = {
+  WIDTH: 33,
+  HEIGHT: 60,
   SHOULDER_GAP: 0,
   COXA_GAP: 6,
 };

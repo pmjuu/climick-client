@@ -24,6 +24,7 @@ export default function drawLimb(
 
   upperArm.position.set(shoulder.x + flagX * flagY, shoulder.y);
   upperArm
+    .clear()
     .lineStyle(limbWidth + 5, COLOR.DARK_SKIN)
     .lineTo(upperArmDxy.dx, upperArmDxy.dy)
     .moveTo(0, 0);
@@ -51,6 +52,7 @@ export default function drawLimb(
     upperArm.y + upperArmDxy.dy
   );
   foreArm
+    .clear()
     .beginFill(COLOR.SKIN)
     .drawCircle(0, 0, limbWidth / 2)
     .lineStyle(limbWidth + 2, COLOR.DARK_SKIN)

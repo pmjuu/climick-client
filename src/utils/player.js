@@ -19,7 +19,7 @@ export const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
 playerContainer.position.set(...Object.values(containerPosition));
 
-const body = new Graphics();
+export const body = new Graphics();
 const leftUpperArm = new Graphics();
 const leftForeArm = new Graphics();
 const leftHand = new Graphics();
@@ -37,8 +37,7 @@ playerContainer.addChild(rightThigh, rightCalf, rightFoot);
 playerContainer.addChild(leftUpperArm, leftForeArm, leftHand);
 playerContainer.addChild(rightUpperArm, rightForeArm, rightHand);
 playerContainer.addChild(body);
-const bodyWidth = 33;
-const bodyHeight = 60;
+
 const headRadius = 15;
 const armLength = 40;
 const armWidth = 10;
@@ -46,41 +45,46 @@ const legLength = 50;
 const legWidth = 15;
 const handRadius = 10;
 const footRadius = 12;
-const leftShoulder = { x: 40, y: 0 };
-const rightShoulder = {
-  x: leftShoulder.x + bodyWidth * getCos(body.angle),
-  y: leftShoulder.y + bodyWidth * getSin(body.angle),
+export const leftShoulder = { x: 40, y: 0 };
+export const rightShoulder = {
+  x: leftShoulder.x + BODY.WIDTH * getCos(body.angle),
+  y: leftShoulder.y + BODY.WIDTH * getSin(body.angle),
 };
-const leftCoxa = {
-  x: leftShoulder.x - bodyHeight * getSin(body.angle) + BODY.COXA_GAP,
-  y: leftShoulder.y + bodyHeight * getCos(body.angle),
+export const leftCoxa = {
+  x: leftShoulder.x - BODY.HEIGHT * getSin(body.angle) + BODY.COXA_GAP,
+  y: leftShoulder.y + BODY.HEIGHT * getCos(body.angle),
 };
-const rightCoxa = {
-  x: rightShoulder.x - bodyHeight * getSin(body.angle) - BODY.COXA_GAP,
-  y: rightShoulder.y + bodyHeight * getCos(body.angle),
+export const rightCoxa = {
+  x: rightShoulder.x - BODY.HEIGHT * getSin(body.angle) - BODY.COXA_GAP,
+  y: rightShoulder.y + BODY.HEIGHT * getCos(body.angle),
 };
 
-const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
-const rightArmList = [rightHand, rightForeArm, rightUpperArm, rightShoulder];
-const leftLegList = [leftFoot, leftCalf, leftThigh, leftCoxa];
-const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
-const armSize = [armWidth, armLength];
-const legSize = [legWidth, legLength];
+export const leftArmList = [leftHand, leftForeArm, leftUpperArm, leftShoulder];
+export const rightArmList = [
+  rightHand,
+  rightForeArm,
+  rightUpperArm,
+  rightShoulder,
+];
+export const leftLegList = [leftFoot, leftCalf, leftThigh, leftCoxa];
+export const rightLegList = [rightFoot, rightCalf, rightThigh, rightCoxa];
+export const armSize = [armWidth, armLength];
+export const legSize = [legWidth, legLength];
 
 body
   .beginFill(COLOR.HAIR)
-  .drawCircle(bodyWidth / 2, -headRadius * 1.2, headRadius)
+  .drawCircle(BODY.WIDTH / 2, -headRadius * 1.2, headRadius)
   .lineStyle(7, COLOR.PANTS)
   .beginFill(COLOR.PANTS)
-  .drawRoundedRect(0, 0, bodyWidth, bodyHeight, 10)
+  .drawRoundedRect(0, 0, BODY.WIDTH, BODY.HEIGHT, 10)
   .lineStyle(10, COLOR.PANTS)
-  .drawRoundedRect(0, bodyHeight * 0.8, bodyWidth, bodyHeight / 3, 10)
+  .drawRoundedRect(0, BODY.HEIGHT * 0.8, BODY.WIDTH, BODY.HEIGHT / 3, 10)
   .lineStyle("none")
   .beginFill(COLOR.SKIN)
   .drawCircle(-BODY.SHOULDER_GAP, 2, (armWidth + 5) / 2)
-  .drawCircle(bodyWidth + BODY.SHOULDER_GAP, 2, (armWidth + 5) / 2)
+  .drawCircle(BODY.WIDTH + BODY.SHOULDER_GAP, 2, (armWidth + 5) / 2)
   .beginFill("#fff")
-  .drawStar(bodyWidth / 2, bodyHeight / 2, 5, 10);
+  .drawStar(BODY.WIDTH / 2, BODY.HEIGHT / 2, 5, 10);
 
 body.position.set(leftShoulder.x, leftShoulder.y);
 
@@ -98,7 +102,7 @@ rightFoot.beginFill(COLOR.SHOES).drawCircle(0, 0, footRadius);
 drawLimb(...leftArmList, ...armSize, -1, 1, 40, 40);
 drawLimb(...rightArmList, ...armSize, 1, 1, 40, 30);
 drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
-drawLimb(...rightLegList, ...legSize, 1, -1, 60, 60);
+drawLimb(...rightLegList, ...legSize, 1, -1, 50, 80);
 
 const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
 limbs.forEach(limb => {
@@ -162,8 +166,8 @@ function onDragging(event) {
     if (!theta2) return;
 
     return moveBodyTo({
-      x: cursorInContainer.x + armLength * 2 * getCos(theta2) + bodyWidth / 2,
-      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
+      x: cursorInContainer.x + armLength * 2 * getCos(theta2) + BODY.WIDTH / 2,
+      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + BODY.HEIGHT / 2,
     });
   }
 
@@ -180,8 +184,8 @@ function onDragging(event) {
     if (!theta2) return;
 
     return moveBodyTo({
-      x: cursorInContainer.x - armLength * 2 * getCos(theta2) - bodyWidth / 2,
-      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + bodyHeight / 2,
+      x: cursorInContainer.x - armLength * 2 * getCos(theta2) - BODY.WIDTH / 2,
+      y: cursorInContainer.y + armLength * 2 * getSin(theta2) + BODY.HEIGHT / 2,
     });
   }
 
@@ -201,11 +205,11 @@ function onDragging(event) {
       x:
         cursorInContainer.x -
         legLength * 2 * getSin(90 - theta2) +
-        bodyWidth / 2,
+        BODY.WIDTH / 2,
       y:
         cursorInContainer.y +
         legLength * 2 * getCos(90 - theta2) -
-        bodyHeight / 2,
+        BODY.HEIGHT / 2,
     });
   }
 
@@ -225,11 +229,11 @@ function onDragging(event) {
       x:
         cursorInContainer.x +
         legLength * 2 * getSin(90 - theta2) -
-        bodyWidth / 2,
+        BODY.WIDTH / 2,
       y:
         cursorInContainer.y +
         legLength * 2 * getCos(90 - theta2) -
-        bodyHeight / 2,
+        BODY.HEIGHT / 2,
     });
   }
 }
@@ -237,15 +241,15 @@ function onDragging(event) {
 function moveBodyTo(cursorInContainer) {
   if (exceededPart) return;
 
-  leftShoulder.x = cursorInContainer.x - bodyWidth / 2;
-  leftShoulder.y = cursorInContainer.y - bodyHeight / 2;
+  leftShoulder.x = cursorInContainer.x - BODY.WIDTH / 2;
+  leftShoulder.y = cursorInContainer.y - BODY.HEIGHT / 2;
 
-  rightShoulder.x = leftShoulder.x + bodyWidth * getCos(body.angle);
-  rightShoulder.y = leftShoulder.y + bodyWidth * getSin(body.angle);
-  leftCoxa.x = leftShoulder.x - bodyHeight * getSin(body.angle);
-  leftCoxa.y = leftShoulder.y + bodyHeight * getCos(body.angle);
-  rightCoxa.x = rightShoulder.x - bodyHeight * getSin(body.angle);
-  rightCoxa.y = rightShoulder.y + bodyHeight * getCos(body.angle);
+  rightShoulder.x = leftShoulder.x + BODY.WIDTH * getCos(body.angle);
+  rightShoulder.y = leftShoulder.y + BODY.WIDTH * getSin(body.angle);
+  leftCoxa.x = leftShoulder.x - BODY.HEIGHT * getSin(body.angle);
+  leftCoxa.y = leftShoulder.y + BODY.HEIGHT * getCos(body.angle);
+  rightCoxa.x = rightShoulder.x - BODY.HEIGHT * getSin(body.angle);
+  rightCoxa.y = rightShoulder.y + BODY.HEIGHT * getCos(body.angle);
 
   if (!exceededPart)
     exceededPart = moveJointByBody(
@@ -388,15 +392,15 @@ function onDragEnd() {
 
 function showWarning(ref) {
   instabilityWarning.position.set(
-    ref.x + bodyWidth / 2,
-    ref.y - bodyHeight / 2 - headRadius * 3
+    ref.x + BODY.WIDTH / 2,
+    ref.y - BODY.HEIGHT / 2 - headRadius * 3
   );
   playerContainer.addChild(instabilityWarning);
 }
 
 function checkGravityCenter() {
   const handsCenterX = (leftHand.x + rightHand.x) / 2;
-  const gravityCenterX = body.x + bodyWidth / 2;
+  const gravityCenterX = body.x + BODY.WIDTH / 2;
   const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
   attachedStatus.isStable =
     leftFoot.x < gravityCenterX && gravityCenterX < rightFoot.x;
@@ -411,7 +415,10 @@ function checkGravityCenter() {
   function descendByGravity() {
     descentVelocityY += 0.3;
 
-    if ((handsCenterX - body.x + bodyWidth / 2) * gravityCenterXdirection < 0) {
+    if (
+      (handsCenterX - body.x + BODY.WIDTH / 2) * gravityCenterXdirection <
+      0
+    ) {
       descentVelocityX = 0;
     } else {
       descentVelocityX += 0.3;
@@ -420,9 +427,9 @@ function checkGravityCenter() {
     moveBodyTo({
       x:
         leftShoulder.x +
-        bodyWidth / 2 -
+        BODY.WIDTH / 2 -
         0.2 * descentVelocityX * gravityCenterXdirection,
-      y: leftShoulder.y + bodyHeight / 2 + 0.3 * descentVelocityY,
+      y: leftShoulder.y + BODY.HEIGHT / 2 + 0.3 * descentVelocityY,
     });
 
     if (exceededPart) {
@@ -459,8 +466,8 @@ function rearrangeBody(part) {
   const rearrangePX = 3;
 
   moveBodyTo({
-    x: body.x + rearrangePX * flag.x + bodyWidth / 2,
-    y: body.y + rearrangePX * flag.y + bodyHeight / 2,
+    x: body.x + rearrangePX * flag.x + BODY.WIDTH / 2,
+    y: body.y + rearrangePX * flag.y + BODY.HEIGHT / 2,
   });
 }
 
