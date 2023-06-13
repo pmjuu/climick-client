@@ -14,12 +14,16 @@ const EntryWrapper = styled.div`
 export default function App() {
   return (
     <EntryWrapper>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/instruction" element={<Instruction />} />
-        <Route path="/game" element={<GamePage />} />
-        <Route path="*" element={<InvalidPage />} />
-      </Routes>
+      {window.innerWidth < 415 ? (
+        <InvalidPage text="not supported in mobile environment" />
+      ) : (
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/instruction" element={<Instruction />} />
+          <Route path="/game" element={<GamePage />} />
+          <Route path="/*" element={<InvalidPage text="Invalid URL" />} />
+        </Routes>
+      )}
     </EntryWrapper>
   );
 }

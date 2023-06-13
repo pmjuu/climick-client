@@ -8,12 +8,13 @@ const Wrapper = styled.div`
   height: 100%;
   color: #fff;
   font-size: 2rem;
+  text-align: center;
 `;
 
-export default function InvalidPage() {
+export default function InvalidPage({ text }) {
   return (
     <Wrapper>
-      <div>Invalid URL</div>
+      <div>{text}</div>
     </Wrapper>
   );
 }
