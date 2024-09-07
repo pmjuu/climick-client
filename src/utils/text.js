@@ -14,11 +14,12 @@ export const getResultText = string => {
 };
 
 export const introText = new Text(
-  "* 손/발/몸통 중 하나를 드래그하면 게임을 시작합니다",
+  "Drag either a hand, foot, or torso\nto start the game",
   {
     fontFamily: "Arial",
     fontSize: 20,
     fill: "#fff",
+    align: "center",
   }
 );
 introText.position.set(10, 650);
