@@ -37,7 +37,7 @@ code {
 }
 
 .button:hover {
-  background-color: #aaa;
+  background-color: rgba(170, 170, 170, 0.5);
   border: solid 1px #fff;
   color: #fff;
   cursor: pointer;

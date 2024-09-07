@@ -67,7 +67,22 @@ export default function Ranking() {
 
       setPlayerList(newPlayerList);
     } catch (err) {
-      setErrorMessage(err.response.statusText);
+      if (err.response) {
+        // Check if response exists
+        if (err.response.status === 404) {
+          setErrorMessage("Server is not connected");
+        } else {
+          setErrorMessage(`Server error: ${err.response.status}`);
+        }
+      } else if (err.request) {
+        // Request was made but no response was received
+        setErrorMessage(
+          "No response from the server. Please check your connection."
+        );
+      } else {
+        // Something happened while setting up the request
+        setErrorMessage("An unexpected error occurred.");
+      }
     }
   }
 
