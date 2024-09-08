@@ -42,3 +42,7 @@ code {
   color: #fff;
   cursor: pointer;
 }
+
+a {
+  text-decoration: none;
+}
