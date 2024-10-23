@@ -206,7 +206,7 @@ I thought I could implement it directly without a 3rd party library because as l
       - Easy to maintain.
     - Problems
       - Body parts are connected to other parts, so in addition to simple downward gravity, other forces like tension act.
-      - Implementing logic to calculate the sum of forces and apply it to body movement was time-consuming.
+      - Implementing logic to calculate the sum of forces and apply it to body movement was time-consuming.<br>
         <img src="https://github.com/pmjuu/climick-client/assets/50537876/e966878d-f274-4c08-bf18-e965f4551732" width="300px" height="230px">
 2. Create a human body gravity function in the form of a `Pixi.JS`-based plugin. ✅
     - Gravity always acts, but assuming that <u>in certain situations, gravity acts more strongly than the sum of other forces</u>, causing body parts to undergo downward accelerated circular motion or the player to move downward, I structured the logic accordingly.
@@ -227,6 +227,7 @@ I thought I could implement it directly without a 3rd party library because as l
       - Execute the `gravityRotate()` function to increase the rotation angular velocity (`angleVelocity`) of the upper arm and forearm at a constant acceleration. 
       - Since gravity always acts downward, until the angle between the line perpendicular to the ground and the arm is achieved,
   increase the upper arm’s angle (`upperArm.angle`) and forearm’s angle (`foreArm.angle`).
+
     ```js
     // src/utils/gravityRotate.js
 
@@ -391,7 +392,8 @@ The center of gravity is pulled down by gravity until one arm is extended.
 
 #### Problems
 - After one arm/leg is extended (by dragging or dropping due to gravity making the arm/leg fall downward), when dragging the other hand/foot, the previously extended limb did not bend.
-- Bending the extended limb by directly dragging the extended hand/foot was possible, but it was inconvenient from the user’s perspective.<br>
+- Bending the extended limb by directly dragging the extended hand/foot was possible, but it was inconvenient from the user’s perspective.
+
   <img src="https://github.com/pmjuu/climick-client/assets/50537876/cec50377-8633-4ffe-bbef-65788f4a1121" width=250>
 
 #### Cause
