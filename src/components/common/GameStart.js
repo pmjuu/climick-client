@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { setName } from "../../features/playerSlice";
 import { SIZE } from "../../assets/constants";
+import { setName } from "../../features/playerSlice";
 
 const GameStartContainer = styled.div`
   display: flex;
@@ -62,12 +63,28 @@ const GameStartContainer = styled.div`
   }
 `;
 
+const ErrorBox = styled.p`
+  margin: 0;
+  color: red;
+  font-size: 1rem;
+`;
+
 export default function GameStart() {
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const name = useSelector(state => state.player.name);
 
-  const handleInput = e => dispatch(setName(e.target.value.trim()));
+  const handleInput = e => {
+    const inputValue = e.target.value.trim();
+    if (inputValue.length > 24) {
+      setError("Name should not exceed 24 characters.");
+    } else {
+      setError(""); // Clear error if valid
+    }
+    dispatch(setName(inputValue));
+  };
+
   const handleGameStart = () => {
     if (!name) return;
 
@@ -76,11 +93,14 @@ export default function GameStart() {
   };
 
   return (
-    <GameStartContainer name={name}>
-      <input placeholder="enter name" onChange={handleInput} />
-      <button className="button" onClick={handleGameStart}>
-        Game&nbsp;START
-      </button>
-    </GameStartContainer>
+    <>
+      {error && <ErrorBox className="error">{error}</ErrorBox>}{" "}
+      <GameStartContainer name={name}>
+        <input placeholder="enter name" onChange={handleInput} />
+        <button className="button" onClick={handleGameStart}>
+          Game&nbsp;START
+        </button>
+      </GameStartContainer>
+    </>
   );
 }
