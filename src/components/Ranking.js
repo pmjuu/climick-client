@@ -6,28 +6,28 @@ import customAxios from "../utils/customAxios";
 const Wrapper = styled.div`
   .table {
     max-height: 450px;
-    border: 1px solid #fff;
+    border: 1px solid #ccc;
     overflow: scroll;
   }
 
   .row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 50px 270px 100px 70px;
     font-size: 1.3rem;
 
     > div {
-      width: 150px;
       padding: 3px 0;
-      border: 1px solid #fff;
+      border: 1px solid #ccc;
     }
 
-    .name {
-      color: blue;
+    .myName {
+      color: royalblue;
+      font-weight: 700;
     }
   }
 
   .row.first {
-    background-color: #bbb;
+    background-color: #ddd;
     font-size: 1.5rem;
     font-weight: 600;
   }
@@ -105,7 +105,7 @@ export default function Ranking() {
         {playerList.map((player, index) => (
           <div className="row" key={player._id}>
             <div>{index + 1}</div>
-            <div className={player.name === name ? "name" : ""}>
+            <div className={player.name === name ? "myName" : ""}>
               {player.name}
             </div>
             <div>{player.time}</div>

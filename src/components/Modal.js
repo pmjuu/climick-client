@@ -1,5 +1,5 @@
-import styled from "styled-components";
 import { useCallback } from "react";
+import styled from "styled-components";
 
 const ModalWrapper = styled.div`
   display: flex;
@@ -20,9 +20,9 @@ const ModalWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     z-index: 1;
-    width: 700px;
+    width: 570px;
     height: 600px;
-    background-color: #ccc;
+    background-color: #eee;
     border: 1px solid #fff;
     border-radius: 20px;
     box-shadow: 5px 5px 5px rgba(50, 50, 50, 0.5);
@@ -31,17 +31,16 @@ const ModalWrapper = styled.div`
       margin: 5px;
       padding: 0 10px;
       background-color: transparent;
-      border: 1px solid #fff;
+      border: 2px solid #aaa;
       border-radius: 0.5em;
-      color: #fff;
+      color: #aaa;
       font-size: 1.5rem;
       font-weight: 700;
       transition: all 0.3s;
 
       :hover {
-        background-color: #fff;
-        border: 1px solid #fff;
-        color: #aaa;
+        background-color: #aaa;
+        color: #fff;
         cursor: pointer;
       }
     }
