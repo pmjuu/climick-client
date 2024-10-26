@@ -14,7 +14,7 @@ export const getResultText = string => {
 };
 
 export const introText = new Text(
-  "Drag either a hand, foot, or torso\nto start the game",
+  "Drag either a hand or foot\nto start the game",
   {
     fontFamily: "Arial",
     fontSize: 20,

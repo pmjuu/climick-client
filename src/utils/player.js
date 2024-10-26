@@ -1,19 +1,19 @@
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-restricted-syntax */
-import { Container, Graphics } from "pixi.js";
 import "@pixi/graphics-extras";
-import { getCos, getDistance, getSin } from "./math";
-import { gameStatus, attachedStatus } from "./status";
-import holdContainer from "./hold";
+import { Container, Graphics } from "pixi.js";
+import { BODY, COLOR } from "../assets/constants";
 import holdInfo from "../assets/holdInfo";
-import { getResultText, instabilityWarning, introText } from "./text";
+import drawLimb from "./drawLimb";
+import gravityRotate from "./gravityRotate";
+import gravityRotateLeg from "./gravityRotateLeg";
+import holdContainer from "./hold";
+import { getCos, getDistance, getSin } from "./math";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
-import gravityRotate from "./gravityRotate";
-import { BODY, COLOR } from "../assets/constants";
-import drawLimb from "./drawLimb";
-import gravityRotateLeg from "./gravityRotateLeg";
+import { attachedStatus, gameStatus } from "./status";
+import { getResultText, instabilityWarning, introText } from "./text";
 
 export const containerPosition = { x: 400, y: 620 };
 const playerContainer = new Container();
@@ -104,7 +104,7 @@ drawLimb(...rightArmList, ...armSize, 1, 1, 40, 30);
 drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
 drawLimb(...rightLegList, ...legSize, 1, -1, 50, 80);
 
-const limbs = [leftHand, rightHand, leftFoot, rightFoot, body];
+const limbs = [leftHand, rightHand, leftFoot, rightFoot];
 limbs.forEach(limb => {
   limb.eventMode = "dynamic";
   limb
