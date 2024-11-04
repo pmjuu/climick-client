@@ -1,37 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import {
+  controlHp,
+  setHp,
+  setIsRankingOpened,
   setName,
   setTime,
-  setHp,
-  controlHp,
-  setIsRankingOpened,
 } from "../features/playerSlice";
+import customAxios from "../utils/customAxios";
+import { attachedStatus, gameStatus } from "../utils/status";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
-import { BODY, COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
-import customAxios from "../utils/customAxios";
-import playerContainer, {
-  fallDown,
-  leftArmList,
-  leftLegList,
-  rightArmList,
-  rightLegList,
-  armSize,
-  legSize,
-  body,
-  leftShoulder,
-  rightShoulder,
-  leftCoxa,
-  rightCoxa,
-} from "../utils/player";
-import { gameStatus, attachedStatus } from "../utils/status";
-import { instabilityWarning } from "../utils/text";
-import drawLimb from "../utils/drawLimb";
-import { getCos, getSin } from "../utils/math";
 
 const SideBar = styled.div`
   display: flex;
@@ -97,7 +80,11 @@ const HpBar = styled.div.attrs(props => ({
   transition: 0.4s all ease;
 `;
 
-export default function GameSideBar() {
+export default function GameSideBar({
+  onClickRestart,
+  failWithMessage,
+  getPlayerStatus,
+}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const name = useSelector(state => state.player.name);
@@ -131,32 +118,6 @@ export default function GameSideBar() {
     navigate("/");
     window.location.reload();
   };
-  const clickRestart = () => {
-    dispatch(setTime(0));
-    dispatch(setHp(100));
-    gameStatus.start = false;
-    gameStatus.fail = false;
-    gameStatus.success = false;
-    setHpColor(COLOR.HP_TWO_HAND);
-    playerContainer.removeChild(instabilityWarning);
-
-    leftShoulder.x = 40;
-    leftShoulder.y = 0;
-    rightShoulder.x = leftShoulder.x + BODY.WIDTH * getCos(body.angle);
-    rightShoulder.y = leftShoulder.y + BODY.WIDTH * getSin(body.angle);
-    leftCoxa.x =
-      leftShoulder.x - BODY.HEIGHT * getSin(body.angle) + BODY.COXA_GAP;
-    leftCoxa.y = leftShoulder.y + BODY.HEIGHT * getCos(body.angle);
-    rightCoxa.x =
-      rightShoulder.x - BODY.HEIGHT * getSin(body.angle) - BODY.COXA_GAP;
-    rightCoxa.y = rightShoulder.y + BODY.HEIGHT * getCos(body.angle);
-    body.position.set(leftShoulder.x, leftShoulder.y);
-
-    drawLimb(...leftArmList, ...armSize, -1, 1, 40, 40);
-    drawLimb(...rightArmList, ...armSize, 1, 1, 40, 30);
-    drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
-    drawLimb(...rightLegList, ...legSize, 1, -1, 50, 80);
-  };
 
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
@@ -171,8 +132,8 @@ export default function GameSideBar() {
 
       if (gameStatus.fail || gameStatus.success) {
         clearInterval(timerInterval);
-        playerContainer.eventMode = "none";
-        playerContainer.removeChild(instabilityWarning);
+        // playerContainer.eventMode = "none";
+        // playerContainer.removeChild(instabilityWarning);
         return dispatch(setIsRankingOpened(true));
       }
 
@@ -186,13 +147,23 @@ export default function GameSideBar() {
   useEffect(() => {
     if (!gameStatus.start) return;
 
+    if (getPlayerStatus() === "두손놓음") {
+      return;
+    }
+
     if (hp <= 0) {
       dispatch(setHp(0));
-      return fallDown("Fail...");
+      failWithMessage("Fail...", () => {
+        dispatch(setName("Fail..."));
+      });
+      return;
     }
 
     if (time >= TIME_LIMIT) {
-      return fallDown("Time Over");
+      failWithMessage("Time Over", () => {
+        dispatch(setName("Time Over"));
+      });
+      return;
     }
 
     if (
@@ -266,7 +237,19 @@ export default function GameSideBar() {
         <button className="button" onClick={clickHomePage}>
           🏠 Home Page
         </button>
-        <button className="button" onClick={clickRestart}>
+        <button
+          className="button"
+          onClick={() => {
+            gameStatus.start = false;
+            gameStatus.fail = false;
+            gameStatus.success = false;
+            dispatch(setTime(0));
+            dispatch(setHp(100));
+            setHpColor(COLOR.HP_TWO_HAND);
+
+            onClickRestart();
+          }}
+        >
           Restart
         </button>
       </div>

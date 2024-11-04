@@ -3,7 +3,7 @@ const apple = { x: 590, y: 450 };
 const tree = { x: 600, y: 680, leafHeight: 20 };
 const diagonal = { x: 170, y: 230, width: 20, height: 60 };
 
-const holdInfo = {
+const normalHolds = {
   floor: { x: -9, y: 760, width: 999, height: 20, type: "rect", color: "#999" },
   start: { x: 420, y: 560, width: 70, height: 20, type: "rect", color: "blue" },
   top: {
@@ -233,4 +233,4 @@ const holdInfo = {
   },
 };
 
-export default holdInfo;
+export default normalHolds;
