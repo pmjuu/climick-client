@@ -19,6 +19,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const NavigateButton = styled.button`
+  margin: 10px 0;
+`;
+
 export default function HomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,14 +31,18 @@ export default function HomePage() {
   localStorage.removeItem("climick-name");
 
   const clickInstruction = () => navigate("/instruction");
+  const clickPractice = () => navigate("/practice");
 
   return (
     <Wrapper>
       <h1 className="title">Climick</h1>
-      <GameStart />
-      <button className="button" onClick={clickInstruction}>
+      <NavigateButton className="button" onClick={clickInstruction}>
         Instruction
-      </button>
+      </NavigateButton>
+      <NavigateButton className="button" onClick={clickPractice}>
+        Practice
+      </NavigateButton>
+      <GameStart />
     </Wrapper>
   );
 }
