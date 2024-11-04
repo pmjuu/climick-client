@@ -27,6 +27,7 @@ code {
   padding: 0 10px;
   background-color: transparent;
   border: solid 1px #aaa;
+  border-radius: 5px;
   color: #fff;
   font-size: 1.8rem;
   font-weight: 600;

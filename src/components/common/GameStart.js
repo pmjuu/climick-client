@@ -32,6 +32,7 @@ const GameStartContainer = styled.div`
     margin-right: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     border: none;
+    border-radius: 5px;
     color: #fff;
     text-align: center;
     font-size: 2rem;
