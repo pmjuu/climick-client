@@ -1,5 +1,13 @@
 import styled from "styled-components";
 
+export default function InvalidPage({ text }) {
+  return (
+    <Wrapper>
+      <div>{text}</div>
+    </Wrapper>
+  );
+}
+
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -10,11 +18,3 @@ const Wrapper = styled.div`
   font-size: 2rem;
   text-align: center;
 `;
-
-export default function InvalidPage({ text }) {
-  return (
-    <Wrapper>
-      <div>{text}</div>
-    </Wrapper>
-  );
-}

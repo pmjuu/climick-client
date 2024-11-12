@@ -3,36 +3,6 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import customAxios from "../utils/customAxios";
 
-const Wrapper = styled.div`
-  .table {
-    max-height: 450px;
-    border: 1px solid #ccc;
-    overflow: scroll;
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 50px 270px 100px 70px;
-    font-size: 1.3rem;
-
-    > div {
-      padding: 3px 0;
-      border: 1px solid #ccc;
-    }
-
-    .myName {
-      color: royalblue;
-      font-weight: 700;
-    }
-  }
-
-  .row.first {
-    background-color: #ddd;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-`;
-
 export default function Ranking() {
   const [playerList, setPlayerList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -95,25 +65,55 @@ export default function Ranking() {
   return (
     <Wrapper>
       <h1>Ranking</h1>
-      <div className="table">
-        <div className="row first">
+      <Table>
+        <FirstRow>
           <div>No.</div>
           <div>Name</div>
           <div>Time</div>
           <div>HP</div>
-        </div>
+        </FirstRow>
         {playerList.map((player, index) => (
-          <div className="row" key={player._id}>
+          <Row key={player._id}>
             <div>{index + 1}</div>
             <div className={player.name === name ? "myName" : ""}>
               {player.name}
             </div>
             <div>{player.time}</div>
             <div>{player.hp}</div>
-          </div>
+          </Row>
         ))}
-      </div>
+      </Table>
       {errorMessage && errorMessage}
     </Wrapper>
   );
 }
+
+const Wrapper = styled.div``;
+
+const Table = styled.div`
+  max-height: 450px;
+  border: 1px solid #ccc;
+  overflow: scroll;
+`;
+
+const Row = styled.div`
+  display: grid;
+  grid-template-columns: 50px 270px 100px 70px;
+  font-size: 1.3rem;
+
+  > div {
+    padding: 3px 0;
+    border: 1px solid #ccc;
+  }
+
+  .myName {
+    color: royalblue;
+    font-weight: 700;
+  }
+`;
+
+const FirstRow = styled(Row)`
+  background-color: #ddd;
+  font-size: 1.5rem;
+  font-weight: 600;
+`;

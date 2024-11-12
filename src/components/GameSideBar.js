@@ -16,70 +16,6 @@ import { attachedStatus, gameStatus } from "../utils/status";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
 
-const SideBar = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  width: 400px;
-  height: ${SIZE.GAME_HEIGHT}px;
-
-  .status-box {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 270px;
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #fff;
-    font-size: 2.5rem;
-
-    .row {
-      display: flex;
-      align-items: center;
-      margin: 10px 15px;
-
-      .category {
-        margin-right: 10px;
-        font-weight: 700;
-      }
-
-      .name {
-        width: 250px;
-        text-overflow: clip;
-        overflow: scroll;
-        white-space: nowrap;
-      }
-    }
-
-    .hp-box {
-      width: 366px;
-      height: 30px;
-      background-color: #fff;
-      border: 1px solid #fff;
-    }
-
-    .hp-text {
-      font-size: 1rem;
-    }
-  }
-
-  .button {
-    margin-top: 5px;
-    padding: 0;
-    width: 100%;
-  }
-`;
-
-const HpBar = styled.div.attrs(props => ({
-  style: {
-    width: `${props.hp}%`,
-    backgroundColor: props.hpColor,
-  },
-}))`
-  height: 30px;
-  transition: 0.4s all ease;
-`;
-
 export default function GameSideBar({
   onClickRestart,
   failWithMessage,
@@ -205,39 +141,39 @@ export default function GameSideBar({
         playerInfo
       );
     } catch (err) {
-      console.error(err);
+      console.error(err); // eslint-disable-line no-console
     }
   }
 
   return (
     <SideBar>
-      <div className="status-box">
-        <div className="row">
-          <span className="category">Name</span>
-          <span className="name">{name}</span>
-        </div>
-        <div className="row">
-          <span className="category">Time</span>
+      <StatusBox className="status-box">
+        <Row>
+          <Category>Name</Category>
+          <PlayerName>{name}</PlayerName>
+        </Row>
+        <Row>
+          <Category>Time</Category>
           <span>
             {minute}:{second}
           </span>
-        </div>
-        <div className="row">
-          <span className="category">HP</span>
-          <span className="hp-text">{hp > 0 ? hp.toFixed(0) : 0}%</span>
-        </div>
-        <div className="row hp-box">
+        </Row>
+        <Row>
+          <Category>HP</Category>
+          <HpText>{hp > 0 ? hp.toFixed(0) : 0}%</HpText>
+        </Row>
+        <HpBox>
           <HpBar hp={hp} hpColor={hpColor} />
-        </div>
-      </div>
+        </HpBox>
+      </StatusBox>
       <div className="button-section">
-        <button className="button" onClick={clickRanking}>
+        <Button className="button" onClick={clickRanking}>
           🏆 Ranking
-        </button>
-        <button className="button" onClick={clickHomePage}>
+        </Button>
+        <Button className="button" onClick={clickHomePage}>
           🏠 Home Page
-        </button>
-        <button
+        </Button>
+        <Button
           className="button"
           onClick={() => {
             gameStatus.start = false;
@@ -251,7 +187,7 @@ export default function GameSideBar({
           }}
         >
           Restart
-        </button>
+        </Button>
       </div>
       {isModalOpened && (
         <Modal closeModal={closeModal}>
@@ -261,3 +197,66 @@ export default function GameSideBar({
     </SideBar>
   );
 }
+
+const SideBar = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 400px;
+  height: ${SIZE.GAME_HEIGHT}px;
+`;
+
+const StatusBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 270px;
+  background-color: rgba(30, 30, 30, 0.9);
+  color: #fff;
+  font-size: 2.5rem;
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 10px 15px;
+`;
+
+const Category = styled.span`
+  margin-right: 10px;
+  font-weight: 700;
+`;
+
+const PlayerName = styled.span`
+  width: 250px;
+  text-overflow: clip;
+  overflow: scroll;
+  white-space: nowrap;
+`;
+
+const HpBox = styled(Row)`
+  width: 366px;
+  height: 30px;
+  background-color: #fff;
+  border: 1px solid #fff;
+`;
+
+const HpText = styled.span`
+  font-size: 1rem;
+`;
+
+const Button = styled.button`
+  margin-top: 5px;
+  padding: 0;
+  width: 100%;
+`;
+
+const HpBar = styled.div.attrs(props => ({
+  style: {
+    width: `${props.hp}%`,
+    backgroundColor: props.hpColor,
+  },
+}))`
+  height: 30px;
+  transition: 0.4s all ease;
+`;

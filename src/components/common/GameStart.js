@@ -5,6 +5,42 @@ import styled from "styled-components";
 import { SIZE } from "../../assets/constants";
 import { setName } from "../../features/playerSlice";
 
+export default function GameStart() {
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const name = useSelector(state => state.player.name);
+
+  const handleInput = e => {
+    const inputValue = e.target.value.trim();
+    if (inputValue.length > 24) {
+      setError("Name should not exceed 24 characters.");
+    } else {
+      setError(""); // Clear error if valid
+    }
+    dispatch(setName(inputValue));
+  };
+
+  const handleGameStart = () => {
+    if (!name) return;
+
+    localStorage.setItem("climick-name", name);
+    navigate("/game");
+  };
+
+  return (
+    <>
+      {error && <ErrorBox className="error">{error}</ErrorBox>}{" "}
+      <GameStartContainer name={name}>
+        <input placeholder="enter name" onChange={handleInput} />
+        <button className="button" onClick={handleGameStart}>
+          Game&nbsp;START
+        </button>
+      </GameStartContainer>
+    </>
+  );
+}
+
 const GameStartContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -69,39 +105,3 @@ const ErrorBox = styled.p`
   color: red;
   font-size: 1rem;
 `;
-
-export default function GameStart() {
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const name = useSelector(state => state.player.name);
-
-  const handleInput = e => {
-    const inputValue = e.target.value.trim();
-    if (inputValue.length > 24) {
-      setError("Name should not exceed 24 characters.");
-    } else {
-      setError(""); // Clear error if valid
-    }
-    dispatch(setName(inputValue));
-  };
-
-  const handleGameStart = () => {
-    if (!name) return;
-
-    localStorage.setItem("climick-name", name);
-    navigate("/game");
-  };
-
-  return (
-    <>
-      {error && <ErrorBox className="error">{error}</ErrorBox>}{" "}
-      <GameStartContainer name={name}>
-        <input placeholder="enter name" onChange={handleInput} />
-        <button className="button" onClick={handleGameStart}>
-          Game&nbsp;START
-        </button>
-      </GameStartContainer>
-    </>
-  );
-}
