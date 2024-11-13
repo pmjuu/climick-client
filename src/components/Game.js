@@ -1,15 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-debugger */
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import normalHolds from "../assets/hold/normal";
+import { setGameStatus } from "../features/playerSlice";
 import Player from "../utils/player";
 import GameSideBar from "./GameSideBar";
 import Wall from "./common/Wall";
 
 export default function Game() {
-  const player = new Player(normalHolds);
-  const getPlayerStatus = () => {
-    return true;
+  const dispatch = useDispatch();
+  const updateGameStatus = (target, status) => {
+    dispatch(setGameStatus({ target, status }));
   };
+
+  const player = new Player(normalHolds, updateGameStatus);
 
   return (
     <Wrapper>
@@ -17,7 +22,7 @@ export default function Game() {
       <GameSideBar
         onClickRestart={player.resetPosition}
         failWithMessage={player.failWithMessage}
-        getPlayerStatus={getPlayerStatus}
+        // getPlayerStatus={getPlayerStatus}
       />
     </Wrapper>
   );

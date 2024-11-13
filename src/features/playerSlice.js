@@ -5,6 +5,11 @@ const initialState = {
   name: "",
   time: 0,
   hp: 100,
+  gameStatus: {
+    start: false,
+    fail: false,
+    success: false,
+  },
   isRankingOpened: false,
 };
 
@@ -24,12 +29,22 @@ const playerSlice = createSlice({
     controlHp(state, action) {
       state.hp += action.payload;
     },
+    setGameStatus(state, action) {
+      const { target, value } = action.payload;
+      state.gameStatus[target] = value;
+    },
     setIsRankingOpened(state, action) {
       state.isRankingOpened = action.payload;
     },
   },
 });
 
-export const { setName, setTime, setHp, controlHp, setIsRankingOpened } =
-  playerSlice.actions;
+export const {
+  setName,
+  setTime,
+  setHp,
+  controlHp,
+  setGameStatus,
+  setIsRankingOpened,
+} = playerSlice.actions;
 export default playerSlice.reducer;

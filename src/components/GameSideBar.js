@@ -5,14 +5,12 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import {
-  controlHp,
   setHp,
   setIsRankingOpened,
   setName,
   setTime,
 } from "../features/playerSlice";
 import customAxios from "../utils/customAxios";
-import { attachedStatus, gameStatus } from "../utils/status";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
 
@@ -60,6 +58,7 @@ export default function GameSideBar({
   const minute = String(parseInt(time / 60, 10)).padStart(2, "00");
   const [hpColor, setHpColor] = useState(COLOR.HP_TWO_HAND);
   const hp = useSelector(state => state.player.hp);
+  const gameStatus = useSelector(state => state.player.gameStatus);
 
   useEffect(() => {
     let tick = 0;
@@ -99,32 +98,31 @@ export default function GameSideBar({
       failWithMessage("Time Over", () => {
         dispatch(setName("Time Over"));
       });
-      return;
     }
 
-    if (
-      attachedStatus.leftHand === 0 ||
-      attachedStatus.rightHand === 0 ||
-      attachedStatus.leftFoot === 0 ||
-      attachedStatus.rightFoot === 0
-    ) {
-      dispatch(controlHp((-4 * 100) / TIME_LIMIT));
-      setHpColor(
-        hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY
-      );
-    } else {
-      dispatch(controlHp((-1 * 100) / TIME_LIMIT));
-      setHpColor(
-        hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
-      );
-    }
+    // if (
+    //   !isAttached.leftHand ||
+    //   !isAttached.rightHand ||
+    //   !isAttached.leftFoot ||
+    //   !isAttached.rightFoot
+    // ) {
+    //   dispatch(controlHp((-4 * 100) / TIME_LIMIT));
+    //   setHpColor(
+    //     hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY
+    //   );
+    // } else {
+    //   dispatch(controlHp((-1 * 100) / TIME_LIMIT));
+    //   setHpColor(
+    //     hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
+    //   );
+    // }
 
-    if (!attachedStatus.isStable) {
-      dispatch(controlHp((-2 * 100) / TIME_LIMIT));
-      setHpColor(
-        hp + (-2 * 100) / TIME_LIMIT > 30 ? COLOR.HP_UNSTABLE : COLOR.HP_RISKY
-      );
-    }
+    // if (!isStable) {
+    //   dispatch(controlHp((-2 * 100) / TIME_LIMIT));
+    //   setHpColor(
+    //     hp + (-2 * 100) / TIME_LIMIT > 30 ? COLOR.HP_UNSTABLE : COLOR.HP_RISKY
+    //   );
+    // }
   }, [time]);
 
   useEffect(() => {

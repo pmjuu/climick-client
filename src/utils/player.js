@@ -12,18 +12,33 @@ import createHoldContainer from "./hold";
 import { getCos, getDistance, getSin } from "./math";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
-import { attachedStatus, gameStatus } from "./status";
 import { getResultText, instabilityWarning, introText } from "./text";
 
 export const containerPosition = { x: 400, y: 620 };
 
 export default class Player {
-  constructor(holdData) {
+  constructor(holdData, updateGameStatus) {
+    // Function Injection
+    this.updateGameStatus = updateGameStatus;
+
+    // Status
+    this.isAttached = {
+      leftHandOnTop: false,
+      rightHandOnTop: false,
+      leftHand: true,
+      rightHand: true,
+      leftFoot: true,
+      rightFoot: true,
+    };
+    this.isStable = true;
+
+    // Environment
     this.container = new Container();
     this.container.position.set(...Object.values(containerPosition));
     this.holdContainer = createHoldContainer(holdData);
     this.holdData = holdData;
 
+    // Body parts
     this.headRadius = 15;
     this.armLength = 40;
     this.armWidth = 10;
@@ -155,15 +170,16 @@ export default class Player {
   onDragStart(limb) {
     this.holdContainer.removeChild(introText);
     this.container.removeChild(instabilityWarning);
+    const { isAttached } = this;
 
-    if (attachedStatus.leftHand && attachedStatus.rightHand)
+    if (isAttached.leftHand && isAttached.rightHand)
       this.container.addChildAt(this.body, 13);
 
-    gameStatus.start = true;
+    this.updateGameStatus("start", true);
 
     const isTwoHandsDetached =
-      (attachedStatus.leftHand === 0 && limb === this.rightHand) ||
-      (attachedStatus.rightHand === 0 && limb === this.leftHand);
+      (!isAttached.leftHand && limb === this.rightHand) ||
+      (!isAttached.rightHand && limb === this.leftHand);
 
     if (isTwoHandsDetached) {
       setTimeout(() => {
@@ -285,6 +301,7 @@ export default class Player {
 
   moveBodyTo(cursorInContainer) {
     const {
+      isAttached,
       body,
       leftShoulder,
       rightShoulder,
@@ -354,19 +371,19 @@ export default class Player {
       );
 
     if (!exceededPart) {
-      if (!attachedStatus.leftHand && dragTarget !== leftHand) {
+      if (!isAttached.leftHand && dragTarget !== leftHand) {
         leftHand.position.set(
           leftShoulder.x,
           leftShoulder.y + armLength * 2 - 3
         );
-      } else if (!attachedStatus.rightHand && dragTarget !== rightHand) {
+      } else if (!isAttached.rightHand && dragTarget !== rightHand) {
         rightHand.position.set(
           rightShoulder.x,
           rightShoulder.y + armLength * 2 - 3
         );
-      } else if (!attachedStatus.leftFoot && dragTarget !== leftFoot) {
+      } else if (!isAttached.leftFoot && dragTarget !== leftFoot) {
         leftFoot.position.set(leftCoxa.x, leftCoxa.y + legLength * 2 - 5);
-      } else if (!attachedStatus.rightFoot && dragTarget !== rightFoot) {
+      } else if (!isAttached.rightFoot && dragTarget !== rightFoot) {
         rightFoot.position.set(rightCoxa.x, rightCoxa.y + legLength * 2 - 5);
       }
 
@@ -376,6 +393,7 @@ export default class Player {
 
   onDragEnd = () => {
     const {
+      isAttached,
       dragTarget,
       holdData,
       body,
@@ -422,19 +440,24 @@ export default class Player {
 
       if (isAttachedToHold) {
         if (dragTarget === leftHand) {
-          attachedStatus.leftHand = 1;
+          isAttached.leftHand = true;
 
-          if (hold.text === "top") attachedStatus.leftHandOnTop = 1;
+          if (hold.text === "top") {
+            // TODO :: identify by hold ID
+            isAttached.leftHandOnTop = true;
+          }
         }
 
         if (dragTarget === rightHand) {
-          attachedStatus.rightHand = 1;
+          isAttached.rightHand = true;
 
-          if (hold.text === "top") attachedStatus.rightHandOnTop = 1;
+          if (hold.text === "top") {
+            isAttached.rightHandOnTop = true;
+          }
         }
 
-        if (attachedStatus.leftHandOnTop && attachedStatus.rightHandOnTop) {
-          gameStatus.success = true;
+        if (isAttached.leftHandOnTop && isAttached.rightHandOnTop) {
+          this.updateGameStatus("success", true);
           holdContainer.addChild(getResultText("Success!"));
           playerContainer.eventMode = "none";
 
@@ -442,8 +465,12 @@ export default class Player {
           wall.removeEventListener("pointerup", this.onDragEnd);
         }
 
-        if (dragTarget === leftFoot) attachedStatus.leftFoot = 1;
-        if (dragTarget === rightFoot) attachedStatus.rightFoot = 1;
+        if (dragTarget === leftFoot) {
+          isAttached.leftFoot = true;
+        }
+        if (dragTarget === rightFoot) {
+          isAttached.rightFoot = true;
+        }
 
         this.checkGravityCenter();
         this.rearrangeBody(exceededPart);
@@ -452,31 +479,33 @@ export default class Player {
     }
 
     if (dragTarget === leftHand) {
-      attachedStatus.leftHand = 0;
+      isAttached.leftHand = false;
       gravityRotate(...leftArmList, ...armSize, -1, handRadius);
       playerContainer.addChildAt(body, 6);
     } else if (dragTarget === rightHand) {
-      attachedStatus.rightHand = 0;
+      isAttached.rightHand = false;
       gravityRotate(...rightArmList, ...armSize, 1, handRadius);
       playerContainer.addChildAt(body, 6);
     } else if (dragTarget === leftFoot) {
-      attachedStatus.leftFoot = 0;
+      isAttached.leftFoot = false;
       gravityRotateLeg(...leftLegList, ...legSize, -1, -1);
     } else if (dragTarget === rightFoot) {
-      attachedStatus.rightFoot = 0;
+      isAttached.rightFoot = false;
       gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
     }
 
+    // this.showWarning(body);
     this.checkGravityCenter();
     this.rearrangeBody(exceededPart);
 
     if (
-      attachedStatus.leftHand === 0 ||
-      attachedStatus.rightHand === 0 ||
-      attachedStatus.leftFoot === 0 ||
-      attachedStatus.rightFoot === 0
-    )
+      !isAttached.leftHand ||
+      !isAttached.rightHand ||
+      !isAttached.leftFoot ||
+      !isAttached.rightFoot
+    ) {
       this.showWarning(body);
+    }
   };
 
   showWarning(ref) {
@@ -501,17 +530,14 @@ export default class Player {
     const handsCenterX = (leftHand.x + rightHand.x) / 2;
     const gravityCenterX = body.x + BODY.WIDTH / 2;
     const gravityCenterXdirection = gravityCenterX < handsCenterX ? -1 : 1;
-    attachedStatus.isStable =
+    const isGravityCenterBetweenFeet =
       leftFoot.x < gravityCenterX && gravityCenterX < rightFoot.x;
+    this.isStable = isGravityCenterBetweenFeet;
 
     let descentVelocityX = 0;
     let descentVelocityY = 0;
 
-    if (!attachedStatus.isStable) {
-      descendByGravity();
-    }
-
-    function descendByGravity() {
+    const descendByGravity = () => {
       descentVelocityY += 0.3;
 
       if (
@@ -538,11 +564,16 @@ export default class Player {
       }
 
       requestAnimationFrame(descendByGravity);
+    };
+
+    if (!isGravityCenterBetweenFeet) {
+      descendByGravity();
     }
   }
 
   rearrangeBody(part) {
     const {
+      isAttached,
       body,
       leftShoulder,
       rightShoulder,
@@ -557,16 +588,16 @@ export default class Player {
       dragTarget,
     } = this;
 
-    if (!attachedStatus.leftHand && dragTarget !== leftHand) {
+    if (!isAttached.leftHand && dragTarget !== leftHand) {
       leftHand.position.set(leftShoulder.x, leftShoulder.y + armLength * 2 - 2);
-    } else if (!attachedStatus.rightHand && dragTarget !== rightHand) {
+    } else if (!isAttached.rightHand && dragTarget !== rightHand) {
       rightHand.position.set(
         rightShoulder.x,
         rightShoulder.y + armLength * 2 - 2
       );
-    } else if (!attachedStatus.leftFoot && dragTarget !== leftFoot) {
+    } else if (!isAttached.leftFoot && dragTarget !== leftFoot) {
       leftFoot.position.set(leftCoxa.x, leftCoxa.y + legLength * 2 - 2);
-    } else if (!attachedStatus.rightFoot && dragTarget !== rightFoot) {
+    } else if (!isAttached.rightFoot && dragTarget !== rightFoot) {
       rightFoot.position.set(rightCoxa.x, rightCoxa.y + legLength * 2 - 2);
     }
 
@@ -603,8 +634,9 @@ export default class Player {
           (this.initialContainerHeight - this.container.height);
 
       if (!isPlayerAboveGround) {
-        // gameStatus.fail = true;
-        onFail();
+        this.updateGameStatus("success", true);
+        // onFail();
+
         this.holdContainer.addChild(getResultText(displayText));
         return;
       }
