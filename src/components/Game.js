@@ -3,9 +3,9 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import normalHolds from "../assets/hold/normal";
+import Player from "../entity/player";
 import { setGameStatus } from "../features/playerSlice";
 import createHoldContainer from "../utils/hold";
-import Player from "../utils/player";
 import GameSideBar from "./GameSideBar";
 import Wall from "./common/Wall";
 

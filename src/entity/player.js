@@ -5,13 +5,13 @@
 import "@pixi/graphics-extras";
 import { Container, Graphics } from "pixi.js";
 import { BODY, COLOR } from "../assets/constants";
-import drawLimb from "./drawLimb";
-import gravityRotate from "./gravityRotate";
-import gravityRotateLeg from "./gravityRotateLeg";
-import { getCos, getDistance, getSin } from "./math";
-import moveJoint from "./moveJoint";
-import moveJointByBody from "./moveJointByBody";
-import { getResultText, instabilityWarning, introText } from "./text";
+import drawLimb from "../utils/drawLimb";
+import gravityRotate from "../utils/gravityRotate";
+import gravityRotateLeg from "../utils/gravityRotateLeg";
+import { getCos, getDistance, getSin } from "../utils/math";
+import moveJoint from "../utils/moveJoint";
+import moveJointByBody from "../utils/moveJointByBody";
+import { getResultText, instabilityWarning, introText } from "../utils/text";
 
 export const containerPosition = { x: 400, y: 620 };
 

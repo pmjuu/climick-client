@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import practiceHolds from "../assets/hold/practice";
-import Player from "../utils/player";
+import Player from "../entity/player";
 import GameStart from "./common/GameStart";
 import Wall from "./common/Wall";
 
