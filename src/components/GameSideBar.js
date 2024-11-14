@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import {
   controlHp,
+  setGameStatus,
   setHp,
   setIsRankingOpened,
   setName,
@@ -18,7 +19,7 @@ import Ranking from "./Ranking";
 export default function GameSideBar({
   onGameEnd,
   getPlayerStatus,
-  onClickRestart,
+  resetPlayerPosition,
   failWithMessage,
 }) {
   const navigate = useNavigate();
@@ -54,6 +55,16 @@ export default function GameSideBar({
     navigate("/");
     window.location.reload();
   };
+  const onClickRestart = () => {
+    dispatch(setGameStatus({ target: "start", status: false }));
+    dispatch(setGameStatus({ target: "fail", status: false }));
+    dispatch(setGameStatus({ target: "success", status: false }));
+    dispatch(setTime(0));
+    dispatch(setHp(100));
+    setHpColor(COLOR.HP_TWO_HAND);
+
+    resetPlayerPosition();
+  };
 
   const time = useSelector(state => state.player.time);
   const second = String(time % 60).padStart(2, "00");
@@ -66,6 +77,7 @@ export default function GameSideBar({
     let tick = 0;
     const timerInterval = setInterval(() => {
       if (!gameStatus.start) {
+        clearInterval(timerInterval);
         return;
       }
 
@@ -86,22 +98,15 @@ export default function GameSideBar({
   useEffect(() => {
     if (!gameStatus.start) return;
 
-    // if (getPlayerStatus() === "두손놓음") {
-    //   return;
-    // }
-
     if (hp <= 0) {
       dispatch(setHp(0));
-      failWithMessage("Fail...", () => {
-        dispatch(setName("Fail..."));
-      });
+      failWithMessage("Fail");
       return;
     }
 
     if (time >= TIME_LIMIT) {
-      failWithMessage("Time Over", () => {
-        dispatch(setName("Time Over"));
-      });
+      failWithMessage("Time Over");
+      return;
     }
 
     const { isAttached, isStable } = getPlayerStatus;
@@ -179,17 +184,8 @@ export default function GameSideBar({
         <Button className="button" onClick={clickHomePage}>
           🏠 Home Page
         </Button>
-        <Button
-          className="button"
-          onClick={() => {
-            dispatch(setTime(0));
-            dispatch(setHp(100));
-            setHpColor(COLOR.HP_TWO_HAND);
-
-            onClickRestart();
-          }}
-        >
-          Restart
+        <Button className="button" onClick={onClickRestart}>
+          🔄 Restart
         </Button>
       </div>
       {isModalOpened && (

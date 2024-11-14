@@ -670,7 +670,7 @@ export default class Player {
     animate();
   };
 
-  resetPosition() {
+  resetPosition = () => {
     const {
       body,
       leftArmList,
@@ -683,10 +683,10 @@ export default class Player {
       rightShoulder,
       leftCoxa,
       rightCoxa,
-      container: playerContainer,
+      container,
     } = this;
 
-    playerContainer.removeChild(instabilityWarning);
+    container.removeChild(instabilityWarning);
     leftShoulder.x = 40;
     leftShoulder.y = 0;
     rightShoulder.x = leftShoulder.x + BODY.WIDTH * getCos(body.angle);
@@ -703,7 +703,7 @@ export default class Player {
     drawLimb(...rightArmList, ...armSize, 1, 1, 40, 30);
     drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
     drawLimb(...rightLegList, ...legSize, 1, -1, 50, 80);
-  }
+  };
 
   onGameEnd = () => {
     this.container.eventMode = "none";

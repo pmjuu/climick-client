@@ -24,7 +24,7 @@ export default function Game() {
       <GameSideBar
         onGameEnd={player.onGameEnd}
         getPlayerStatus={player.getPlayerStatus}
-        onClickRestart={player.resetPosition}
+        resetPlayerPosition={player.resetPosition}
         failWithMessage={player.failWithMessage}
       />
     </Wrapper>
