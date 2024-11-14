@@ -162,9 +162,13 @@ export default class Player {
     });
 
     this.dragTarget = null;
-    this.exceededPart = null;
+    this.exceededPart = { hand: null, shoulder: null };
 
     this.initialContainerHeight = this.container.height;
+  }
+
+  get isLimbFullyExtended() {
+    return this.exceededPart.hand && this.exceededPart.shoulder;
   }
 
   onDragStart(limb) {
@@ -322,10 +326,13 @@ export default class Player {
       armLength,
       legLength,
       dragTarget,
+      exceededPart,
+      isLimbFullyExtended,
     } = this;
-    let { exceededPart } = this;
 
-    if (exceededPart) return;
+    if (isLimbFullyExtended) {
+      return;
+    }
 
     leftShoulder.x = cursorInContainer.x - BODY.WIDTH / 2;
     leftShoulder.y = cursorInContainer.y - BODY.HEIGHT / 2;
@@ -337,40 +344,48 @@ export default class Player {
     rightCoxa.x = rightShoulder.x - BODY.HEIGHT * getSin(body.angle);
     rightCoxa.y = rightShoulder.y + BODY.HEIGHT * getCos(body.angle);
 
-    if (!exceededPart)
-      exceededPart = moveJointByBody(
+    if (!isLimbFullyExtended) {
+      const fullyExtendedLimb = moveJointByBody(
         ...leftArmList,
         ...armSize,
         1,
         1,
         handRadius
       );
-    if (!exceededPart)
-      exceededPart = moveJointByBody(
+      Object.assign(exceededPart, fullyExtendedLimb);
+    }
+    if (!isLimbFullyExtended) {
+      const fullyExtendedLimb = moveJointByBody(
         ...rightArmList,
         ...armSize,
         -1,
         1,
         handRadius
       );
-    if (!exceededPart)
-      exceededPart = moveJointByBody(
+      Object.assign(exceededPart, fullyExtendedLimb);
+    }
+    if (!isLimbFullyExtended) {
+      const fullyExtendedLimb = moveJointByBody(
         ...leftLegList,
         ...legSize,
         -1,
         -1,
         footRadius
       );
-    if (!exceededPart)
-      exceededPart = moveJointByBody(
+      Object.assign(exceededPart, fullyExtendedLimb);
+    }
+    if (!isLimbFullyExtended) {
+      const fullyExtendedLimb = moveJointByBody(
         ...rightLegList,
         ...legSize,
         1,
         -1,
         footRadius
       );
+      Object.assign(exceededPart, fullyExtendedLimb);
+    }
 
-    if (!exceededPart) {
+    if (!isLimbFullyExtended) {
       if (!isAttached.leftHand && dragTarget !== leftHand) {
         leftHand.position.set(
           leftShoulder.x,
@@ -494,7 +509,6 @@ export default class Player {
       gravityRotateLeg(...rightLegList, ...legSize, 1, -1);
     }
 
-    // this.showWarning(body);
     this.checkGravityCenter();
     this.rearrangeBody(exceededPart);
 
@@ -518,13 +532,14 @@ export default class Player {
 
   checkGravityCenter() {
     const {
-      exceededPart,
       body,
       leftHand,
       rightHand,
       leftFoot,
       rightFoot,
       leftShoulder,
+      exceededPart,
+      isLimbFullyExtended,
     } = this;
 
     const handsCenterX = (leftHand.x + rightHand.x) / 2;
@@ -557,7 +572,7 @@ export default class Player {
         y: leftShoulder.y + BODY.HEIGHT / 2 + 0.3 * descentVelocityY,
       });
 
-      if (exceededPart) {
+      if (isLimbFullyExtended) {
         this.rearrangeBody(exceededPart);
 
         return this.showWarning(body);
@@ -586,6 +601,8 @@ export default class Player {
       armLength,
       legLength,
       dragTarget,
+      exceededPart,
+      isLimbFullyExtended,
     } = this;
 
     if (!isAttached.leftHand && dragTarget !== leftHand) {
@@ -601,13 +618,15 @@ export default class Player {
       rightFoot.position.set(rightCoxa.x, rightCoxa.y + legLength * 2 - 2);
     }
 
-    if (!part) return;
+    if (!isLimbFullyExtended) {
+      return;
+    }
 
     const flag = { x: null, y: null };
     flag.x = part.hand.x < part.shoulder.x ? -1 : 1;
     flag.y = part.hand.y < part.shoulder.y ? -1 : 1;
 
-    this.exceededPart = null;
+    Object.assign(exceededPart, { hand: null, shoulder: null });
     const rearrangePX = 3;
 
     this.moveBodyTo({
