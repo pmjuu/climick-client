@@ -170,6 +170,13 @@ export default class Player {
     return this.exceededPart.hand && this.exceededPart.shoulder;
   }
 
+  get getPlayerStatus() {
+    return {
+      isAttached: this.isAttached,
+      isStable: this.isStable,
+    };
+  }
+
   onDragStart(limb) {
     this.holdContainer.removeChild(introText);
     this.container.removeChild(instabilityWarning);
@@ -697,4 +704,9 @@ export default class Player {
     drawLimb(...leftLegList, ...legSize, -1, -1, 50, 80);
     drawLimb(...rightLegList, ...legSize, 1, -1, 50, 80);
   }
+
+  onGameEnd = () => {
+    this.container.eventMode = "none";
+    this.container.removeChild(instabilityWarning);
+  };
 }

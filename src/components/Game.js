@@ -22,6 +22,8 @@ export default function Game() {
     <Wrapper>
       <Wall holdContainer={holdContainer} playerContainer={player.container} />
       <GameSideBar
+        onGameEnd={player.onGameEnd}
+        getPlayerStatus={player.getPlayerStatus}
         onClickRestart={player.resetPosition}
         failWithMessage={player.failWithMessage}
       />

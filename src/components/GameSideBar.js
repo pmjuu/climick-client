@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLOR, SIZE, TIME_LIMIT } from "../assets/constants";
 import {
+  controlHp,
   setHp,
   setIsRankingOpened,
   setName,
@@ -14,7 +15,12 @@ import customAxios from "../utils/customAxios";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
 
-export default function GameSideBar({ onClickRestart, failWithMessage }) {
+export default function GameSideBar({
+  onGameEnd,
+  getPlayerStatus,
+  onClickRestart,
+  failWithMessage,
+}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const name = useSelector(state => state.player.name);
@@ -65,9 +71,9 @@ export default function GameSideBar({ onClickRestart, failWithMessage }) {
 
       if (gameStatus.fail || gameStatus.success) {
         clearInterval(timerInterval);
-        // playerContainer.eventMode = "none";
-        // playerContainer.removeChild(instabilityWarning);
-        return dispatch(setIsRankingOpened(true));
+        dispatch(setIsRankingOpened(true));
+        onGameEnd();
+        return;
       }
 
       tick += 1;
@@ -75,7 +81,7 @@ export default function GameSideBar({ onClickRestart, failWithMessage }) {
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [gameStatus.start]);
+  }, [gameStatus.start, gameStatus.fail, gameStatus.success]);
 
   useEffect(() => {
     if (!gameStatus.start) return;
@@ -98,29 +104,33 @@ export default function GameSideBar({ onClickRestart, failWithMessage }) {
       });
     }
 
-    // if (
-    //   !isAttached.leftHand ||
-    //   !isAttached.rightHand ||
-    //   !isAttached.leftFoot ||
-    //   !isAttached.rightFoot
-    // ) {
-    //   dispatch(controlHp((-4 * 100) / TIME_LIMIT));
-    //   setHpColor(
-    //     hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY
-    //   );
-    // } else {
-    //   dispatch(controlHp((-1 * 100) / TIME_LIMIT));
-    //   setHpColor(
-    //     hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
-    //   );
-    // }
+    const { isAttached, isStable } = getPlayerStatus;
 
-    // if (!isStable) {
-    //   dispatch(controlHp((-2 * 100) / TIME_LIMIT));
-    //   setHpColor(
-    //     hp + (-2 * 100) / TIME_LIMIT > 30 ? COLOR.HP_UNSTABLE : COLOR.HP_RISKY
-    //   );
-    // }
+    // if the player detached hand or foot, HP decreases faster and HP bar color chagnes
+    if (
+      !isAttached.leftHand ||
+      !isAttached.rightHand ||
+      !isAttached.leftFoot ||
+      !isAttached.rightFoot
+    ) {
+      dispatch(controlHp((-4 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-4 * 100) / TIME_LIMIT > 30 ? COLOR.HP_ONE_HAND : COLOR.HP_RISKY
+      );
+    } else {
+      dispatch(controlHp((-1 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-1 * 100) / TIME_LIMIT > 30 ? COLOR.HP_TWO_HAND : COLOR.HP_RISKY
+      );
+    }
+
+    // if the player is unstable, HP decreases faster and HP bar color chagnes
+    if (!isStable) {
+      dispatch(controlHp((-2 * 100) / TIME_LIMIT));
+      setHpColor(
+        hp + (-2 * 100) / TIME_LIMIT > 30 ? COLOR.HP_UNSTABLE : COLOR.HP_RISKY
+      );
+    }
   }, [time]);
 
   useEffect(() => {
