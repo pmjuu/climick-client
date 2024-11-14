@@ -30,8 +30,8 @@ const playerSlice = createSlice({
       state.hp += action.payload;
     },
     setGameStatus(state, action) {
-      const { target, value } = action.payload;
-      state.gameStatus[target] = value;
+      const { target, status } = action.payload;
+      state.gameStatus[target] = status;
     },
     setIsRankingOpened(state, action) {
       state.isRankingOpened = action.payload;

@@ -2,15 +2,13 @@ import { Application } from "pixi.js";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { COLOR, SIZE } from "../../assets/constants";
-import createHoldContainer from "../../utils/hold";
 
-export default function Wall({ playerContainer, holdData }) {
+export default function Wall({ holdContainer, playerContainer }) {
   const app = new Application({
     width: SIZE.GAME_WIDTH,
     height: SIZE.GAME_HEIGHT,
     backgroundAlpha: 0,
   });
-  const holdContainer = createHoldContainer(holdData);
 
   app.stage.addChild(holdContainer);
   app.stage.addChild(playerContainer);

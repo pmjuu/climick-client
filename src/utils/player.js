@@ -8,7 +8,6 @@ import { BODY, COLOR } from "../assets/constants";
 import drawLimb from "./drawLimb";
 import gravityRotate from "./gravityRotate";
 import gravityRotateLeg from "./gravityRotateLeg";
-import createHoldContainer from "./hold";
 import { getCos, getDistance, getSin } from "./math";
 import moveJoint from "./moveJoint";
 import moveJointByBody from "./moveJointByBody";
@@ -17,7 +16,7 @@ import { getResultText, instabilityWarning, introText } from "./text";
 export const containerPosition = { x: 400, y: 620 };
 
 export default class Player {
-  constructor(holdData, updateGameStatus) {
+  constructor(holdData, holdContainer, updateGameStatus) {
     // Function Injection
     this.updateGameStatus = updateGameStatus;
 
@@ -35,7 +34,7 @@ export default class Player {
     // Environment
     this.container = new Container();
     this.container.position.set(...Object.values(containerPosition));
-    this.holdContainer = createHoldContainer(holdData);
+    this.holdContainer = holdContainer;
     this.holdData = holdData;
 
     // Body parts
@@ -635,7 +634,7 @@ export default class Player {
     });
   }
 
-  failWithMessage = (displayText, onFail) => {
+  failWithMessage = displayText => {
     const wall = document.querySelector(".wall");
     wall.removeEventListener("pointermove", this.onDragging);
     wall.removeEventListener("pointerup", this.onDragEnd);
@@ -653,9 +652,7 @@ export default class Player {
           (this.initialContainerHeight - this.container.height);
 
       if (!isPlayerAboveGround) {
-        this.updateGameStatus("success", true);
-        // onFail();
-
+        this.updateGameStatus("fail", true);
         this.holdContainer.addChild(getResultText(displayText));
         return;
       }

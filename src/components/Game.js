@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import normalHolds from "../assets/hold/normal";
 import { setGameStatus } from "../features/playerSlice";
+import createHoldContainer from "../utils/hold";
 import Player from "../utils/player";
 import GameSideBar from "./GameSideBar";
 import Wall from "./common/Wall";
@@ -14,15 +15,15 @@ export default function Game() {
     dispatch(setGameStatus({ target, status }));
   };
 
-  const player = new Player(normalHolds, updateGameStatus);
+  const holdContainer = createHoldContainer(normalHolds);
+  const player = new Player(normalHolds, holdContainer, updateGameStatus);
 
   return (
     <Wrapper>
-      <Wall playerContainer={player.container} holdData={normalHolds} />
+      <Wall holdContainer={holdContainer} playerContainer={player.container} />
       <GameSideBar
         onClickRestart={player.resetPosition}
         failWithMessage={player.failWithMessage}
-        // getPlayerStatus={getPlayerStatus}
       />
     </Wrapper>
   );

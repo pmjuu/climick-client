@@ -14,11 +14,7 @@ import customAxios from "../utils/customAxios";
 import Modal from "./Modal";
 import Ranking from "./Ranking";
 
-export default function GameSideBar({
-  onClickRestart,
-  failWithMessage,
-  getPlayerStatus,
-}) {
+export default function GameSideBar({ onClickRestart, failWithMessage }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const name = useSelector(state => state.player.name);
@@ -63,7 +59,9 @@ export default function GameSideBar({
   useEffect(() => {
     let tick = 0;
     const timerInterval = setInterval(() => {
-      if (!gameStatus.start) return;
+      if (!gameStatus.start) {
+        return;
+      }
 
       if (gameStatus.fail || gameStatus.success) {
         clearInterval(timerInterval);
@@ -77,14 +75,14 @@ export default function GameSideBar({
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, []);
+  }, [gameStatus.start]);
 
   useEffect(() => {
     if (!gameStatus.start) return;
 
-    if (getPlayerStatus() === "두손놓음") {
-      return;
-    }
+    // if (getPlayerStatus() === "두손놓음") {
+    //   return;
+    // }
 
     if (hp <= 0) {
       dispatch(setHp(0));
@@ -174,9 +172,6 @@ export default function GameSideBar({
         <Button
           className="button"
           onClick={() => {
-            gameStatus.start = false;
-            gameStatus.fail = false;
-            gameStatus.success = false;
             dispatch(setTime(0));
             dispatch(setHp(100));
             setHpColor(COLOR.HP_TWO_HAND);
