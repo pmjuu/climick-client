@@ -3,9 +3,9 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import normalHolds from "../assets/hold/normal";
+import HoldMap from "../entity/hold";
 import Player from "../entity/player";
 import { setGameStatus } from "../features/playerSlice";
-import createHoldContainer from "../utils/hold";
 import GameSideBar from "./GameSideBar";
 import Wall from "./common/Wall";
 
@@ -15,7 +15,7 @@ export default function Game() {
     dispatch(setGameStatus({ target, status }));
   };
 
-  const holdContainer = createHoldContainer(normalHolds);
+  const holdContainer = new HoldMap(normalHolds).container;
   const player = new Player(normalHolds, holdContainer, updateGameStatus);
 
   return (
