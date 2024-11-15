@@ -1,16 +1,30 @@
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import practiceHolds from "../assets/hold/practice";
+import HoldMap from "../entity/hold";
 import Player from "../entity/player";
+import { setGameStatus } from "../features/playerSlice";
 import GameStart from "./common/GameStart";
 import Wall from "./common/Wall";
 
 export default function Practice() {
-  const player = new Player(practiceHolds);
+  const dispatch = useDispatch();
+  const updateGameStatus = (target, status) => {
+    dispatch(setGameStatus({ target, status }));
+  };
+
+  const holdContainer = new HoldMap(practiceHolds).container;
+  const player = new Player(
+    practiceHolds,
+    holdContainer,
+    updateGameStatus,
+    true
+  );
 
   return (
     <Wrapper>
       <Title>Practice</Title>
-      <Wall playerContainer={player.container} holdData={practiceHolds} />
+      <Wall holdContainer={holdContainer} playerContainer={player.container} />
       <GameStart />
     </Wrapper>
   );
@@ -21,6 +35,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
 `;
 
 const Title = styled.h1`

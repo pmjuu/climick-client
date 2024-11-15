@@ -16,11 +16,12 @@ import { getResultText, instabilityWarning, introText } from "../utils/text";
 export const containerPosition = { x: 400, y: 620 };
 
 export default class Player {
-  constructor(holdData, holdContainer, updateGameStatus) {
+  constructor(holdData, holdContainer, updateGameStatus, isPractice = false) {
     // Function Injection
     this.updateGameStatus = updateGameStatus;
 
     // Status
+    this.isPractice = isPractice;
     this.isAttached = {
       leftHandOnTop: false,
       rightHandOnTop: false,
@@ -185,7 +186,9 @@ export default class Player {
     if (isAttached.leftHand && isAttached.rightHand)
       this.container.addChildAt(this.body, 13);
 
-    this.updateGameStatus("start", true);
+    if (!this.isPractice) {
+      this.updateGameStatus("start", true);
+    }
 
     const isTwoHandsDetached =
       (!isAttached.leftHand && limb === this.rightHand) ||

@@ -1,6 +1,6 @@
 const cloud = { x: 365, y: 360 };
 const apple = { x: 550, y: 470 };
-const tree = { x: 550, y: 680, leafHeight: 20 };
+const tree = { x: 560, y: 670, leafHeight: 20 };
 const diagonal = { x: 520, y: 330, width: 40, height: 20 };
 
 const practiceHolds = {
@@ -18,7 +18,7 @@ const practiceHolds = {
     x: tree.x,
     y: tree.y,
     width: 20,
-    height: 80,
+    height: 90,
     type: "rect",
     color: "#744700",
   },
@@ -62,7 +62,8 @@ const practiceHolds = {
     type: "rect",
     color: "green",
   },
-  b1: { x: 350, y: 670, width: 50, height: 20, type: "rect", color: "navy" },
+  b0: { x: 350, y: 670, width: 40, height: 20, type: "rect", color: "navy" },
+  b1: { x: 370, y: 620, width: 40, height: 20, type: "rect", color: "navy" },
   p1: {
     x: diagonal.x,
     y: diagonal.y,
