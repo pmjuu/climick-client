@@ -66,7 +66,7 @@ export default function App() {
 
 const EntryWrapper = styled.div`
   width: 100vw;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 90px);
 `;
 
 const Footer = styled.footer`
@@ -75,6 +75,7 @@ const Footer = styled.footer`
   justify-content: flex-end;
   align-items: center;
   column-gap: 30px;
+  margin-top: 50px;
   padding: 0 15px;
   height: 40px;
   color: white;

@@ -47,7 +47,7 @@ const GameStartContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: ${props => (props.name ? 520 : SIZE.INPUT_WIDTH)}px;
-  height: 68px;
+  height: 60px;
   margin: 10px 0;
   text-align: center;
   overflow: hidden;
@@ -89,6 +89,7 @@ const GameStartContainer = styled.div`
     }
 
     :focus {
+      height: 52px;
       background-color: rgba(0, 0, 0, 0);
       border-bottom: 1px solid white;
       outline: none;
