@@ -5,7 +5,7 @@ const diagonal = { x: 170, y: 230, width: 20, height: 60 };
 
 const normalHolds = {
   floor: { x: -9, y: 760, width: 999, height: 20, type: "rect", color: "#999" },
-  start: { x: 420, y: 560, width: 70, height: 20, type: "rect", color: "blue" },
+  start: { x: 410, y: 560, width: 95, height: 20, type: "rect", color: "blue" },
   top: {
     x: 490,
     y: 100,

@@ -3,7 +3,7 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import normalHolds from "../assets/hold/normal";
-import HoldMap from "../entity/hold";
+import HoldMap from "../entity/holdMap";
 import Player from "../entity/player";
 import { setGameStatus } from "../features/playerSlice";
 import GameSideBar from "./GameSideBar";

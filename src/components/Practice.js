@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import practiceHolds from "../assets/hold/practice";
-import HoldMap from "../entity/hold";
+import HoldMap from "../entity/holdMap";
 import Player from "../entity/player";
 import { setGameStatus } from "../features/playerSlice";
 import GameStart from "./common/GameStart";

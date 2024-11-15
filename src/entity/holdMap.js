@@ -17,7 +17,7 @@ export default class HoldMap {
       align: "center",
     });
     this.startHold.addChild(startText);
-    startText.anchor.set(0.1, 1);
+    startText.anchor.set(-0.1, 1);
 
     this.topHold = new Graphics();
     this.topHold.position.set(holdData.top.x, holdData.top.y);
