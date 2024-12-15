@@ -11,7 +11,7 @@ export default function App() {
   return (
     <EntryWrapper>
       {window.innerWidth < 415 ? (
-        <InvalidPage text="not supported in mobile environment" />
+        <InvalidPage text="Please visit on a desktop for a smoother experience." />
       ) : (
         <Routes>
           <Route path="/" element={<HomePage />} />
